@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Order - Food Ordering</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #111;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .phone-shell {
+      width: 390px;
+      min-height: 100vh;
+      background: #1c1c1c;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .phone-shell::-webkit-scrollbar { display: none; }
+
+    /* ── Header ── */
+    .app-header {
+      padding: 20px 18px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1c1c1c;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      color: #e8890c;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      padding: 0;
+      min-width: 60px;
+    }
+    .page-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 24px;
+      color: #fff;
+      font-weight: 700;
+    }
+    .notif-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    /* ── Credit Card ── */
+    .card-section {
+      padding: 6px 18px 0;
+    }
+
+    .credit-card {
+      background: linear-gradient(135deg, #e8890c 0%, #c0641a 60%, #a0440a 100%);
+      border-radius: 20px;
+      padding: 24px 24px 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(232, 137, 12, 0.35);
+    }
+    .credit-card::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 160px;
+      height: 160px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50%;
+    }
+    .credit-card::after {
+      content: '';
+      position: absolute;
+      bottom: -50px;
+      right: 30px;
+      width: 120px;
+      height: 120px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+    .card-label {
+      color: rgba(255,255,255,0.85);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-label i { font-size: 18px; }
+    .card-number {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+    .card-holder {
+      color: rgba(255,255,255,0.9);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    /* card chip */
+    .card-chip {
+      position: absolute;
+      top: 22px;
+      right: 24px;
+      width: 36px;
+      height: 28px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-chip::before {
+      content: '';
+      width: 20px;
+      height: 14px;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 3px;
+    }
+
+    /* ── Section Labels ── */
+    .section-label {
+      color: #ccc;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 22px 18px 10px;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── Address Card ── */
+    .address-card {
+      background: #252525;
+      border-radius: 14px;
+      margin: 0 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .address-info {}
+    .address-name {
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .address-text {
+      color: #888;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.5;
+    }
+    .change-address-btn {
+      background: none;
+      border: none;
+      color: #e8890c;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    /* ── Payment Method ── */
+    .payment-section {
+      margin: 0 18px;
+    }
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .payment-option {
+      background: #252525;
+      border-radius: 14px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .payment-option.selected {
+      border-color: #e8890c;
+    }
+    .payment-icon {
+      width: 40px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .payment-icon.cc  { background: linear-gradient(135deg,#e8890c,#c0441a); }
+    .payment-icon.pay { background: #1a1a2e; }
+    .payment-icon.cod { background: #1a2e1a; }
+    .payment-name {
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      flex: 1;
+    }
+    .payment-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color 0.2s;
+    }
+    .payment-option.selected .payment-radio {
+      border-color: #e8890c;
+    }
+    .payment-radio-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e8890c;
+      display: none;
+    }
+    .payment-option.selected .payment-radio-dot { display: block; }
+
+    /* ── Spacer ── */
+    .flex-spacer { flex: 1; }
+
+    /* ── Total + Checkout ── */
+    .bottom-section {
+      padding: 20px 18px 26px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .total-label {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .total-value {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .confirm-btn {
+      width: 100%;
+      background: #c0441a;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+    .confirm-btn:hover { background: #e8890c; }
+    .confirm-btn:active { transform: scale(0.98); }
+
+    /* ── Toast ── */
+    .toast-msg {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #e8890c;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 100;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Address modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 50;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet {
+      background: #252525;
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px 32px;
+      width: 390px;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    .modal-title {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .modal-input {
+      width: 100%;
+      background: #1c1c1c;
+      border: 1px solid #3a3a3a;
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: #fff;
+      font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+      margin-bottom: 10px;
+    }
+    .modal-input:focus { border-color: #e8890c; }
+    .modal-save-btn {
+      width: 100%;
+      background: #c0441a;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .modal-save-btn:hover { background: #e8890c; }
+  </style>
+</head>
+<body>
+
+<div class="phone-shell">
+
+  <!-- Header -->
+  <div class="app-header">
+    <button class="back-btn">
+      <i class="fas fa-play fa-flip-horizontal"></i> Back
+    </button>
+    <span class="page-title">Order</span>
+    <div style="min-width:60px;text-align:right;">
+      <button class="notif-btn"><i class="far fa-bell"></i></button>
+    </div>
+  </div>
+
+  <!-- Credit Card -->
+  <div class="card-section">
+    <div class="credit-card">
+      <div class="card-chip"></div>
+      <div class="card-label">
+        <i class="fas fa-credit-card"></i> Credit Card
+      </div>
+      <div class="card-number">0123 4567 8901 2345</div>
+      <div class="card-holder">Chiaki Sato</div>
+    </div>
+  </div>
+
+  <!-- Address -->
+  <div class="section-label">Address</div>
+  <div class="address-card">
+    <div class="address-info">
+      <div class="address-name">Chiaki Sato</div>
+      <div class="address-text">123 Anywhere St., Any City,<br>ST 12345</div>
+    </div>
+    <button class="change-address-btn" onclick="openAddressModal()">Change Address</button>
+  </div>
+
+  <!-- Payment Method -->
+  <div class="section-label">Payment Method</div>
+  <div class="payment-section">
+    <div class="payment-options">
+
+      <div class="payment-option selected" onclick="selectPayment(this)">
+        <div class="payment-icon cc"><i class="fas fa-credit-card" style="color:#fff;font-size:14px"></i></div>
+        <span class="payment-name">Credit / Debit Card</span>
+        <div class="payment-radio"><div class="payment-radio-dot"></div></div>
+      </div>
+
+      <div class="payment-option" onclick="selectPayment(this)">
+        <div class="payment-icon pay" style="font-size:14px;color:#4285f4;font-weight:700;letter-spacing:-1px;">G</div>
+        <span class="payment-name">Google Pay</span>
+        <div class="payment-radio"><div class="payment-radio-dot"></div></div>
+      </div>
+
+      <div class="payment-option" onclick="selectPayment(this)">
+        <div class="payment-icon cod" style="font-size:16px;">💵</div>
+        <span class="payment-name">Cash on Delivery</span>
+        <div class="payment-radio"><div class="payment-radio-dot"></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flex-spacer" style="min-height:28px;"></div>
+
+  <!-- Total + Confirm -->
+  <div class="bottom-section">
+    <div class="total-row">
+      <span class="total-label">Total Payment</span>
+      <span class="total-value">$ 1,234.56</span>
+    </div>
+    <button class="confirm-btn" onclick="confirmOrder()">Confirm Order</button>
+  </div>
+
+</div>
+
+<!-- Address Modal -->
+<div class="modal-overlay" id="addressModal" onclick="closeModalOutside(event)">
+  <div class="modal-sheet">
+    <div class="modal-title">Change Address</div>
+    <input class="modal-input" type="text" placeholder="Full Name" id="addrName" value="Chiaki Sato"/>
+    <input class="modal-input" type="text" placeholder="Street Address" id="addrStreet" value="123 Anywhere St."/>
+    <input class="modal-input" type="text" placeholder="City, State, ZIP" id="addrCity" value="Any City, ST 12345"/>
+    <button class="modal-save-btn" onclick="saveAddress()">Save Address</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-msg" id="toast"></div>
+
+<script>
+  function selectPayment(el) {
+    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function openAddressModal() {
+    document.getElementById('addressModal').classList.add('open');
+  }
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('addressModal')) {
+      document.getElementById('addressModal').classList.remove('open');
+    }
+  }
+  function saveAddress() {
+    const name   = document.getElementById('addrName').value.trim();
+    const street = document.getElementById('addrStreet').value.trim();
+    const city   = document.getElementById('addrCity').value.trim();
+    if (name && street && city) {
+      document.querySelector('.address-name').textContent = name;
+      document.querySelector('.address-text').innerHTML   = street + ',<br>' + city;
+      document.getElementById('addressModal').classList.remove('open');
+      showToast('📍 Address updated!');
+    } else {
+      showToast('Please fill all fields.');
+    }
+  }
+
+  function confirmOrder() {
+    showToast('🎉 Order confirmed! Thank you.');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Orange Elegant Food Ordering</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      padding: 0;
+    }
+
+    .phone-shell {
+      width: 390px;
+      min-height: 100vh;
+      background: #1c1c1c;
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      background: #1c1c1c;
+      padding: 10px 18px 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-time { color: #fff; font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; }
+    .status-icons { display: flex; align-items: center; gap: 6px; }
+    .status-icons i, .status-icons span { color: #fff; font-size: 11px; }
+
+    /* Header */
+    .app-header {
+      background: #1c1c1c;
+      padding: 8px 18px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .greeting-name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 22px;
+      color: #fff;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .greeting-sub {
+      color: #aaa;
+      font-size: 12px;
+      font-weight: 300;
+      margin-top: 1px;
+    }
+    .cart-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 2px;
+    }
+
+    /* Search */
+    .search-wrap {
+      padding: 4px 18px 12px;
+      background: #1c1c1c;
+    }
+    .search-box {
+      background: #2a2a2a;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      gap: 8px;
+    }
+    .search-box input {
+      background: none;
+      border: none;
+      outline: none;
+      color: #888;
+      font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      width: 100%;
+    }
+    .search-box input::placeholder { color: #666; }
+    .search-box i { color: #888; font-size: 14px; }
+
+    /* Hero Banner */
+    .hero-banner {
+      margin: 0 18px 16px;
+      background: linear-gradient(135deg, #2a2a2a 0%, #222 100%);
+      border-radius: 16px;
+      padding: 18px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 110px;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,140,0,0.08) 0%, transparent 60%);
+      border-radius: 16px;
+    }
+    .hero-badge {
+      background: #e8890c;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .hero-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 26px;
+      color: #fff;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .hero-meta { display: flex; flex-direction: column; gap: 4px; }
+    .hero-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #ccc;
+      font-size: 11px;
+    }
+    .hero-meta-item i { color: #e8890c; font-size: 11px; }
+    .hero-img {
+      width: 110px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+    .hero-img-placeholder {
+      width: 110px;
+      height: 90px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3a2a1a, #2a1a0a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+
+    /* Category */
+    .section-header {
+      padding: 0 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 22px;
+      color: #fff;
+      font-weight: 700;
+    }
+    .see-all {
+      color: #e8890c;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .category-scroll {
+      padding: 0 18px 16px;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .category-scroll::-webkit-scrollbar { display: none; }
+
+    .cat-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 30px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .cat-btn.active { background: #e8890c; color: #fff; }
+    .cat-btn:not(.active) { background: #2a2a2a; color: #ccc; }
+    .cat-btn .cat-icon { font-size: 15px; }
+
+    /* Best Seller */
+    .best-seller-title {
+      text-align: center;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+      padding: 0 18px;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 0 18px 24px;
+    }
+
+    .food-card {
+      background: #252525;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+    .food-card-img-wrap {
+      position: relative;
+      height: 120px;
+      background: #2a2a2a;
+    }
+    .food-card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .food-card-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    .heart-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .heart-btn.liked { color: #e8890c; }
+    .heart-btn:not(.liked) { color: #888; }
+
+    .food-card-body { padding: 10px 10px 8px; }
+    .food-card-name {
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .food-card-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+    .food-card-rating i { color: #f5a623; font-size: 11px; }
+    .food-card-rating span { color: #ccc; font-size: 11px; font-weight: 500; }
+    .food-card-price { color: #fff; font-size: 12px; font-weight: 600; margin-left: 2px; }
+    .food-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #888;
+      font-size: 10px;
+    }
+    .food-card-meta span { display: flex; align-items: center; gap: 3px; }
+    .meta-divider { color: #444; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      background: #1c1c1c;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 14px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-item i { font-size: 20px; color: #555; }
+    .nav-item.active i { color: #e8890c; }
+    .nav-dot { width: 5px; height: 5px; background: #e8890c; border-radius: 50%; }
+
+    /* scrollbar */
+    .phone-shell::-webkit-scrollbar { width: 0; }
+  </style>
+</head>
+<body>
+<div class="phone-shell">
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-time">08:30</span>
+    <div class="status-icons">
+      <i class="fas fa-signal" style="font-size:12px"></i>
+      <i class="fas fa-wifi" style="font-size:12px"></i>
+      <i class="fas fa-battery-three-quarters" style="font-size:12px"></i>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="app-header">
+    <div>
+      <div class="greeting-name">Hi, Chiaki Sato</div>
+      <div class="greeting-sub">Ready to order for dinner?</div>
+    </div>
+    <button class="cart-btn">
+      <i class="fas fa-shopping-cart"></i>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <input type="text" placeholder="Search menu" />
+      <i class="fas fa-search"></i>
+    </div>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div>
+      <div class="hero-badge">Best Seller</div>
+      <div class="hero-title">Chicken Steak</div>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <i class="fas fa-clock"></i>
+          <span>20 Minutes</span>
+        </div>
+        <div class="hero-meta-item">
+          <i class="fas fa-utensils"></i>
+          <span>Medium Size</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-img-placeholder">🥩</div>
+  </div>
+
+  <!-- Category -->
+  <div class="section-header">
+    <div class="section-title">Category</div>
+    <a href="#" class="see-all">See All <i class="fas fa-chevron-right" style="font-size:10px"></i></a>
+  </div>
+
+  <div class="category-scroll">
+    <button class="cat-btn active"><span class="cat-icon">🥩</span> Meat</button>
+    <button class="cat-btn"><span class="cat-icon">🍿</span> Snack</button>
+    <button class="cat-btn"><span class="cat-icon">🧃</span> Drink</button>
+    <button class="cat-btn"><span class="cat-icon">🍮</span> Dessert</button>
+  </div>
+
+  <!-- Best Seller Heading -->
+  <div class="best-seller-title">BEST SELLER!!!</div>
+
+  <!-- Cards Grid -->
+  <div class="cards-grid">
+
+    <!-- Card 1 -->
+    <div class="food-card">
+      <div class="food-card-img-wrap" style="background:linear-gradient(135deg,#2a1a0a,#3a2a10);">
+        <div class="food-card-img-placeholder">🥩</div>
+        <button class="heart-btn liked"><i class="fas fa-heart"></i></button>
+      </div>
+      <div class="food-card-body">
+        <div class="food-card-name">Chicken Steak<br>with French Fires</div>
+        <div class="food-card-rating">
+          <i class="fas fa-star"></i>
+          <span>4.9</span>
+          <span class="food-card-price">$1,234.56</span>
+        </div>
+        <div class="food-card-meta">
+          <span><i class="fas fa-clock" style="font-size:9px;color:#888"></i> 20 Minutes</span>
+          <span class="meta-divider">|</span>
+          <span>Medium</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="food-card">
+      <div class="food-card-img-wrap" style="background:linear-gradient(135deg,#2a1500,#3a2000);">
+        <div class="food-card-img-placeholder">🍛</div>
+        <button class="heart-btn"><i class="far fa-heart"></i></button>
+      </div>
+      <div class="food-card-body">
+        <div class="food-card-name">Chicken Curry<br>with Mayonnaise</div>
+        <div class="food-card-rating">
+          <i class="fas fa-star"></i>
+          <span>4.9</span>
+          <span class="food-card-price">$1,234.56</span>
+        </div>
+        <div class="food-card-meta">
+          <span><i class="fas fa-clock" style="font-size:9px;color:#888"></i> 20 Minutes</span>
+          <span class="meta-divider">|</span>
+          <span>Medium</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="food-card">
+      <div class="food-card-img-wrap" style="background:linear-gradient(135deg,#1a1a0a,#2a2a10);">
+        <div class="food-card-img-placeholder">🍗</div>
+        <button class="heart-btn"><i class="far fa-heart"></i></button>
+      </div>
+      <div class="food-card-body">
+        <div class="food-card-name">Fried Chicken<br>with Soy Sauce</div>
+        <div class="food-card-rating">
+          <i class="fas fa-star"></i>
+          <span>4.9</span>
+          <span class="food-card-price">$1,234.56</span>
+        </div>
+        <div class="food-card-meta">
+          <span><i class="fas fa-clock" style="font-size:9px;color:#888"></i> 20 Minutes</span>
+          <span class="meta-divider">|</span>
+          <span>Medium</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="food-card">
+      <div class="food-card-img-wrap" style="background:linear-gradient(135deg,#1a1000,#2a1800);">
+        <div class="food-card-img-placeholder">🍲</div>
+        <button class="heart-btn liked"><i class="fas fa-heart"></i></button>
+      </div>
+      <div class="food-card-body">
+        <div class="food-card-name">Chicken Katsu<br>with Ketchup</div>
+        <div class="food-card-rating">
+          <i class="fas fa-star"></i>
+          <span>4.9</span>
+          <span class="food-card-price">$1,234.56</span>
+        </div>
+        <div class="food-card-meta">
+          <span><i class="fas fa-clock" style="font-size:9px;color:#888"></i> 20 Minutes</span>
+          <span class="meta-divider">|</span>
+          <span>Medium</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <button class="nav-item active">
+      <i class="fas fa-home"></i>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-item">
+      <i class="fas fa-search"></i>
+    </button>
+    <button class="nav-item">
+      <i class="fas fa-shopping-bag"></i>
+    </button>
+    <button class="nav-item">
+      <i class="fas fa-user"></i>
+    </button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Category filter
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Heart toggle
+  document.querySelectorAll('.heart-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.classList.toggle('liked');
+      const icon = this.querySelector('i');
+      if (this.classList.contains('liked')) {
+        icon.classList.remove('far');
+        icon.classList.add('fas');
+      } else {
+        icon.classList.remove('fas');
+        icon.classList.add('far');
+      }
+    });
+  });
+
+  // Bottom nav
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
