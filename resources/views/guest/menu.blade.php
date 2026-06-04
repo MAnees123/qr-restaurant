@@ -344,6 +344,9 @@ function customerSPA() {
         
         init() {
             this.cart = {!! json_encode(session('cart', [])) !!};
+            if (Array.isArray(this.cart) && this.cart.length === 0) {
+                this.cart = {};
+            }
             this.appliedDiscount = {!! json_encode(session('discount')) !!};
             const categories = {!! json_encode($categories) !!};
             categories.forEach(cat => cat.menu_items.forEach(item => this.allItems.push(item)));
@@ -395,15 +398,30 @@ function customerSPA() {
         addToCart(id, name, price) {
             axios.post('{{ route("cart.add") }}', { menu_item_id: id, quantity: 1 }).then(response => {
                 let key = id + '_d41d8cd98f00b204e9800998ecf8427e';
-                if(this.cart[key]) { this.cart[key].quantity++; } else { this.cart[key] = { id, name, price, quantity: 1 }; }
+                const newCart = { ...this.cart };
+                if (newCart[key]) {
+                    newCart[key] = { ...newCart[key], quantity: newCart[key].quantity + 1 };
+                } else {
+                    newCart[key] = { id, name, price, quantity: 1 };
+                }
+                this.cart = newCart;
             });
         },
         
         updateQuantity(key, newQuantity) {
             if (newQuantity <= 0) {
-                axios.post('{{ route("cart.remove") }}', { cart_id: key }).then(() => { delete this.cart[key]; if(Object.keys(this.cart).length === 0) this.isCartOpen = false; });
+                axios.post('{{ route("cart.remove") }}', { cart_id: key }).then(() => {
+                    const newCart = { ...this.cart };
+                    delete newCart[key];
+                    this.cart = newCart;
+                    if (Object.keys(this.cart).length === 0) this.isCartOpen = false;
+                });
             } else {
-                axios.post('{{ route("cart.update") }}', { cart_id: key, quantity: newQuantity }).then(() => { this.cart[key].quantity = newQuantity; });
+                axios.post('{{ route("cart.update") }}', { cart_id: key, quantity: newQuantity }).then(() => {
+                    const newCart = { ...this.cart };
+                    newCart[key] = { ...newCart[key], quantity: newQuantity };
+                    this.cart = newCart;
+                });
             }
         },
 

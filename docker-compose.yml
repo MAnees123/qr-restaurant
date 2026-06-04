@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: qr-restaurant-app
+        restart: unless-stopped
+        working_dir: /app
+        environment:
+            - APP_ENV=production
+            - LOG_CHANNEL=stack
+            - DB_CONNECTION=mysql
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_DATABASE=${DB_DATABASE}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+        volumes:
+            - ./storage:/app/storage
+            - ./bootstrap/cache:/app/bootstrap/cache
+        ports:
+            - "80:80"
+        depends_on:
+            - db
+        networks:
+            - qr-network
+
+    db:
+        image: mysql:8.0
+        container_name: qr-restaurant-db
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - db-data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        networks:
+            - qr-network
+
+volumes:
+    db-data:
+        driver: local
+
+networks:
+    qr-network:
+        driver: bridge

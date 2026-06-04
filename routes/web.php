@@ -52,7 +52,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/revenue', [DashboardController::class, 'revenue'])->name('revenue');
     Route::get('/menu/download', [RestaurantController::class, 'generateMenuPDF'])->name('menu.download');
-    
+
     Route::resource('restaurant', RestaurantController::class)->only(['index', 'edit', 'update']);
     Route::resource('tables', TableController::class);
     Route::resource('menu-categories', MenuCategoryController::class);
@@ -87,4 +87,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
