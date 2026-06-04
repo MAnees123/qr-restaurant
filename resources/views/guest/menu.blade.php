@@ -2,461 +2,1367 @@
 @section('title', $restaurant->name . ' - Menu')
 
 @section('content')
-<div class="max-w-md mx-auto min-h-screen bg-white shadow-xl relative" x-data="customerSPA()" x-init="init()">
-    
-    <!-- Compact Restaurant Header (Not Sticky) -->
-    <div class="px-6 py-3 bg-slate-50 border-b">
-        <div class="flex items-center gap-4">
-            <!-- Left: Small Circle Logo -->
-            <div class="flex-shrink-0">
-                @if($restaurant->logo)
-                    <img src="{{ Storage::url($restaurant->logo) }}" alt="Logo" class="w-10 h-10 rounded-full object-cover shadow-sm border border-white">
-                @else
-                    <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-black text-white shadow-sm">
-                        {{ substr($restaurant->name, 0, 1) }}
+    @php
+        function getCategoryEmoji($name)
+        {
+            $name = strtolower($name);
+            if (str_contains($name, 'starter') || str_contains($name, 'appetizer') || str_contains($name, 'chaat')) {
+                return '🍿';
+            }
+            if (
+                str_contains($name, 'main') ||
+                str_contains($name, 'course') ||
+                str_contains($name, 'karahi') ||
+                str_contains($name, 'handi')
+            ) {
+                return '🍛';
+            }
+            if (str_contains($name, 'bbq') || str_contains($name, 'barbeque') || str_contains($name, 'meat')) {
+                return '🥩';
+            }
+            if (str_contains($name, 'dessert') || str_contains($name, 'sweet')) {
+                return '🍮';
+            }
+            if (str_contains($name, 'drink') || str_contains($name, 'beverage') || str_contains($name, 'tea')) {
+                return '🥤';
+            }
+            if (str_contains($name, 'pizza') || str_contains($name, 'fast')) {
+                return '🍕';
+            }
+            return '🍽️';
+        }
+
+        $featured = null;
+        foreach ($categories as $category) {
+            if ($category->menuItems->count() > 0) {
+                $featured = $category->menuItems->first();
+                break;
+            }
+        }
+    @endphp
+
+    <div class="phone-shell max-w-md mx-auto min-h-screen bg-[#1c1c1c] text-[#ccc] relative" x-data="customerSPA()"
+        x-init="init()">
+
+        <!-- Waiter Status Banner (Dismissible) -->
+        <template x-if="!statusDismissed && (callStatus === 'sent' || callStatus === 'accepted')">
+            <div
+                class="bg-amber-500/10 border-b border-amber-500/20 px-6 py-3 flex items-center justify-between animate-pulse">
+                <div class="flex items-center gap-3 text-[#e8890c]">
+                    <i class="fas fa-bell"></i>
+                    <div>
+                        <p class="text-[11px] font-black uppercase tracking-widest"
+                            x-text="callStatus === 'sent' ? 'Waiter Requested' : 'Waiter is coming'"></p>
+                        <p class="text-[9px] text-[#ccc] font-bold"
+                            x-text="callStatus === 'sent' ? 'Waiting for staff to acknowledge...' : 'A staff member is on their way!'">
+                        </p>
                     </div>
-                @endif
-            </div>
-
-            <!-- Left: Restaurant Name & Table -->
-            <div class="flex-1">
-                <h1 class="text-sm font-black text-slate-800 tracking-tight leading-none">{{ $restaurant->name }}</h1>
-                <div class="flex items-center gap-1.5 mt-0.5">
-                    <span class="w-1 h-1 rounded-full bg-emerald-500"></span>
-                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Table {{ $table->table_number }}</span>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Waiter Status Banner (Dismissible) -->
-    <template x-if="!statusDismissed && (callStatus === 'sent' || callStatus === 'accepted')">
-        <div class="bg-amber-50 border-b border-amber-100 px-6 py-3 flex items-center justify-between animate-pulse">
-            <div class="flex items-center gap-3">
-                <div class="bg-amber-500 text-white p-1.5 rounded-lg">
-                    <svg class="w-4 h-4" :class="callStatus === 'sent' ? 'animate-bounce' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                </div>
-                <div>
-                    <p class="text-[11px] font-black text-amber-900 uppercase tracking-widest" x-text="callStatus === 'sent' ? 'Waiter Requested' : 'Waiter are coming'"></p>
-                    <p class="text-[9px] text-amber-700 font-bold" x-text="callStatus === 'sent' ? 'Waiting for staff to acknowledge...' : 'A staff member is on their way!'"></p>
-                </div>
-            </div>
-            <button @click="dismissCallStatus()" class="text-amber-400 hover:text-amber-600 p-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-    </template>
-
-    <!-- Sticky Action Bar (Tabs + Search + Bell in one row) -->
-    <div class="sticky top-0 z-[100] bg-white/95 backdrop-blur-md p-3 border-b shadow-sm">
-        <div class="flex items-center gap-2">
-            <!-- Navigation Buttons (Compact) -->
-            <div class="flex gap-1 p-1 bg-slate-100 rounded-xl flex-shrink-0">
-                <button @click="activeTab = 'restaurant'; window.scrollTo({top: 0, behavior: 'smooth'})" 
-                        :class="activeTab === 'restaurant' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'"
-                        class="px-3 py-2 rounded-lg font-black text-[9px] uppercase tracking-widest transition-all duration-300">
-                    Menu
+                <button @click="dismissCallStatus()" class="text-[#e8890c]/70 hover:text-[#e8890c] p-2">
+                    <i class="fas fa-times"></i>
                 </button>
-                <button @click="activeTab = 'order'; window.scrollTo({top: 0, behavior: 'smooth'})" 
-                        :class="activeTab === 'order' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'"
-                        class="px-3 py-2 rounded-lg font-black text-[9px] uppercase tracking-widest transition-all duration-300 relative">
-                    Order
-                    <template x-if="activeOrder && activeOrder.status !== 'served' && activeOrder.status !== 'cancelled'">
-                        <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse border border-white"></span>
-                    </template>
-                </button>
-            </div>
-
-            <!-- Search Bar (Flexible) -->
-            <div class="relative flex-1">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-3.5 w-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </div>
-                <input type="text" 
-                       x-model="searchQuery" 
-                       @input.debounce.300ms="searchItems()"
-                       placeholder="Search..." 
-                       class="w-full bg-slate-50 border-none rounded-xl py-2.5 pl-9 pr-3 text-[11px] font-bold text-slate-700 shadow-inner focus:ring-1 focus:ring-emerald-500 transition-all">
-            </div>
-
-            <!-- Waiter Bell Button -->
-            <button @click="callWaiter()" 
-                    :disabled="isCalling || (!statusDismissed && (callStatus === 'sent' || callStatus === 'accepted'))"
-                    class="p-2.5 rounded-xl transition-all flex-shrink-0 relative"
-                    :class="(callStatus === 'accepted' && !statusDismissed) ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600 hover:bg-amber-200'">
-                <svg class="w-5 h-5" :class="isCalling ? 'animate-bounce' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                <template x-if="!statusDismissed && (callStatus === 'sent' || callStatus === 'accepted')">
-                    <span class="absolute -top-1 -right-1 flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" :class="callStatus === 'accepted' ? 'bg-emerald-400' : 'bg-amber-400'"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3" :class="callStatus === 'accepted' ? 'bg-emerald-500' : 'bg-amber-500'"></span>
-                    </span>
-                </template>
-            </button>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT AREA -->
-    <div class="min-h-[60vh]">
-        
-        <!-- GLOBAL SEARCH RESULTS -->
-        <template x-if="searchQuery.length > 0">
-            <div class="p-6 bg-white min-h-[60vh]">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-sm font-black text-slate-400 uppercase tracking-widest">Search Results</h2>
-                    <button @click="searchQuery = ''" class="text-[10px] font-black text-red-500 uppercase">Clear</button>
-                </div>
-                <div class="space-y-6">
-                    <template x-for="item in searchResults" :key="item.id">
-                        <div class="bg-white rounded-[2rem] border p-5 flex gap-5 shadow-sm">
-                            <img x-show="item.image" :src="'/storage/' + item.image" class="w-20 h-20 object-cover rounded-2xl flex-shrink-0">
-                            <div x-show="!item.image" class="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </div>
-                            <div class="flex-1 flex flex-col justify-between">
-                                <h3 class="font-black text-slate-800 text-sm leading-tight" x-text="item.name"></h3>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="font-black text-emerald-600 text-sm" x-text="'Rs ' + item.price"></span>
-                                    <button @click="addToCart(item.id, item.name, item.price)" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg font-black text-[10px] uppercase tracking-widest">ADD +</button>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
             </div>
         </template>
 
-        <!-- Tab 1: Restaurant Menu -->
-        <div x-show="activeTab === 'restaurant' && searchQuery.length === 0" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
-            <div class="overflow-x-auto whitespace-nowrap py-6 px-6 flex gap-3 no-scrollbar">
-                @foreach($categories as $category)
-                    <a href="#cat-{{ $category->id }}" class="px-5 py-2 rounded-2xl bg-slate-100 text-slate-500 hover:bg-emerald-600 hover:text-white font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-sm">
-                        {{ $category->name }}
-                    </a>
-                @endforeach
+        <!-- Header -->
+        <div class="app-header px-6 py-4 flex justify-between items-start sticky top-0 bg-[#1c1c1c] z-50">
+            <div>
+                <div class="greeting-name">Hi, Table {{ $table->table_number }}</div>
+                <div class="greeting-sub">Ready to order from {{ $restaurant->name }}?</div>
             </div>
+            <button class="cart-btn relative text-white"
+                @click="activeTab = 'cart'; window.scrollTo({top: 0, behavior: 'smooth'})">
+                <i class="fas fa-shopping-cart text-xl"></i>
+                <span
+                    class="cart-badge bg-[#e8890c] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center absolute -top-1.5 -right-1.5"
+                    x-show="cartCount > 0" x-text="cartCount"></span>
+            </button>
+        </div>
 
-            <div class="p-6 space-y-10">
-                @foreach($categories as $category)
-                    @if($category->menuItems->count() > 0)
-                        <section id="cat-{{ $category->id }}" class="scroll-mt-[200px]">
-                            <h2 class="text-xl font-black text-slate-800 mb-6 flex items-center gap-3">
-                                {{ $category->name }}
-                                <span class="h-1 flex-1 bg-slate-100 rounded-full"></span>
-                            </h2>
-                            <div class="space-y-6">
-                                @foreach($category->menuItems as $item)
-                                    <div class="bg-white rounded-[2rem] border-2 border-slate-50 p-5 flex gap-5 hover:border-emerald-100 transition-all group shadow-sm">
-                                        @if($item->image)
-                                            <img src="{{ Storage::url($item->image) }}" class="w-24 h-24 object-cover rounded-3xl flex-shrink-0 shadow-md group-hover:scale-105 transition-transform" alt="{{ $item->name }}">
-                                        @else
-                                            <div class="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center flex-shrink-0 border-2 border-dashed border-slate-200">
-                                                <svg class="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                            </div>
-                                        @endif
-                                        <div class="flex-1 flex flex-col justify-between">
-                                            <div>
-                                                <h3 class="font-black text-slate-800 leading-tight">{{ $item->name }}</h3>
-                                                <p class="text-[10px] text-slate-400 font-bold mt-1">Ready in ~{{ $item->preparation_time }} mins</p>
-                                            </div>
-                                            <div class="flex items-center justify-between mt-4">
-                                                <span class="font-black text-emerald-600">Rs {{ number_format($item->price) }}</span>
-                                                <button @click="addToCart({{ $item->id }}, '{{ addslashes($item->name) }}', {{ $item->price }})" class="bg-slate-900 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition shadow-lg">
-                                                    ADD +
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </section>
-                    @endif
-                @endforeach
+        <!-- Search Section -->
+        <div class="search-wrap px-6 pb-4" x-show="activeTab === 'restaurant'">
+            <div class="search-box">
+                <input type="text" placeholder="Search menu..." x-model="searchQuery" />
+                <i class="fas fa-search"></i>
             </div>
         </div>
 
-        <!-- Tab 2: Order Status -->
-        <div x-show="activeTab === 'order' && searchQuery.length === 0" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-x-4" x-transition:enter-end="opacity-100 translate-x-0" class="p-6">
-            <template x-if="!activeOrder">
-                <div class="min-h-[60vh] flex flex-col items-center justify-center text-center p-8">
-                    <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-                        <svg class="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+        <!-- MAIN MENU TAB CONTENT -->
+        <div x-show="activeTab === 'restaurant'" class="flex-1 pb-20">
+            <!-- Hero Banner (Featured Item) -->
+            @if ($featured)
+                <div class="hero-banner"
+                    @click="searchQuery = '{{ addslashes($featured->name) }}'; window.scrollTo({top: 280, behavior: 'smooth'})"
+                    style="cursor: pointer;">
+                    <div>
+                        <div class="hero-badge">Featured</div>
+                        <div class="hero-title">{{ $featured->name }}</div>
+                        <div class="hero-meta">
+                            <div class="hero-meta-item">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ $featured->preparation_time }} Minutes</span>
+                            </div>
+                            <div class="hero-meta-item mt-1">
+                                <i class="fas fa-utensils"></i>
+                                <span>Rs {{ number_format($featured->price) }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-black text-slate-800 mb-2">No Active Orders</h3>
-                    <p class="text-sm text-slate-400 font-bold leading-relaxed">Place an order from the menu to see its live status here.</p>
-                    <button @click="activeTab = 'restaurant'" class="mt-8 bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-emerald-200 transition">Browse Menu</button>
+                    @if ($featured->image)
+                        <img src="{{ Storage::url($featured->image) }}" class="hero-img" alt="{{ $featured->name }}">
+                    @else
+                        <div class="hero-img-placeholder text-4xl">🍛</div>
+                    @endif
+                </div>
+            @endif
+
+            <!-- Category Section -->
+            <div class="section-header">
+                <div class="section-title">Category</div>
+            </div>
+
+            <div class="category-scroll">
+                <button class="cat-btn" :class="activeCategory === 'all' ? 'active' : ''"
+                    @click="activeCategory = 'all'">
+                    <span class="cat-icon">🍽️</span> All
+                </button>
+                @foreach ($categories as $category)
+                    <button class="cat-btn" :class="activeCategory === '{{ $category->id }}' ? 'active' : ''"
+                        @click="activeCategory = '{{ $category->id }}'">
+                        <span class="cat-icon">{{ getCategoryEmoji($category->name) }}</span> {{ $category->name }}
+                    </button>
+                @endforeach
+            </div>
+
+            <!-- Section Heading -->
+            <div class="best-seller-title uppercase"
+                x-text="activeCategory === 'all' ? 'Menu List' : (categories.find(cat => cat.id == activeCategory)?.name || 'Category Items')">
+            </div>
+
+            <!-- Empty state when search or category yields nothing -->
+            <template x-if="filteredItems.length === 0">
+                <div class="text-center py-12 text-[#888]">
+                    <i class="fas fa-search-minus text-4xl mb-4 text-[#333]"></i>
+                    <p class="text-sm">No items found matching criteria.</p>
+                </div>
+            </template>
+
+            <!-- Cards Grid -->
+            <div class="cards-grid">
+                <template x-for="item in filteredItems" :key="item.id">
+                    <div class="food-card">
+                        <div class="food-card-img-wrap"
+                            :style="item.image ? '' : 'background:linear-gradient(135deg,#2a1a0a,#3a2a10);'">
+                            <template x-if="item.image">
+                                <img :src="'/storage/' + item.image" class="w-full h-full object-cover"
+                                    :alt="item.name">
+                            </template>
+                            <template x-if="!item.image">
+                                <div class="food-card-img-placeholder" x-text="getEmoji(item.name, item.category_name)">
+                                </div>
+                            </template>
+                            <button class="heart-btn" :class="likedItems.includes(item.id) ? 'liked' : ''"
+                                @click="toggleLike(item.id)">
+                                <i class="fas fa-heart"
+                                    :style="likedItems.includes(item.id) ? 'color:#e8890c' : 'color:#888'"></i>
+                            </button>
+                        </div>
+                        <div class="food-card-body">
+                            <div>
+                                <div class="food-card-name" x-text="item.name"></div>
+                                <div class="food-card-rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>4.9</span>
+                                    <span class="food-card-price"
+                                        x-text="'Rs ' + parseFloat(item.price).toLocaleString()"></span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="food-card-meta">
+                                    <span><i class="fas fa-clock" style="font-size:9px;color:#888"></i> <span
+                                            x-text="item.preparation_time || 15"></span> Mins</span>
+                                </div>
+                                <button @click="addToCart(item.id, item.name, item.price)"
+                                    class="w-full mt-2 bg-[#c0441a] hover:bg-[#e8890c] text-white py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-wider transition">
+                                    ADD +
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- ORDER STATUS TAB CONTENT -->
+        <div x-show="activeTab === 'order'" class="flex-1 p-6 pb-20" style="display: none;">
+            <template x-if="!activeOrder">
+                <div class="min-h-[50vh] flex flex-col items-center justify-center text-center p-8">
+                    <div class="w-20 h-20 bg-[#252525] rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-receipt text-3xl text-[#555]"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">No Active Orders</h3>
+                    <p class="text-xs text-[#888] leading-relaxed">Place an order from the menu to see its live tracking
+                        status here.</p>
+                    <button @click="activeTab = 'restaurant'"
+                        class="mt-6 bg-[#c0441a] text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition">Browse
+                        Menu</button>
                 </div>
             </template>
 
             <template x-if="activeOrder">
-                <div class="space-y-8">
-                    <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl">
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-start mb-8">
-                                <div>
-                                    <h3 class="text-xs font-black text-emerald-400 uppercase tracking-[0.2em] mb-2">Live Status</h3>
-                                    <h1 class="text-2xl font-black italic uppercase" x-text="activeOrder.status"></h1>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1" x-text="activeOrder.order_number"></p>
-                                    <span class="px-3 py-1 bg-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest" x-text="activeOrder.payment_status"></span>
-                                </div>
+                <div class="space-y-6">
+                    <!-- Status Card (replaces credit card layout for status) -->
+                    <div class="credit-card">
+                        <div class="card-chip"></div>
+                        <div class="card-label">
+                            <i class="fas fa-clock"></i> Estimated Prep Countdown
+                        </div>
+                        <div class="flex justify-center gap-4 py-2"
+                            x-show="activeOrder.status !== 'served' && activeOrder.status !== 'cancelled'">
+                            <div
+                                class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-2 w-16 text-center">
+                                <p class="text-2xl font-black text-white" x-text="countdown.minutes">00</p>
+                                <p class="text-[8px] uppercase font-black text-[#ccc] mt-0.5">Mins</p>
                             </div>
-                            <div class="flex justify-center gap-4 py-4" x-show="activeOrder.status !== 'served' && activeOrder.status !== 'cancelled'">
-                                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 w-20 text-center">
-                                    <p class="text-3xl font-black" x-text="countdown.minutes">00</p>
-                                    <p class="text-[8px] uppercase font-black text-slate-500 mt-1">Mins</p>
-                                </div>
-                                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 w-20 text-center">
-                                    <p class="text-3xl font-black" x-text="countdown.seconds">00</p>
-                                    <p class="text-[8px] uppercase font-black text-slate-500 mt-1">Secs</p>
-                                </div>
+                            <div
+                                class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-2 w-16 text-center">
+                                <p class="text-2xl font-black text-white" x-text="countdown.seconds">00</p>
+                                <p class="text-[8px] uppercase font-black text-[#ccc] mt-0.5">Secs</p>
                             </div>
                         </div>
+                        <div class="card-holder text-center mt-3 uppercase tracking-widest font-black text-white"
+                            x-text="'Status: ' + activeOrder.status"></div>
                     </div>
-                    <div class="bg-white rounded-[2rem] border shadow-sm p-8">
-                        <h3 class="text-sm font-black text-slate-800 mb-6 uppercase tracking-widest">Order Summary</h3>
-                        <div class="space-y-4 divide-y divide-slate-50">
+
+                    <!-- Order Details Card -->
+                    <div class="section-label">Order Details</div>
+                    <div class="bg-[#252525] rounded-2xl p-5 border border-[#3a3a3a] space-y-4">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-[#888]">Order Number</span>
+                            <span class="text-white font-bold uppercase tracking-wider"
+                                x-text="activeOrder.order_number"></span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-[#888]">Payment Status</span>
+                            <span
+                                class="bg-[#c0441a]/20 text-[#e8890c] px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-[#c0441a]/30"
+                                x-text="activeOrder.payment_status"></span>
+                        </div>
+                        <hr class="border-[#3a3a3a]" />
+
+                        <div class="space-y-3">
                             <template x-for="item in activeOrder.order_items" :key="item.id">
-                                <div class="flex justify-between items-center pt-4 first:pt-0">
-                                    <div class="flex gap-4 items-center">
-                                        <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-black text-slate-800 text-xs" x-text="item.quantity + 'x'"></span>
-                                        <p class="font-bold text-slate-800 text-sm" x-text="item.menu_item.name"></p>
+                                <div class="flex justify-between items-center text-xs">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[#e8890c] font-black" x-text="item.quantity + 'x'"></span>
+                                        <span class="text-white font-medium" x-text="item.menu_item.name"></span>
                                     </div>
-                                    <span class="font-black text-slate-800 text-sm" x-text="'Rs ' + parseFloat(item.subtotal).toLocaleString()"></span>
+                                    <span class="text-[#aaa]"
+                                        x-text="'Rs ' + parseFloat(item.subtotal).toLocaleString()"></span>
                                 </div>
                             </template>
                         </div>
-                        <div class="mt-8 pt-6 border-t border-dashed border-slate-200 flex justify-between items-center">
-                            <span class="font-black text-slate-800 uppercase tracking-widest text-xs">Total</span>
-                            <span class="font-black text-xl text-emerald-600" x-text="'Rs ' + parseFloat(activeOrder.total_amount).toLocaleString()"></span>
+
+                        <hr class="border-[#3a3a3a] border-dashed" />
+                        <div class="flex justify-between items-center font-bold text-sm">
+                            <span class="text-white">Total Amount</span>
+                            <span class="text-[#e8890c]"
+                                x-text="'Rs ' + parseFloat(activeOrder.total_amount).toLocaleString()"></span>
                         </div>
                     </div>
                 </div>
             </template>
         </div>
-    </div>
 
-    <!-- Basket Modal & UI -->
-    <div x-show="activeTab === 'restaurant' && cartCount > 0" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 z-[120]">
-        <button @click="isCartOpen = true" class="w-full bg-slate-900 text-white rounded-[2rem] p-6 shadow-2xl flex items-center justify-between transform hover:scale-[1.02] transition-all ring-8 ring-white">
-            <div class="flex items-center gap-4">
-                <div class="bg-white/10 w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm" x-text="cartCount"></div>
-                <span class="font-black uppercase tracking-[0.2em] text-xs">View Basket</span>
-            </div>
-            <span class="font-black text-lg" x-text="'Rs ' + cartTotal.toLocaleString()"></span>
-        </button>
-    </div>
-
-    <!-- Basket Modal Content -->
-    <div x-show="isCartOpen" class="fixed inset-0 z-[130] flex items-end sm:items-center justify-center max-w-md mx-auto" style="display: none;">
-        <div x-show="isCartOpen" x-transition.opacity @click="isCartOpen = false" class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
-        <div x-show="isCartOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0" class="relative bg-white w-full rounded-t-[3rem] max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="p-8 border-b flex items-center justify-between bg-slate-50">
-                <div>
-                    <h2 class="text-2xl font-black text-slate-800">Your Basket</h2>
-                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Review your selections</p>
-                </div>
-                <button @click="isCartOpen = false" class="p-3 text-slate-400 hover:bg-slate-100 rounded-2xl transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div class="p-8 overflow-y-auto flex-1 space-y-8">
-                <div class="space-y-6">
-                    <template x-for="(item, key) in cart" :key="key">
-                        <div class="flex items-center justify-between group">
-                            <div class="flex-1">
-                                <h4 class="font-black text-slate-800 leading-tight" x-text="item.name"></h4>
-                                <p class="text-emerald-600 font-black text-xs mt-1" x-text="'Rs ' + item.price.toLocaleString()"></p>
-                            </div>
-                            <div class="flex items-center gap-4 bg-slate-50 rounded-2xl px-3 py-2 border border-slate-100">
-                                <button @click="updateQuantity(key, item.quantity - 1)" class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-red-500 font-black transition">-</button>
-                                <span class="w-4 text-center text-sm font-black text-slate-800" x-text="item.quantity"></span>
-                                <button @click="updateQuantity(key, item.quantity + 1)" class="w-8 h-8 rounded-xl bg-white shadow-sm flex items-center justify-center text-slate-400 hover:text-emerald-600 font-black transition">+</button>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-                <div class="bg-slate-50 rounded-3xl p-6 border border-slate-100">
-                    <template x-if="!appliedDiscount">
-                        <div class="flex gap-2">
-                            <input type="text" x-model="couponCode" placeholder="COUPON" class="flex-1 rounded-xl border-slate-200 text-xs font-black uppercase tracking-widest focus:ring-emerald-500 focus:border-emerald-500">
-                            <button @click="applyCoupon()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition">Apply</button>
-                        </div>
-                    </template>
-                    <template x-if="appliedDiscount">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg" x-text="'Coupon: ' + appliedDiscount.code"></span>
-                                <p class="text-[10px] text-slate-400 font-bold mt-1" x-text="appliedDiscount.type === 'percentage' ? appliedDiscount.value + '% Discount Applied' : 'Rs ' + appliedDiscount.value + ' Discount Applied'"></p>
-                            </div>
-                            <button @click="removeCoupon()" class="text-red-500 font-black text-[10px] uppercase hover:underline">Remove</button>
-                        </div>
-                    </template>
-                </div>
-                <div class="pt-4">
-                    <textarea x-model="notes" placeholder="Any special cooking instructions?" class="w-full border-slate-100 bg-slate-50 rounded-2xl text-sm font-medium focus:ring-emerald-500 focus:border-emerald-500 min-h-[100px]"></textarea>
-                </div>
-            </div>
-            <div class="p-8 bg-slate-900">
-                <div class="flex justify-between text-white mb-6">
-                    <span class="font-black text-lg uppercase tracking-[0.2em]">Total</span>
-                    <span class="font-black text-2xl text-emerald-400" x-text="'Rs ' + (cartTotal - discountAmount).toLocaleString()"></span>
-                </div>
-                <button @click="placeOrder()" :disabled="isPlacing || cartCount === 0" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-black py-5 rounded-2xl flex justify-center items-center gap-3 disabled:opacity-50 transition-all shadow-xl shadow-emerald-900/50 uppercase tracking-[0.2em] text-sm">
-                    <span x-show="!isPlacing">Place Order</span>
-                    <span x-show="isPlacing">Processing...</span>
-                </button>
-            </div>
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+            <button class="nav-item" :class="activeTab === 'restaurant' ? 'active' : ''"
+                @click="activeTab = 'restaurant'; window.scrollTo({top: 0, behavior: 'smooth'})">
+                <i class="fas fa-utensils"></i>
+                <span class="text-[9px] font-bold uppercase mt-0.5"
+                    :style="activeTab === 'restaurant' ? 'color:#e8890c' : 'color:#fff'">Menu</span>
+            </button>
+            <button class="nav-item" @click="callWaiter()"
+                :disabled="isCalling || (!statusDismissed && (callStatus === 'sent' || callStatus === 'accepted'))">
+                <i class="fas fa-bell" :class="isCalling ? 'animate-bounce' : ''"
+                    :style="(callStatus === 'accepted' && !statusDismissed) ? 'color:#2e7d32' : ''"></i>
+                <span class="text-[9px] font-bold uppercase mt-0.5" style="color:#fff">Waiter</span>
+            </button>
+            <button class="nav-item relative" :class="activeTab === 'cart' ? 'active' : ''"
+                @click="activeTab = 'cart'; window.scrollTo({top: 0, behavior: 'smooth'})">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="text-[9px] font-bold uppercase mt-0.5"
+                    :style="activeTab === 'cart' ? 'color:#e8890c' : 'color:#fff'">Basket</span>
+                <span
+                    class="bg-[#e8890c] text-white text-[8px] font-black rounded-full flex items-center justify-center absolute -top-0.5 -right-0.5"
+                    style="min-width:16px;height:16px;padding:0 3px;" x-show="cartCount > 0" x-text="cartCount"></span>
+            </button>
+            <button class="nav-item" :class="activeTab === 'order' ? 'active' : ''"
+                @click="activeTab = 'order'; window.scrollTo({top: 0, behavior: 'smooth'})">
+                <i class="fas fa-receipt"></i>
+                <span class="text-[9px] font-bold uppercase mt-0.5"
+                    :style="activeTab === 'order' ? 'color:#e8890c' : 'color:#fff'">Order</span>
+                <span class="bg-red-500 text-white text-[8px] font-black rounded-full absolute -top-0.5 -right-0.5"
+                    style="min-width:8px;height:8px;"
+                    x-show="activeOrder && activeOrder.status !== 'served' && activeOrder.status !== 'cancelled'"></span>
+            </button>
         </div>
+
+        <!-- CART TAB (Full-page, no overlay) -->
+        <div x-show="activeTab === 'cart'" x-transition:enter="transition ease-out duration-250"
+            x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0"
+            class="flex-1 bg-[#1c1c1c] flex flex-col" style="max-width:425px; display:none;">
+
+            <!-- Cart Header -->
+            <div
+                class="flex items-center text-white justify-between px-5 py-4 border-b border-[#2a2a2a] bg-[#1c1c1c] sticky top-0 z-10">
+                <button class="back-btn" @click="activeTab = 'restaurant'">
+                    <i class="fas fa-play text-white fa-flip-horizontal"></i> Back
+                </button>
+                <span class="page-title text-white">Cart</span>
+                <span class="text-xs text-[#e8890c] font-bold min-w-[60px] text-right"
+                    x-text="cartCount + ' item' + (cartCount !== 1 ? 's' : '')"></span>
+            </div>
+
+            <!-- Scrollable Items Area -->
+            <div class="flex-1 overflow-y-auto px-5 py-5 space-y-3" style="padding-bottom:16px;">
+                <div class="my-order-title">My Order</div>
+
+                <!-- Empty cart state -->
+                <template x-if="cartCount === 0">
+                    <div class="flex flex-col items-center justify-center py-16 text-center">
+                        <div class="w-20 h-20 bg-[#252525] rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-shopping-basket text-3xl text-[#555]"></i>
+                        </div>
+                        <p class="text-white font-semibold text-sm mb-1">Your basket is empty</p>
+                        <p class="text-[#888] text-xs mb-6">Add items from the menu to get started</p>
+                        <button @click="activeTab = 'restaurant'"
+                            class="bg-[#c0441a] text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider">Browse
+                            Menu</button>
+                    </div>
+                </template>
+
+                <!-- Cart Items -->
+                <template x-for="(item, key) in cart" :key="key">
+                    <div class="cart-item-card">
+                        <div class="cart-item-img bg-[#2a2a2a]" x-text="getEmoji(item.name)"></div>
+                        <div class="cart-item-info">
+                            <div class="cart-item-name" x-text="item.name"></div>
+                            <div class="cart-item-bottom">
+                                <span class="cart-item-price" x-text="'Rs ' + item.price.toLocaleString()"></span>
+                                <div class="qty-controls">
+                                    <button class="qty-btn minus"
+                                        @click="updateQuantity(key, item.quantity - 1)">−</button>
+                                    <span class="qty-num" x-text="item.quantity"></span>
+                                    <button class="qty-btn plus"
+                                        @click="updateQuantity(key, item.quantity + 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Special Instructions -->
+                <template x-if="cartCount > 0">
+                    <div class="pt-2">
+                        <label class="text-xs text-[#ccc] text-white font-semibold mb-1.5 block">Special
+                            instructions</label>
+                        <textarea x-model="notes" placeholder="Any special cooking instructions (e.g. less spicy)?"
+                            class="w-full bg-[#252525] text-white border border-[#3a3a3a] rounded-xl p-3 text-xs outline-none" rows="2"></textarea>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Summary + Place Order (sticky bottom) -->
+            <template x-if="cartCount > 0">
+                <div class="bg-[#252525] border-t border-[#3a3a3a] px-5 py-4">
+                    <!-- Promo Code -->
+                    <div class="promo-wrap mb-4 bg-[#1c1c1c] border border-[#2a2a2a]">
+                        <input class="promo-input" type="text" placeholder="Promo Code..." x-model="couponCode" />
+                        <button class="promo-apply-btn bg-[#c0441a]" @click="applyCoupon()">Apply</button>
+                    </div>
+
+                    <!-- Applied Coupon badge -->
+                    <template x-if="appliedDiscount">
+                        <div class="flex justify-between items-center px-3 py-2 rounded-xl border border-emerald-900 mb-3 text-xs"
+                            style="background:rgba(6,78,59,0.2);">
+                            <span class="text-emerald-400 font-bold" x-text="'Coupon: ' + appliedDiscount.code"></span>
+                            <button class="text-red-400 font-black uppercase" @click="removeCoupon()">Remove</button>
+                        </div>
+                    </template>
+
+                    <!-- Totals -->
+                    <div class="summary-wrap">
+                        <div class="summary-row">
+                            <span class="summary-label" style="color:#888;font-weight:400;font-size:12px;">Subtotal</span>
+                            <span class="summary-value" style="font-size:12px;"
+                                x-text="'Rs ' + cartTotal.toLocaleString()"></span>
+                        </div>
+                        <template x-if="appliedDiscount">
+                            <div class="summary-row">
+                                <span class="summary-label"
+                                    style="color:#888;font-weight:400;font-size:12px;">Discount</span>
+                                <span style="color:#4ade80;font-size:12px;font-weight:600;"
+                                    x-text="'- Rs ' + discountAmount.toLocaleString()"></span>
+                            </div>
+                        </template>
+                        <hr class="summary-divider" />
+                        <div class="summary-row total-payment">
+                            <span class="summary-label">Total Payment</span>
+                            <span class="summary-value" style="color:#e8890c;"
+                                x-text="'Rs ' + (cartTotal - discountAmount).toLocaleString()"></span>
+                        </div>
+                    </div>
+
+                    <!-- Place Order Button -->
+                    <button class="checkout-btn mt-3" style="background:#c0441a;" @click="placeOrder()"
+                        :disabled="isPlacing" x-text="isPlacing ? 'Processing...' : 'Place Order'">
+                    </button>
+                </div>
+            </template>
+        </div>
+
+        <!-- Toast -->
+        <div class="toast-msg" id="toast" :class="toastShow ? 'show' : ''" x-text="toastMessage"></div>
     </div>
-</div>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        .phone-shell {
+            width: 100%;
+            max-width: 425px;
+            min-height: 100vh;
+            background: #1c1c1c;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding-bottom: 96px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .phone-shell::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Greeting & Subtitle */
+        .greeting-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 22px;
+            color: #fff;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .greeting-sub {
+            color: #aaa;
+            font-size: 11px;
+            font-weight: 300;
+            margin-top: 1px;
+        }
+
+        /* Search */
+        .search-wrap {
+            padding: 4px 18px 12px;
+            background: #1c1c1c;
+        }
+
+        .search-box {
+            background: #2a2a2a;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            gap: 8px;
+            border: 1px solid #333;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            color: #ccc;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+        }
+
+        .search-box input::placeholder {
+            color: #666;
+        }
+
+        .search-box i {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            margin: 0 18px 16px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #222 100%);
+            border-radius: 16px;
+            padding: 18px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 110px;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 140, 0, 0.08) 0%, transparent 60%);
+            border-radius: 16px;
+        }
+
+        .hero-badge {
+            background: #e8890c;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 26px;
+            color: #fff;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hero-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ccc;
+            font-size: 11px;
+        }
+
+        .hero-meta-item i {
+            color: #e8890c;
+            font-size: 11px;
+        }
+
+        .hero-img {
+            width: 110px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .hero-img-placeholder {
+            width: 110px;
+            height: 90px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3a2a1a, #2a1a0a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            flex-shrink: 0;
+        }
+
+        /* Category */
+        .section-header {
+            padding: 0 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 22px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .category-scroll {
+            padding: 0 18px 16px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .category-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .cat-btn.active {
+            background: #e8890c;
+            color: #fff;
+        }
+
+        .cat-btn:not(.active) {
+            background: #2a2a2a;
+            color: #ccc;
+        }
+
+        .cat-btn .cat-icon {
+            font-size: 15px;
+        }
+
+        /* Best Seller */
+        .best-seller-title {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 14px;
+            padding: 0 18px;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            padding: 0 18px 24px;
+        }
+
+        .food-card {
+            background: #252525;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .food-card-img-wrap {
+            position: relative;
+            height: 120px;
+            background: #2a2a2a;
+        }
+
+        .food-card-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .food-card-img-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .heart-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .heart-btn.liked i {
+            color: #e8890c;
+        }
+
+        .heart-btn:not(.liked) {
+            color: #888;
+        }
+
+        .food-card-body {
+            padding: 10px 10px 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .food-card-name {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+
+        .food-card-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .food-card-rating i {
+            color: #f5a623;
+            font-size: 11px;
+        }
+
+        .food-card-rating span {
+            color: #ccc;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .food-card-price {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 2px;
+        }
+
+        .food-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #888;
+            font-size: 10px;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 100%;
+            max-width: 425px;
+            background: #1c1c1c;
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 14px;
+            z-index: 120;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .nav-item.active i {
+            color: #e8890c;
+        }
+
+        .nav-dot {
+            width: 5px;
+            height: 5px;
+            background: #e8890c;
+            border-radius: 50%;
+        }
+
+        /* Cart Items */
+        .my-order-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 22px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .cart-item-card {
+            background: #252525;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+        }
+
+        .cart-item-img {
+            width: 72px;
+            height: 72px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            background: #2a2a2a;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.35;
+            margin-bottom: 8px;
+        }
+
+        .cart-item-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-item-price {
+            color: #ccc;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qty-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1;
+            padding: 0;
+            transition: transform 0.1s;
+        }
+
+        .qty-btn.minus {
+            color: #e8890c;
+        }
+
+        .qty-btn.plus {
+            color: #e8890c;
+        }
+
+        .qty-num {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Promo Code */
+        .promo-wrap {
+            background: #252525;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            padding: 4px 4px 4px 16px;
+        }
+
+        .promo-input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: #aaa;
+            font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            padding: 10px 0;
+        }
+
+        .promo-input::placeholder {
+            color: #666;
+        }
+
+        .promo-apply-btn {
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        /* Order Summary */
+        .summary-wrap {
+            margin-top: 14px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .summary-label {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .summary-value {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .summary-row.total-payment .summary-label {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .summary-row.total-payment .summary-value {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .summary-divider {
+            border: none;
+            border-top: 1px solid #3a3a3a;
+            margin: 4px 0 14px;
+        }
+
+        /* Checkout Button */
+        .checkout-btn {
+            width: 100%;
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            letter-spacing: 0.3px;
+        }
+
+        /* Toast */
+        .toast-msg {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #e8890c;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 200;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Credit Card for Live order details */
+        .credit-card {
+            background: linear-gradient(135deg, #e8890c 0%, #c0641a 60%, #a0440a 100%);
+            border-radius: 20px;
+            padding: 24px 24px 22px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(232, 137, 12, 0.35);
+        }
+
+        .credit-card::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 160px;
+            height: 160px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 50%;
+        }
+
+        .card-label {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-holder {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .card-chip {
+            position: absolute;
+            top: 22px;
+            right: 24px;
+            width: 36px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .section-label {
+            color: #ccc;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 22px 0 10px;
+            letter-spacing: 0.2px;
+        }
+    </style>
+
+@endsection
 
 @section('scripts')
-<script>
-function customerSPA() {
-    return {
-        activeTab: 'restaurant',
-        cart: {},
-        isCartOpen: false,
-        notes: '',
-        isPlacing: false,
-        isCalling: false,
-        callStatus: 'idle', 
-        statusDismissed: false,
-        couponCode: '',
-        appliedDiscount: null,
-        searchQuery: '',
-        searchResults: [],
-        allItems: [],
-        activeOrder: {!! $activeOrder ? json_encode($activeOrder) : 'null' !!},
-        countdown: {
-            minutes: '00',
-            seconds: '00',
-            finished: false
-        },
-        
-        get cartCount() { return Object.values(this.cart).reduce((sum, item) => sum + item.quantity, 0); },
-        get cartTotal() { return Object.values(this.cart).reduce((sum, item) => sum + (item.price * item.quantity), 0); },
-        get discountAmount() {
-            if (!this.appliedDiscount) return 0;
-            return this.appliedDiscount.type === 'percentage' ? this.cartTotal * (this.appliedDiscount.value / 100) : Math.min(this.appliedDiscount.value, this.cartTotal);
-        },
-        
-        init() {
-            this.cart = {!! json_encode(session('cart', [])) !!};
-            if (Array.isArray(this.cart) && this.cart.length === 0) {
-                this.cart = {};
-            }
-            this.appliedDiscount = {!! json_encode(session('discount')) !!};
-            const categories = {!! json_encode($categories) !!};
-            categories.forEach(cat => cat.menu_items.forEach(item => this.allItems.push(item)));
-            if (this.activeOrder) {
-                this.updateCountdown();
-                setInterval(() => this.updateCountdown(), 1000);
-                setInterval(() => this.pollOrderStatus(), 5000);
-            }
-            setInterval(() => this.pollCallStatus(), 3000);
-            this.pollCallStatus();
-        },
+    <script>
+        function customerSPA() {
+            return {
+                activeTab: 'restaurant',
+                activeCategory: 'all',
+                cart: {},
+                isCartOpen: false,
+                notes: '',
+                isPlacing: false,
+                isCalling: false,
+                callStatus: 'idle',
+                statusDismissed: false,
+                couponCode: '',
+                appliedDiscount: null,
+                searchQuery: '',
+                categories: {!! json_encode(
+                    $categories->map(function ($category) {
+                        return ['id' => $category->id, 'name' => $category->name];
+                    }),
+                ) !!},
+                allItems: [],
+                likedItems: [],
+                activeOrder: {!! $activeOrder ? json_encode($activeOrder) : 'null' !!},
+                countdown: {
+                    minutes: '00',
+                    seconds: '00',
+                    finished: false
+                },
+                toastShow: false,
+                toastMessage: '',
 
-        pollCallStatus() {
-            axios.get('{{ route("table.call.status") }}')
-                .then(response => {
-                    if (this.callStatus !== response.data.status) {
-                        this.callStatus = response.data.status;
-                        // Reset dismissed flag if status changes
-                        this.statusDismissed = false;
+                get cartCount() {
+                    return Object.values(this.cart).reduce((sum, item) => sum + item.quantity, 0);
+                },
+                get cartTotal() {
+                    return Object.values(this.cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                },
+                get discountAmount() {
+                    if (!this.appliedDiscount) return 0;
+                    return this.appliedDiscount.type === 'percentage' ? this.cartTotal * (this.appliedDiscount.value /
+                        100) : Math.min(this.appliedDiscount.value, this.cartTotal);
+                },
+
+                get filteredItems() {
+                    let items = this.allItems;
+                    if (this.activeCategory !== 'all') {
+                        items = items.filter(item => item.category_id == this.activeCategory);
                     }
-                });
-        },
+                    if (this.searchQuery.trim().length > 0) {
+                        const q = this.searchQuery.toLowerCase();
+                        items = items.filter(item => item.name.toLowerCase().includes(q) || (item.description && item
+                            .description.toLowerCase().includes(q)));
+                    }
+                    return items;
+                },
 
-        dismissCallStatus() {
-            this.statusDismissed = true;
-        },
+                init() {
+                    this.cart = {!! json_encode(session('cart', [])) !!};
+                    if (Array.isArray(this.cart) && this.cart.length === 0) {
+                        this.cart = {};
+                    }
+                    this.appliedDiscount = {!! json_encode(session('discount')) !!};
 
-        searchItems() {
-            if (this.searchQuery.length < 2) { this.searchResults = []; return; }
-            const query = this.searchQuery.toLowerCase();
-            this.searchResults = this.allItems.filter(item => item.name.toLowerCase().includes(query) || (item.description && item.description.toLowerCase().includes(query)));
-        },
+                    // Reconstruct all items with category names for emoji matching
+                    const categories = {!! json_encode($categories) !!};
+                    categories.forEach(cat => {
+                        cat.menu_items.forEach(item => {
+                            this.allItems.push({
+                                ...item,
+                                category_id: cat.id,
+                                category_name: cat.name
+                            });
+                        });
+                    });
 
-        callWaiter() {
-            if (this.isCalling) return;
-            this.isCalling = true;
-            axios.post('{{ route("table.call") }}')
-                .then(response => {
-                    this.callStatus = 'sent';
-                    this.statusDismissed = false;
-                    this.isCalling = false;
-                })
-                .catch(error => {
-                    alert(error.response.data.error || 'Something went wrong.');
-                    this.isCalling = false;
-                });
-        },
-        
-        addToCart(id, name, price) {
-            axios.post('{{ route("cart.add") }}', { menu_item_id: id, quantity: 1 }).then(response => {
-                let key = id + '_d41d8cd98f00b204e9800998ecf8427e';
-                const newCart = { ...this.cart };
-                if (newCart[key]) {
-                    newCart[key] = { ...newCart[key], quantity: newCart[key].quantity + 1 };
-                } else {
-                    newCart[key] = { id, name, price, quantity: 1 };
+                    // Initialize active order timers
+                    if (this.activeOrder) {
+                        this.updateCountdown();
+                        setInterval(() => this.updateCountdown(), 1000);
+                        setInterval(() => this.pollOrderStatus(), 5000);
+                    }
+                    setInterval(() => this.pollCallStatus(), 3000);
+                    this.pollCallStatus();
+
+                    // Load likes from localStorage
+                    try {
+                        this.likedItems = JSON.parse(localStorage.getItem('liked_items') || '[]');
+                    } catch (e) {}
+                },
+
+                showToast(msg) {
+                    this.toastMessage = msg;
+                    this.toastShow = true;
+                    setTimeout(() => this.toastShow = false, 2500);
+                },
+
+                toggleLike(id) {
+                    if (this.likedItems.includes(id)) {
+                        this.likedItems = this.likedItems.filter(item => item !== id);
+                    } else {
+                        this.likedItems.push(id);
+                        this.showToast('❤️ Added to favorites!');
+                    }
+                    localStorage.setItem('liked_items', JSON.stringify(this.likedItems));
+                },
+
+                pollCallStatus() {
+                    axios.get('{{ route('table.call.status') }}')
+                        .then(response => {
+                            if (this.callStatus !== response.data.status) {
+                                this.callStatus = response.data.status;
+                                this.statusDismissed = false;
+                            }
+                        });
+                },
+
+                dismissCallStatus() {
+                    this.statusDismissed = true;
+                },
+
+                callWaiter() {
+                    if (this.isCalling) return;
+                    this.isCalling = true;
+                    axios.post('{{ route('table.call') }}')
+                        .then(response => {
+                            this.callStatus = 'sent';
+                            this.statusDismissed = false;
+                            this.isCalling = false;
+                            this.showToast('🔔 Waiter has been requested!');
+                        })
+                        .catch(error => {
+                            this.showToast(error.response.data.error || 'Something went wrong.');
+                            this.isCalling = false;
+                        });
+                },
+
+                addToCart(id, name, price) {
+                    axios.post('{{ route('cart.add') }}', {
+                        menu_item_id: id,
+                        quantity: 1
+                    }).then(response => {
+                        let key = id + '_d41d8cd98f00b204e9800998ecf8427e';
+                        const newCart = {
+                            ...this.cart
+                        };
+                        if (newCart[key]) {
+                            newCart[key] = {
+                                ...newCart[key],
+                                quantity: newCart[key].quantity + 1
+                            };
+                        } else {
+                            newCart[key] = {
+                                id,
+                                name,
+                                price,
+                                quantity: 1
+                            };
+                        }
+                        this.cart = newCart;
+                        this.showToast('🛒 Added ' + name + ' to basket!');
+                    });
+                },
+
+                updateQuantity(key, newQuantity) {
+                    if (newQuantity <= 0) {
+                        axios.post('{{ route('cart.remove') }}', {
+                            cart_id: key
+                        }).then(() => {
+                            const newCart = {
+                                ...this.cart
+                            };
+                            delete newCart[key];
+                            this.cart = newCart;
+                            if (Object.keys(this.cart).length === 0) this.isCartOpen = false;
+                            this.showToast('🗑️ Item removed.');
+                        });
+                    } else {
+                        axios.post('{{ route('cart.update') }}', {
+                            cart_id: key,
+                            quantity: newQuantity
+                        }).then(() => {
+                            const newCart = {
+                                ...this.cart
+                            };
+                            newCart[key] = {
+                                ...newCart[key],
+                                quantity: newQuantity
+                            };
+                            this.cart = newCart;
+                        });
+                    }
+                },
+
+                applyCoupon() {
+                    if (!this.couponCode) return;
+                    axios.post('{{ route('cart.discount.apply') }}', {
+                        code: this.couponCode
+                    }).then(response => {
+                        this.appliedDiscount = response.data.discount;
+                        this.couponCode = '';
+                        this.showToast('🎉 Coupon applied successfully!');
+                    }).catch(error => this.showToast(error.response.data.error || 'Invalid Coupon'));
+                },
+
+                removeCoupon() {
+                    axios.post('{{ route('cart.discount.remove') }}').then(() => {
+                        this.appliedDiscount = null;
+                        this.showToast('🗑️ Coupon removed.');
+                    });
+                },
+
+                placeOrder() {
+                    if (Object.keys(this.cart).length === 0) return;
+                    this.isPlacing = true;
+                    axios.post('{{ route('order.place') }}', {
+                        notes: this.notes
+                    }).then(response => {
+                        this.showToast('✅ Order placed successfully!');
+                        setTimeout(() => location.reload(), 1000);
+                    }).catch(error => {
+                        this.showToast(error.response.data.error || 'Something went wrong.');
+                        this.isPlacing = false;
+                    });
+                },
+
+                updateCountdown() {
+                    if (!this.activeOrder || !this.activeOrder.estimated_completion_time) return;
+                    const target = new Date(this.activeOrder.estimated_completion_time).getTime();
+                    const now = new Date().getTime();
+                    const distance = target - now;
+                    if (distance < 0) {
+                        this.countdown.minutes = '00';
+                        this.countdown.seconds = '00';
+                        this.countdown.finished = true;
+                        return;
+                    }
+                    const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((distance % (1000 * 60)) / 1000);
+                    this.countdown.minutes = mins < 10 ? '0' + mins : mins;
+                    this.countdown.seconds = secs < 10 ? '0' + secs : secs;
+                    this.countdown.finished = false;
+                },
+
+                pollOrderStatus() {
+                    if (!this.activeOrder) return;
+                    axios.get('/order/status/' + this.activeOrder.order_number).then(response => {
+                        this.activeOrder.status = response.data.status;
+                        this.activeOrder.estimated_completion_time = response.data.estimated_completion_time;
+                        this.activeOrder.payment_status = response.data.payment_status;
+                    });
+                },
+
+                getEmoji(name, categoryName) {
+                    name = (name || '').toLowerCase();
+                    categoryName = (categoryName || '').toLowerCase();
+                    if (name.includes('pizza')) return '🍕';
+                    if (name.includes('burger') || name.includes('bun')) return '🍔';
+                    if (name.includes('steak') || name.includes('meat') || name.includes('beef') || name.includes(
+                            'mutton') || name.includes('kebab') || name.includes('tikka')) return '🥩';
+                    if (name.includes('chicken') || name.includes('wing') || name.includes('nugget')) return '🍗';
+                    if (name.includes('rice') || name.includes('biryani') || name.includes('platter') || name.includes(
+                            'curry')) return '🍛';
+                    if (name.includes('fries') || name.includes('snack') || name.includes('chips') || name.includes('roll'))
+                        return '🍟';
+                    if (name.includes('salad')) return '🥗';
+                    if (name.includes('soup') || name.includes('noodle') || name.includes('ramen')) return '🍜';
+                    if (name.includes('dessert') || name.includes('sweet') || name.includes('ice cream') || name.includes(
+                            'cake') || name.includes('kulfi') || name.includes('kheer') || name.includes('bhallay'))
+                        return '🍨';
+                    if (name.includes('tea') || name.includes('coffee') || name.includes('latte')) return '☕';
+                    if (name.includes('drink') || name.includes('juice') || name.includes('soda') || name.includes(
+                            'cola') || name.includes('water')) return '🥤';
+
+                    // Category fallbacks
+                    if (categoryName.includes('starter') || categoryName.includes('appetizer')) return '🍿';
+                    if (categoryName.includes('main')) return '🍛';
+                    if (categoryName.includes('dessert') || categoryName.includes('sweet')) return '🍮';
+                    if (categoryName.includes('drink') || categoryName.includes('beverage')) return '🧃';
+                    return '🍽️';
                 }
-                this.cart = newCart;
-            });
-        },
-        
-        updateQuantity(key, newQuantity) {
-            if (newQuantity <= 0) {
-                axios.post('{{ route("cart.remove") }}', { cart_id: key }).then(() => {
-                    const newCart = { ...this.cart };
-                    delete newCart[key];
-                    this.cart = newCart;
-                    if (Object.keys(this.cart).length === 0) this.isCartOpen = false;
-                });
-            } else {
-                axios.post('{{ route("cart.update") }}', { cart_id: key, quantity: newQuantity }).then(() => {
-                    const newCart = { ...this.cart };
-                    newCart[key] = { ...newCart[key], quantity: newQuantity };
-                    this.cart = newCart;
-                });
             }
-        },
-
-        applyCoupon() {
-            if (!this.couponCode) return;
-            axios.post('{{ route("cart.discount.apply") }}', { code: this.couponCode }).then(response => { this.appliedDiscount = response.data.discount; this.couponCode = ''; }).catch(error => alert(error.response.data.error || 'Invalid Coupon'));
-        },
-
-        removeCoupon() { axios.post('{{ route("cart.discount.remove") }}').then(() => this.appliedDiscount = null); },
-        
-        placeOrder() {
-            if(Object.keys(this.cart).length === 0) return;
-            this.isPlacing = true;
-            axios.post('{{ route("order.place") }}', { notes: this.notes }).then(response => location.reload()).catch(error => { alert(error.response.data.error || 'Something went wrong.'); this.isPlacing = false; });
-        },
-
-        updateCountdown() {
-            if (!this.activeOrder || !this.activeOrder.estimated_completion_time) return;
-            const target = new Date(this.activeOrder.estimated_completion_time).getTime();
-            const now = new Date().getTime();
-            const distance = target - now;
-            if (distance < 0) { this.countdown.minutes = '00'; this.countdown.seconds = '00'; this.countdown.finished = true; return; }
-            const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const secs = Math.floor((distance % (1000 * 60)) / 1000);
-            this.countdown.minutes = mins < 10 ? '0' + mins : mins;
-            this.countdown.seconds = secs < 10 ? '0' + secs : secs;
-            this.countdown.finished = false;
-        },
-
-        pollOrderStatus() {
-            if (!this.activeOrder) return;
-            axios.get('/order/status/' + this.activeOrder.order_number).then(response => { this.activeOrder.status = response.data.status; this.activeOrder.estimated_completion_time = response.data.estimated_completion_time; this.activeOrder.payment_status = response.data.payment_status; });
         }
-    }
-}
-</script>
-@endsection
+    </script>
 @endsection
