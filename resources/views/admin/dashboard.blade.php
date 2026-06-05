@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('header', 'Cool & Cool')
+@section('header', auth()->user()->restaurant->name ?? 'Admin Dashboard')
 
 @section('content')
     <!-- Smart Search System -->
@@ -105,6 +105,86 @@
                 </svg>
             </button>
         </div>
+    </div>
+
+    <!-- Order Status Notifications -->
+    <div class="mb-8 z-40 relative" x-data="orderStatusNotifications()" x-init="initPolling()">
+        <template x-if="notifications.length > 0">
+            <div
+                class="bg-slate-900 text-white rounded-[2rem] p-6 shadow-lg animate-pulse hover:animate-none transition-all">
+                <div class="flex items-center justify-between mb-4 gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-white text-slate-900 p-3 rounded-2xl shadow-lg shadow-slate-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 10h-4m0 0H6m4 0v4m0-4v-4m-2 8H6a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2h-2.5">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black text-white">Order Updates</h2>
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-300">New orders & status
+                                changes</p>
+                        </div>
+                    </div>
+                    <button @click="notifications = []" type="button"
+                        class="text-[10px] font-black uppercase tracking-widest bg-slate-800/80 hover:bg-slate-700 px-3 py-2 rounded-full transition">
+                        Done
+                    </button>
+                </div>
+                <div class="space-y-3">
+                    <template x-for="(notification, index) in notifications"
+                        :key="notification.id + notification.updated_at">
+                        <div
+                            class="bg-slate-800/90 border border-slate-700 rounded-3xl p-4 flex items-start justify-between gap-4">
+                            <div>
+                                <p class="text-sm font-black text-white" x-text="notificationMessage(notification)"></p>
+                                <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-1"
+                                    x-text="formatTime(notification.updated_at)"></p>
+                            </div>
+                            <button @click="dismissNotification(index)" type="button"
+                                class="text-[10px] font-black uppercase tracking-widest text-amber-300 hover:text-white transition">Dismiss</button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Waiter Notifications (Bell System) -->
+    <div class="mb-8 z-40 relative" x-data="waiterCalls()" x-init="initPolling()">
+        <template x-if="calls.length > 0">
+            <div
+                class="bg-amber-50 border-2 border-amber-200 rounded-[2rem] p-6 shadow-lg animate-pulse hover:animate-none transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-amber-500 text-white p-3 rounded-2xl shadow-lg shadow-amber-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black text-amber-900">Waiter Requested!</h2>
+                            <p class="text-xs text-amber-700 font-bold uppercase tracking-widest">Table assistance needed
+                                immediately</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <template x-for="call in calls" :key="call.id">
+                            <div
+                                class="bg-white px-4 py-2 rounded-xl border border-amber-200 flex items-center gap-3 shadow-sm">
+                                <span class="font-black text-amber-900"
+                                    x-text="'Table ' + call.table.table_number"></span>
+                                <button @click="completeCall(call.id)"
+                                    class="bg-amber-500 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition">Done</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -231,42 +311,6 @@
     </div>
     </div>
 
-    <!-- Waiter Notifications (Bell System) -->
-    <div class="mb-8" x-data="waiterCalls()" x-init="initPolling()">
-        <template x-if="calls.length > 0">
-            <div
-                class="bg-amber-50 border-2 border-amber-200 rounded-[2rem] p-6 shadow-lg animate-pulse hover:animate-none transition-all">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-4">
-                        <div class="bg-amber-500 text-white p-3 rounded-2xl shadow-lg shadow-amber-200">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                                </path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-black text-amber-900">Waiter Requested!</h2>
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-widest">Table assistance needed
-                                immediately</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        <template x-for="call in calls" :key="call.id">
-                            <div
-                                class="bg-white px-4 py-2 rounded-xl border border-amber-200 flex items-center gap-3 shadow-sm">
-                                <span class="font-black text-amber-900"
-                                    x-text="'Table ' + call.table.table_number"></span>
-                                <button @click="completeCall(call.id)"
-                                    class="bg-amber-500 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition">Done</button>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </template>
-    </div>
-
     <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden" x-data="liveOrders()"
         x-init="initPolling()">
         <div class="p-8 border-b flex justify-between items-center bg-slate-50/50">
@@ -333,7 +377,7 @@
                     </div>
 
                     <a :href="'/admin/orders/' + order.id"
-                        class="w-full flex items-center justify-center gap-2 py-3 bg-white border border-slate-200 rounded-xl font-black text-xs uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition duration-300">
+                        class="w-full flex items-center justify-center gap-2 py-3 bg-white border border-slate-200 rounded-xl font-black text-xs uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-black hover:border-slate-900 transition duration-300">
                         View Details
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
@@ -534,6 +578,68 @@
                             this.calls = this.calls.filter(c => c.id !== id);
                         })
                         .catch(error => console.error('Error completing call:', error));
+                }
+            }
+        }
+
+        function orderStatusNotifications() {
+            return {
+                notifications: [],
+                pollingInterval: null,
+                lastCheckedAt: new Date().toISOString(),
+                previousStates: {},
+                initPolling() {
+                    this.fetchNotifications();
+                    this.pollingInterval = setInterval(() => this.fetchNotifications(), 5000);
+                },
+                shouldShowNotification(order) {
+                    const prevState = this.previousStates[order.id];
+                    const isNewPendingOrder = order.status === 'pending' && !prevState;
+                    const isPreparingToReady = order.status === 'ready';
+                    return isNewPendingOrder || isPreparingToReady;
+                },
+                fetchNotifications() {
+                    axios.get('{{ route('admin.order-notifications') }}', {
+                            params: {
+                                since: this.lastCheckedAt
+                            }
+                        })
+                        .then(response => {
+                            const updates = response.data;
+                            console.log('Fetched orders:', updates);
+                            updates.reverse().forEach(order => {
+                                if (this.shouldShowNotification(order)) {
+                                    const isDuplicate = this.notifications.some(note => note.id === order.id &&
+                                        note.updated_at === order.updated_at);
+                                    if (!isDuplicate) {
+                                        this.notifications.unshift(order);
+                                        console.log('Added notification:', order);
+                                    }
+                                }
+                                this.previousStates[order.id] = order;
+                            });
+                            this.lastCheckedAt = new Date().toISOString();
+                        })
+                        .catch(error => console.error('Order notification error:', error));
+                },
+                dismissNotification(index) {
+                    this.notifications.splice(index, 1);
+                },
+                notificationMessage(notification) {
+                    const tableNum = notification.table?.table_number ?? '#';
+                    if (notification.status === 'pending') {
+                        return `New Order from Table ${tableNum}! Ready to be cooked.`;
+                    } else if (notification.status === 'ready') {
+                        return `Order Ready! Table ${tableNum}'s food is prepared.`;
+                    }
+                    return `Table ${tableNum} order status: ${notification.status}`;
+                },
+                formatTime(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
                 }
             }
         }

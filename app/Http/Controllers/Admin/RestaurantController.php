@@ -41,7 +41,12 @@ class RestaurantController extends Controller
             if ($logoPath && Storage::disk('public')->exists($logoPath)) {
                 Storage::disk('public')->delete($logoPath);
             }
-            $logoPath = $request->file('logo')->store('restaurant_logos', 'public');
+            $file = $request->file('logo');
+            $logoPath = $file->store('restaurant_logos', 'public');
+            
+            // Auto resize the uploaded logo to 256x256
+            $absolutePath = Storage::disk('public')->path($logoPath);
+            $this->resizeImage($absolutePath, 256, 256);
         }
 
         $restaurant->update([
@@ -53,6 +58,101 @@ class RestaurantController extends Controller
         ]);
 
         return redirect()->route('admin.restaurant.edit', $restaurant)->with('success', 'Restaurant settings updated successfully.');
+    }
+
+    private function resizeImage($filePath, $targetWidth = 256, $targetHeight = 256)
+    {
+        $info = getimagesize($filePath);
+        if (!$info) {
+            return;
+        }
+
+        $width = $info[0];
+        $height = $info[1];
+        $mime = $info['mime'];
+
+        switch ($mime) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $image = imagecreatefromjpeg($filePath);
+                break;
+            case 'image/png':
+                $image = imagecreatefrompng($filePath);
+                break;
+            case 'image/gif':
+                $image = imagecreatefromgif($filePath);
+                break;
+            case 'image/webp':
+                if (function_exists('imagecreatefromwebp')) {
+                    $image = imagecreatefromwebp($filePath);
+                } else {
+                    return;
+                }
+                break;
+            default:
+                return;
+        }
+
+        if (!$image) {
+            return;
+        }
+
+        $targetRatio = $targetWidth / $targetHeight;
+        $originalRatio = $width / $height;
+
+        $cropWidth = $width;
+        $cropHeight = $height;
+        $cropX = 0;
+        $cropY = 0;
+
+        if ($originalRatio > $targetRatio) {
+            $cropWidth = (int)($height * $targetRatio);
+            $cropX = (int)(($width - $cropWidth) / 2);
+        } else {
+            $cropHeight = (int)($width / $targetRatio);
+            $cropY = (int)(($height - $cropHeight) / 2);
+        }
+
+        $newImage = imagecreatetruecolor($targetWidth, $targetHeight);
+
+        if ($mime == 'image/png' || $mime == 'image/webp') {
+            imagealphablending($newImage, false);
+            imagesavealpha($newImage, true);
+            $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+            imagefilledrectangle($newImage, 0, 0, $targetWidth, $targetHeight, $transparent);
+        }
+
+        imagecopyresampled(
+            $newImage,
+            $image,
+            0,
+            0,
+            $cropX,
+            $cropY,
+            $targetWidth,
+            $targetHeight,
+            $cropWidth,
+            $cropHeight
+        );
+
+        switch ($mime) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                imagejpeg($newImage, $filePath, 90);
+                break;
+            case 'image/png':
+                imagepng($newImage, $filePath, 9);
+                break;
+            case 'image/gif':
+                imagegif($newImage, $filePath);
+                break;
+            case 'image/webp':
+                imagewebp($newImage, $filePath, 90);
+                break;
+        }
+
+        imagedestroy($image);
+        imagedestroy($newImage);
     }
 
     public function generateMenuPDF()

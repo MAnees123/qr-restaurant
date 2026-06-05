@@ -123,4 +123,28 @@ class DashboardController extends Controller
 
         return view('admin.revenue.index', compact('orders'));
     }
+
+    public function orderNotifications(Request $request)
+    {
+        $restaurantId = auth()->user()->restaurant_id;
+        $since = $request->get('since');
+
+        $query = Order::where('restaurant_id', $restaurantId)
+            ->with('table')
+            ->orderBy('updated_at', 'desc');
+
+        if ($since) {
+            try {
+                $query->where('updated_at', '>=', $since);
+            } catch (\Exception $e) {
+                // ignore invalid timestamp
+            }
+        } else {
+            $query->where('updated_at', '>=', now()->subHours(24)->toDateTimeString());
+        }
+
+        $orders = $query->take(20)->get();
+
+        return response()->json($orders);
+    }
 }

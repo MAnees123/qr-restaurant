@@ -65,6 +65,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/orders/{order}/payment', [OrderController::class, 'recordPayment'])->name('orders.payment');
     Route::resource('reservations', ReservationController::class)->only(['index', 'update']);
     Route::get('/table-calls', [\App\Http\Controllers\Admin\TableCallController::class, 'index'])->name('table-calls.index');
+    Route::get('/order-notifications', [DashboardController::class, 'orderNotifications'])->name('order-notifications');
     Route::post('/table-calls/{call}/accept', [\App\Http\Controllers\Admin\TableCallController::class, 'accept'])->name('table-calls.accept');
     Route::post('/table-calls/{call}/complete', [\App\Http\Controllers\Admin\TableCallController::class, 'complete'])->name('table-calls.complete');
 });

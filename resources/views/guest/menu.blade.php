@@ -238,14 +238,14 @@
                     <div class="section-label">Order Details</div>
                     <div class="bg-[#252525] rounded-2xl p-5 border border-[#3a3a3a] space-y-4">
                         <div class="flex justify-between items-center text-xs">
-                            <span class="text-[#888]">Order Number</span>
+                            <span class="text-white">Order Number</span>
                             <span class="text-white font-bold uppercase tracking-wider"
                                 x-text="activeOrder.order_number"></span>
                         </div>
                         <div class="flex justify-between items-center text-xs">
-                            <span class="text-[#888]">Payment Status</span>
+                            <span class="text-white">Payment Status</span>
                             <span
-                                class="bg-[#c0441a]/20 text-[#e8890c] px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-[#c0441a]/30"
+                                class="bg-[#c0441a]/20 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-[#c0441a]/30"
                                 x-text="activeOrder.payment_status"></span>
                         </div>
                         <hr class="border-[#3a3a3a]" />
@@ -254,10 +254,10 @@
                             <template x-for="item in activeOrder.order_items" :key="item.id">
                                 <div class="flex justify-between items-center text-xs">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-[#e8890c] font-black" x-text="item.quantity + 'x'"></span>
+                                        <span class="text-white font-black" x-text="item.quantity + 'x'"></span>
                                         <span class="text-white font-medium" x-text="item.menu_item.name"></span>
                                     </div>
-                                    <span class="text-[#aaa]"
+                                    <span class="text-white"
                                         x-text="'Rs ' + parseFloat(item.subtotal).toLocaleString()"></span>
                                 </div>
                             </template>
@@ -266,7 +266,7 @@
                         <hr class="border-[#3a3a3a] border-dashed" />
                         <div class="flex justify-between items-center font-bold text-sm">
                             <span class="text-white">Total Amount</span>
-                            <span class="text-[#e8890c]"
+                            <span class="text-white"
                                 x-text="'Rs ' + parseFloat(activeOrder.total_amount).toLocaleString()"></span>
                         </div>
                     </div>
@@ -368,7 +368,7 @@
                         <label class="text-xs text-[#ccc] text-white font-semibold mb-1.5 block">Special
                             instructions</label>
                         <textarea x-model="notes" placeholder="Any special cooking instructions (e.g. less spicy)?"
-                            class="w-full bg-[#252525] text-white border border-[#3a3a3a] rounded-xl p-3 text-xs outline-none" rows="2"></textarea>
+                            class="w-full bg-[#252525] text-black border border-[#3a3a3a] rounded-xl p-3 text-xs outline-none" rows="2"></textarea>
                     </div>
                 </template>
             </div>

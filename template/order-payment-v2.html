@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Order - Food Ordering</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0e0e0e;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ─── Phone Shell ─── */
+    .shell {
+      width: 100%;
+      max-width: 390px;
+      min-height: 100vh;
+      background: #1c1c1c;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding-bottom: 28px;
+    }
+    .shell::-webkit-scrollbar { display: none; }
+
+    /* ─── Header ─── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 20px 14px;
+      position: sticky;
+      top: 0;
+      background: #1c1c1c;
+      z-index: 20;
+    }
+    .btn-back {
+      display: flex; align-items: center; gap: 6px;
+      background: none; border: none; cursor: pointer;
+      color: #e8890c; font-size: 13px; font-weight: 500;
+      font-family: 'Poppins', sans-serif;
+      min-width: 64px;
+    }
+    .btn-back i { font-size: 11px; }
+    .header-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 24px; font-weight: 700; color: #fff;
+    }
+    .btn-bell {
+      background: none; border: none; cursor: pointer;
+      color: #fff; font-size: 20px;
+      min-width: 64px; text-align: right;
+    }
+
+    /* ─── Credit Card ─── */
+    .card-wrap { padding: 4px 18px 0; }
+    .credit-card {
+      background: linear-gradient(135deg, #f0900d 0%, #c96018 55%, #a84210 100%);
+      border-radius: 20px;
+      padding: 22px 22px 20px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 10px 36px rgba(232,137,12,0.4);
+    }
+    .credit-card::before {
+      content: '';
+      position: absolute; top: -50px; right: -50px;
+      width: 170px; height: 170px;
+      background: rgba(255,255,255,0.07); border-radius: 50%;
+    }
+    .credit-card::after {
+      content: '';
+      position: absolute; bottom: -55px; right: 20px;
+      width: 130px; height: 130px;
+      background: rgba(255,255,255,0.04); border-radius: 50%;
+    }
+    .cc-chip {
+      position: absolute; top: 20px; right: 22px;
+      width: 38px; height: 28px;
+      background: rgba(255,255,255,0.22);
+      border-radius: 6px; border: 1px solid rgba(255,255,255,0.28);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cc-chip::before {
+      content: ''; width: 22px; height: 15px;
+      border: 1.5px solid rgba(255,255,255,0.45); border-radius: 3px;
+    }
+    .cc-type {
+      display: flex; align-items: center; gap: 7px;
+      color: rgba(255,255,255,0.88);
+      font-size: 13px; font-weight: 600; letter-spacing: 0.4px;
+      margin-bottom: 16px;
+    }
+    .cc-type i { font-size: 17px; }
+    .cc-number {
+      color: #fff; font-size: 20px; font-weight: 700;
+      letter-spacing: 2.5px; margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+    .cc-name {
+      color: rgba(255,255,255,0.88);
+      font-size: 13px; font-weight: 500; letter-spacing: 0.4px;
+    }
+
+    /* ─── Section label ─── */
+    .sec-label {
+      color: #c8c8c8; font-size: 14px; font-weight: 500;
+      padding: 20px 18px 10px; letter-spacing: 0.15px;
+    }
+
+    /* ─── Address ─── */
+    .addr-card {
+      margin: 0 18px;
+      background: #262626; border-radius: 14px;
+      padding: 14px 16px;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 10px;
+    }
+    .addr-name {
+      color: #fff; font-size: 13px; font-weight: 600; margin-bottom: 4px;
+    }
+    .addr-text {
+      color: #888; font-size: 12px; line-height: 1.55;
+    }
+    .btn-change {
+      background: none; border: none; cursor: pointer;
+      color: #e8890c; font-size: 12px; font-weight: 500;
+      font-family: 'Poppins', sans-serif;
+      white-space: nowrap; flex-shrink: 0; padding: 0;
+    }
+
+    /* ─── Payment options ─── */
+    .pay-list {
+      padding: 0 18px;
+      display: flex; flex-direction: column; gap: 11px;
+    }
+    .pay-opt {
+      background: #262626; border-radius: 14px;
+      padding: 13px 15px;
+      display: flex; align-items: center; gap: 13px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.18s, background 0.18s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pay-opt:hover   { background: #2d2d2d; }
+    .pay-opt.active  { border-color: #e8890c; }
+
+    /* icon box */
+    .pay-icon {
+      width: 46px; height: 33px; border-radius: 8px;
+      flex-shrink: 0; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .pay-info { flex: 1; min-width: 0; }
+    .pay-name {
+      color: #fff; font-size: 13px; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pay-sub {
+      color: #777; font-size: 10.5px; font-weight: 400; margin-top: 1px;
+    }
+
+    /* radio */
+    .pay-radio {
+      width: 19px; height: 19px; border-radius: 50%;
+      border: 2px solid #4a4a4a; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.18s;
+    }
+    .pay-opt.active .pay-radio { border-color: #e8890c; }
+    .pay-radio-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #e8890c; opacity: 0;
+      transform: scale(0.4); transition: opacity 0.18s, transform 0.18s;
+    }
+    .pay-opt.active .pay-radio-dot { opacity: 1; transform: scale(1); }
+
+    /* ─── MC circles ─── */
+    .mc-wrap { position: relative; width: 38px; height: 24px; }
+    .mc-l {
+      position: absolute; left: 0; top: 1px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #eb001b;
+    }
+    .mc-r {
+      position: absolute; left: 16px; top: 1px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #f79e1b; opacity: 0.92;
+    }
+
+    /* ─── Spacer ─── */
+    .spacer { flex: 1; min-height: 22px; }
+
+    /* ─── Bottom ─── */
+    .bottom {
+      padding: 18px 18px 0;
+    }
+    .total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .total-lbl { color: #fff; font-size: 15px; font-weight: 700; }
+    .total-val { color: #fff; font-size: 15px; font-weight: 700; }
+
+    .btn-confirm {
+      width: 100%; background: #bf441a; color: #fff;
+      border: none; border-radius: 16px; padding: 16px;
+      font-size: 15px; font-weight: 600;
+      font-family: 'Poppins', sans-serif; cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-confirm:hover  { background: #e8890c; }
+    .btn-confirm:active { transform: scale(0.98); }
+
+    /* ─── Toast ─── */
+    .toast {
+      position: fixed; bottom: 86px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: #e8890c; color: #fff;
+      padding: 10px 22px; border-radius: 50px;
+      font-size: 12.5px; font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.28s, transform 0.28s;
+      z-index: 99; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ─── Address modal ─── */
+    .modal-bg {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.68); z-index: 60;
+      align-items: flex-end; justify-content: center;
+    }
+    .modal-bg.open { display: flex; }
+    .modal-box {
+      background: #262626; border-radius: 22px 22px 0 0;
+      padding: 22px 20px 36px; width: 100%; max-width: 390px;
+      animation: up .28s ease;
+    }
+    @keyframes up { from { transform:translateY(100%); } to { transform:translateY(0); } }
+    .modal-ttl {
+      color: #fff; font-size: 16px; font-weight: 700;
+      text-align: center; margin-bottom: 16px;
+    }
+    .modal-inp {
+      width: 100%; background: #1c1c1c;
+      border: 1.5px solid #383838; border-radius: 11px;
+      padding: 12px 14px; color: #fff; font-size: 13px;
+      font-family: 'Poppins', sans-serif; outline: none;
+      margin-bottom: 10px; transition: border-color 0.2s;
+    }
+    .modal-inp:focus { border-color: #e8890c; }
+    .modal-save {
+      width: 100%; background: #bf441a; color: #fff;
+      border: none; border-radius: 12px; padding: 13px;
+      font-size: 14px; font-weight: 600;
+      font-family: 'Poppins', sans-serif; cursor: pointer;
+      margin-top: 4px; transition: background 0.2s;
+    }
+    .modal-save:hover { background: #e8890c; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Header -->
+  <div class="header">
+    <button class="btn-back">
+      <i class="fas fa-chevron-left"></i> Back
+    </button>
+    <span class="header-title">Order</span>
+    <button class="btn-bell"><i class="far fa-bell"></i></button>
+  </div>
+
+  <!-- Credit Card -->
+  <div class="card-wrap">
+    <div class="credit-card">
+      <div class="cc-chip"></div>
+      <div class="cc-type"><i class="fas fa-credit-card"></i> Credit Card</div>
+      <div class="cc-number">0123 4567 8901 2345</div>
+      <div class="cc-name">Chiaki Sato</div>
+    </div>
+  </div>
+
+  <!-- Address -->
+  <div class="sec-label">Address</div>
+  <div class="addr-card">
+    <div>
+      <div class="addr-name">Chiaki Sato</div>
+      <div class="addr-text" id="addrDisplay">123 Anywhere St., Any City,<br>ST 12345</div>
+    </div>
+    <button class="btn-change" onclick="openModal()">Change Address</button>
+  </div>
+
+  <!-- Payment Method -->
+  <div class="sec-label">Payment Method</div>
+  <div class="pay-list">
+
+    <!-- EasyPaisa -->
+    <div class="pay-opt active" onclick="pick(this)">
+      <div class="pay-icon">
+        <svg width="46" height="33" viewBox="0 0 46 33" fill="none">
+          <rect width="46" height="33" rx="7" fill="#1a5c2e"/>
+          <text x="5" y="16" font-family="Poppins,sans-serif" font-size="9" font-weight="800" fill="#ffffff">Easy</text>
+          <text x="5" y="27" font-family="Poppins,sans-serif" font-size="8" font-weight="600" fill="#7dda9e">paisa</text>
+          <circle cx="38" cy="10" r="5" fill="#34a853" opacity="0.5"/>
+          <circle cx="34" cy="14" r="3" fill="#34a853" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="pay-info">
+        <div class="pay-name">EasyPaisa</div>
+        <div class="pay-sub">Mobile Wallet · Pakistan</div>
+      </div>
+      <div class="pay-radio"><div class="pay-radio-dot"></div></div>
+    </div>
+
+    <!-- JazzCash -->
+    <div class="pay-opt" onclick="pick(this)">
+      <div class="pay-icon">
+        <svg width="46" height="33" viewBox="0 0 46 33" fill="none">
+          <rect width="46" height="33" rx="7" fill="#c0060b"/>
+          <text x="5" y="16" font-family="Poppins,sans-serif" font-size="9" font-weight="800" fill="#ffffff">Jazz</text>
+          <text x="5" y="27" font-family="Poppins,sans-serif" font-size="8" font-weight="600" fill="#ffbbbb">Cash</text>
+          <circle cx="38" cy="10" r="5" fill="#ff4444" opacity="0.4"/>
+          <circle cx="34" cy="14" r="3" fill="#ff6666" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="pay-info">
+        <div class="pay-name">JazzCash</div>
+        <div class="pay-sub">Mobile Account · Pakistan</div>
+      </div>
+      <div class="pay-radio"><div class="pay-radio-dot"></div></div>
+    </div>
+
+    <!-- Visa -->
+    <div class="pay-opt" onclick="pick(this)">
+      <div class="pay-icon">
+        <svg width="46" height="33" viewBox="0 0 46 33" fill="none">
+          <rect width="46" height="33" rx="7" fill="#1a1f71"/>
+          <text x="6" y="22" font-family="Arial Black,Arial,sans-serif" font-size="13" font-weight="900" fill="#ffffff" letter-spacing="-0.5">VISA</text>
+          <rect x="0" y="27" width="46" height="6" rx="0" fill="#e8890c" opacity="0.35"/>
+        </svg>
+      </div>
+      <div class="pay-info">
+        <div class="pay-name">Visa Card</div>
+        <div class="pay-sub">International · Debit / Credit</div>
+      </div>
+      <div class="pay-radio"><div class="pay-radio-dot"></div></div>
+    </div>
+
+    <!-- MasterCard -->
+    <div class="pay-opt" onclick="pick(this)">
+      <div class="pay-icon" style="background:#1e1e1e;border-radius:8px;border:1px solid #333;">
+        <div class="mc-wrap">
+          <div class="mc-l"></div>
+          <div class="mc-r"></div>
+        </div>
+      </div>
+      <div class="pay-info">
+        <div class="pay-name">Master Card</div>
+        <div class="pay-sub">International · Debit / Credit</div>
+      </div>
+      <div class="pay-radio"><div class="pay-radio-dot"></div></div>
+    </div>
+
+    <!-- Bitcoin -->
+    <div class="pay-opt" onclick="pick(this)">
+      <div class="pay-icon">
+        <svg width="46" height="33" viewBox="0 0 46 33" fill="none">
+          <rect width="46" height="33" rx="7" fill="#14100a"/>
+          <text x="12" y="24" font-family="Arial,sans-serif" font-size="18" font-weight="900" fill="#f7931a">₿</text>
+          <circle cx="38" cy="8" r="4" fill="#f7931a" opacity="0.25"/>
+          <circle cx="34" cy="13" r="2.5" fill="#f7931a" opacity="0.15"/>
+        </svg>
+      </div>
+      <div class="pay-info">
+        <div class="pay-name">Bitcoin</div>
+        <div class="pay-sub">Crypto Currency · BTC</div>
+      </div>
+      <div class="pay-radio"><div class="pay-radio-dot"></div></div>
+    </div>
+
+  </div><!-- /pay-list -->
+
+  <div class="spacer"></div>
+
+  <!-- Total + Confirm -->
+  <div class="bottom">
+    <div class="total-row">
+      <span class="total-lbl">Total Payment</span>
+      <span class="total-val">$ 1,234.56</span>
+    </div>
+    <button class="btn-confirm" onclick="confirmOrder()">Confirm Order</button>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- Address modal -->
+<div class="modal-bg" id="modal" onclick="bgClose(event)">
+  <div class="modal-box">
+    <div class="modal-ttl">Change Address</div>
+    <input class="modal-inp" id="inp-name"   type="text" placeholder="Full Name"        value="Chiaki Sato"/>
+    <input class="modal-inp" id="inp-street" type="text" placeholder="Street Address"   value="123 Anywhere St."/>
+    <input class="modal-inp" id="inp-city"   type="text" placeholder="City, State, ZIP" value="Any City, ST 12345"/>
+    <button class="modal-save" onclick="saveAddr()">Save Address</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  function pick(el) {
+    document.querySelectorAll('.pay-opt').forEach(o => o.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+  }
+  function bgClose(e) {
+    if (e.target === document.getElementById('modal'))
+      document.getElementById('modal').classList.remove('open');
+  }
+  function saveAddr() {
+    const n = document.getElementById('inp-name').value.trim();
+    const s = document.getElementById('inp-street').value.trim();
+    const c = document.getElementById('inp-city').value.trim();
+    if (!n || !s || !c) { showToast('Please fill all fields.'); return; }
+    document.querySelector('.addr-name').textContent = n;
+    document.getElementById('addrDisplay').innerHTML = s + ',<br>' + c;
+    document.getElementById('modal').classList.remove('open');
+    showToast('📍 Address updated!');
+  }
+  function confirmOrder() {
+    const m = document.querySelector('.pay-opt.active .pay-name');
+    showToast('🎉 Order confirmed via ' + (m ? m.textContent : 'payment') + '!');
+  }
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._tid);
+    t._tid = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+</script>
+</body>
+</html>
