@@ -28,19 +28,16 @@
       inset: 0;
       z-index: 0;
       overflow: hidden;
-    }
-    /* Main warm restaurant background using CSS art */
-    .bg-scene canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      background-image: url('{{ asset("images/login-bg.png") }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     .bg-scene::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(0,0,0,0.38) 0%, rgba(20,10,5,0.28) 100%);
+      background: linear-gradient(135deg, rgba(0,0,0,0.45) 0%, rgba(20,10,5,0.35) 100%);
       z-index: 1;
     }
 
@@ -330,9 +327,7 @@
 </style>
 
 <!-- Background -->
-<div class="bg-scene">
-  <canvas id="bgCanvas"></canvas>
-</div>
+<div class="bg-scene"></div>
 
 <!-- Glassmorphism Card -->
 <div class="glass-card mx-3">
@@ -586,203 +581,6 @@
       @endif
     });
 
-    /* ── Canvas Restaurant Background ── */
-    (function drawBg() {
-      const canvas = document.getElementById('bgCanvas');
-      const ctx = canvas.getContext('2d');
 
-      function resize() {
-        canvas.width  = window.innerWidth;
-        canvas.height = window.innerHeight;
-        draw();
-      }
-
-      function draw() {
-        const W = canvas.width, H = canvas.height;
-        ctx.clearRect(0, 0, W, H);
-
-        // Sky / ceiling gradient - warm amber dusk outside windows
-        const sky = ctx.createLinearGradient(0, 0, W, H * 0.55);
-        sky.addColorStop(0,   '#1a0a05');
-        sky.addColorStop(0.25,'#3d1a06');
-        sky.addColorStop(0.5, '#7a3810');
-        sky.addColorStop(0.75,'#c4681a');
-        sky.addColorStop(1,   '#e8972a');
-        ctx.fillStyle = sky;
-        ctx.fillRect(0, 0, W, H * 0.55);
-
-        // Floor gradient - deep rich brown
-        const floor = ctx.createLinearGradient(0, H * 0.5, 0, H);
-        floor.addColorStop(0, '#2a1205');
-        floor.addColorStop(1, '#0d0601');
-        ctx.fillStyle = floor;
-        ctx.fillRect(0, H * 0.5, W, H * 0.5);
-
-        // Window glow (left side - cityscape)
-        const winL = ctx.createRadialGradient(W * 0.12, H * 0.3, 10, W * 0.12, H * 0.3, W * 0.28);
-        winL.addColorStop(0,   'rgba(255,180,60,0.55)');
-        winL.addColorStop(0.4, 'rgba(220,120,30,0.25)');
-        winL.addColorStop(1,   'rgba(0,0,0,0)');
-        ctx.fillStyle = winL;
-        ctx.fillRect(0, 0, W * 0.35, H * 0.7);
-
-        // Window glow (right side)
-        const winR = ctx.createRadialGradient(W * 0.88, H * 0.28, 10, W * 0.88, H * 0.28, W * 0.3);
-        winR.addColorStop(0,   'rgba(180,220,255,0.35)');
-        winR.addColorStop(0.4, 'rgba(100,160,210,0.18)');
-        winR.addColorStop(1,   'rgba(0,0,0,0)');
-        ctx.fillStyle = winR;
-        ctx.fillRect(W * 0.65, 0, W * 0.35, H * 0.65);
-
-        // City lights in distance
-        ctx.save();
-        for (let i = 0; i < 120; i++) {
-          const x = (Math.sin(i * 137.5) * 0.5 + 0.5) * W;
-          const y = (Math.cos(i * 97.3)  * 0.5 + 0.5) * H * 0.5;
-          const r = Math.random() * 1.8 + 0.4;
-          const alpha = Math.random() * 0.7 + 0.3;
-          ctx.beginPath();
-          ctx.arc(x, y, r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,${180 + Math.floor(Math.random()*75)},${80 + Math.floor(Math.random()*80)},${alpha})`;
-          ctx.fill();
-        }
-        ctx.restore();
-
-        // Columns / pillars
-        function pillar(x, w) {
-          const g = ctx.createLinearGradient(x, 0, x + w, 0);
-          g.addColorStop(0,   'rgba(60,25,5,0.9)');
-          g.addColorStop(0.3, 'rgba(100,45,10,0.7)');
-          g.addColorStop(0.7, 'rgba(80,35,8,0.75)');
-          g.addColorStop(1,   'rgba(30,12,2,0.95)');
-          ctx.fillStyle = g;
-          ctx.fillRect(x, 0, w, H);
-        }
-        pillar(W * 0.0,  W * 0.055);
-        pillar(W * 0.24, W * 0.045);
-        pillar(W * 0.72, W * 0.045);
-        pillar(W * 0.945,W * 0.055);
-
-        // Dining tables
-        function table(cx, cy, rx, ry) {
-          const tg = ctx.createRadialGradient(cx, cy - ry*0.3, 2, cx, cy, rx);
-          tg.addColorStop(0,   'rgba(180,90,20,0.9)');
-          tg.addColorStop(0.5, 'rgba(120,55,10,0.8)');
-          tg.addColorStop(1,   'rgba(60,25,5,0.6)');
-          ctx.beginPath();
-          ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-          ctx.fillStyle = tg;
-          ctx.fill();
-
-          ctx.beginPath();
-          ctx.ellipse(cx, cy - ry * 0.15, rx * 0.7, ry * 0.35, 0, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255,220,160,0.12)';
-          ctx.fill();
-        }
-        table(W * 0.13, H * 0.72, W * 0.09, H * 0.04);
-        table(W * 0.35, H * 0.78, W * 0.10, H * 0.04);
-        table(W * 0.65, H * 0.76, W * 0.10, H * 0.04);
-        table(W * 0.87, H * 0.70, W * 0.09, H * 0.04);
-
-        // Candle / table lamp glows
-        function candleGlow(cx, cy, spread) {
-          const cg = ctx.createRadialGradient(cx, cy, 1, cx, cy, spread);
-          cg.addColorStop(0,   'rgba(255,210,80,0.75)');
-          cg.addColorStop(0.3, 'rgba(255,150,30,0.35)');
-          cg.addColorStop(1,   'rgba(255,100,0,0)');
-          ctx.beginPath();
-          ctx.arc(cx, cy, spread, 0, Math.PI * 2);
-          ctx.fillStyle = cg;
-          ctx.fill();
-        }
-        candleGlow(W*0.13, H*0.68, W*0.07);
-        candleGlow(W*0.35, H*0.73, W*0.07);
-        candleGlow(W*0.65, H*0.71, W*0.07);
-        candleGlow(W*0.87, H*0.66, W*0.07);
-
-        // Chairs (simple arcs)
-        function chair(cx, cy, size) {
-          ctx.save();
-          ctx.strokeStyle = 'rgba(80,35,8,0.85)';
-          ctx.lineWidth = size * 0.18;
-          ctx.beginPath();
-          ctx.arc(cx, cy, size, Math.PI * 0.1, Math.PI * 0.9);
-          ctx.stroke();
-          ctx.restore();
-        }
-        chair(W*0.09, H*0.71, H*0.045);
-        chair(W*0.17, H*0.71, H*0.045);
-        chair(W*0.30, H*0.77, H*0.048);
-        chair(W*0.40, H*0.77, H*0.048);
-        chair(W*0.60, H*0.75, H*0.048);
-        chair(W*0.70, H*0.75, H*0.048);
-        chair(W*0.83, H*0.69, H*0.045);
-        chair(W*0.91, H*0.69, H*0.045);
-
-        // Overhead warm pendant lights
-        function pendant(x, intensity) {
-          const pg = ctx.createRadialGradient(x, H*0.08, 2, x, H*0.2, H*0.25);
-          pg.addColorStop(0,   `rgba(255,200,80,${intensity})`);
-          pg.addColorStop(0.35,`rgba(230,140,30,${intensity*0.4})`);
-          pg.addColorStop(1,   'rgba(0,0,0,0)');
-          ctx.beginPath();
-          ctx.arc(x, H*0.08, H*0.25, 0, Math.PI*2);
-          ctx.fillStyle = pg;
-          ctx.fill();
-          // Bulb
-          ctx.beginPath();
-          ctx.arc(x, H*0.085, 5, 0, Math.PI*2);
-          ctx.fillStyle = 'rgba(255,240,180,0.95)';
-          ctx.fill();
-        }
-        pendant(W*0.2,  0.28);
-        pendant(W*0.5,  0.32);
-        pendant(W*0.8,  0.28);
-
-        // Wine glasses on tables
-        function glass_(cx, cy, h) {
-          ctx.save();
-          ctx.strokeStyle = 'rgba(220,180,120,0.55)';
-          ctx.lineWidth = 1.2;
-          ctx.beginPath();
-          ctx.ellipse(cx, cy, h*0.18, h*0.1, 0, 0, Math.PI*2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(cx, cy + h*0.1);
-          ctx.lineTo(cx, cy + h*0.38);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(cx - h*0.15, cy + h*0.38);
-          ctx.lineTo(cx + h*0.15, cy + h*0.38);
-          ctx.stroke();
-          ctx.restore();
-        }
-        glass_(W*0.11, H*0.665, 28);
-        glass_(W*0.155,H*0.665, 28);
-        glass_(W*0.33, H*0.725, 30);
-        glass_(W*0.37, H*0.725, 30);
-        glass_(W*0.63, H*0.705, 30);
-        glass_(W*0.67, H*0.705, 30);
-        glass_(W*0.855,H*0.645, 28);
-        glass_(W*0.895,H*0.645, 28);
-
-        // Atmospheric vignette
-        const vig = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.9);
-        vig.addColorStop(0, 'rgba(0,0,0,0)');
-        vig.addColorStop(1, 'rgba(0,0,0,0.72)');
-        ctx.fillStyle = vig;
-        ctx.fillRect(0, 0, W, H);
-
-        // Floor reflection
-        const refl = ctx.createLinearGradient(0, H*0.6, 0, H);
-        refl.addColorStop(0, 'rgba(180,80,10,0.08)');
-        refl.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = refl;
-        ctx.fillRect(0, H*0.6, W, H*0.4);
-      }
-
-      resize();
-      window.addEventListener('resize', resize);
-    })();
 </script>
 @endsection

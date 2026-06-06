@@ -2,8 +2,17 @@
 @section('title', 'Order Confirmed')
 
 @section('content')
-<div class="max-w-md mx-auto min-h-screen bg-white shadow-xl relative">
-<div class="min-h-screen flex flex-col items-center justify-center p-6 bg-amber-50">
+@php
+    $cart = session()->get('cart', []);
+    $cartCount = 0;
+    foreach ($cart as $item) {
+        $cartCount += $item['quantity'];
+    }
+    $hasActiveOrder = session()->has('active_order_number');
+    $code = $order->table->qrCode->code;
+@endphp
+<div class="max-w-md mx-auto min-h-screen bg-white shadow-xl relative pb-24" x-data="orderConfirmedPage()">
+<div class="min-h-screen flex flex-col items-center justify-center p-6 bg-amber-50 pb-20">
     <div class="bg-white p-8 rounded-3xl shadow-xl w-full text-center">
         <div class="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -56,9 +65,135 @@
         </div>
     </div>
 </div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+    <button class="nav-item" @click="window.location.href = '{{ route('menu.show', $code) }}#restaurant'">
+        <i class="fas fa-utensils"></i>
+        <span class="text-[9px] font-bold uppercase mt-0.5" style="color:#fff">Menu</span>
+    </button>
+    <button class="nav-item" @click="callWaiter()" :disabled="isCalling">
+        <i class="fas fa-bell text-white" :class="isCalling ? 'animate-bounce' : ''"></i>
+        <span class="text-[9px] font-bold uppercase mt-0.5" style="color:#fff">Waiter</span>
+    </button>
+    <button class="nav-item relative" @click="window.location.href = '{{ route('menu.show', $code) }}#cart'">
+        <i class="fas fa-shopping-bag text-white"></i>
+        <span class="text-[9px] font-bold uppercase mt-0.5" style="color:#fff">Basket</span>
+        @if($cartCount > 0)
+        <span
+            class="bg-[#e8890c] text-white text-[8px] font-black rounded-full flex items-center justify-center absolute -top-0.5 -right-0.5"
+            style="min-width:16px;height:16px;padding:0 3px;">{{ $cartCount }}</span>
+        @endif
+    </button>
+    <button class="nav-item active" @click="window.location.href = '{{ route('menu.show', $code) }}#order'">
+        <i class="fas fa-receipt text-[#e8890c]"></i>
+        <span class="text-[9px] font-bold uppercase mt-0.5" style="color:#e8890c">Order</span>
+        @if($hasActiveOrder)
+        <span class="bg-red-500 text-white text-[8px] font-black rounded-full absolute -top-0.5 -right-0.5"
+            style="min-width:8px;height:8px;"></span>
+        @endif
+    </button>
 </div>
+
+<!-- Toast Notifications -->
+<div class="toast" id="toast" :class="toastShow ? 'show' : ''" x-text="toastMessage"></div>
+
+</div>
+
+<style>
+/* Bottom Nav */
+.bottom-nav {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    width: 100%;
+    max-width: 448px; /* max-w-md is 448px */
+    background: #1c1c1c;
+    border-top: 1px solid #2a2a2a;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 14px;
+    z-index: 120;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.nav-item i {
+    font-size: 20px;
+    color: #fff;
+}
+
+.nav-item.active i {
+    color: #e8890c;
+}
+
+/* toast message */
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: #e8890c;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 0.28s,
+        transform 0.28s;
+    z-index: 999;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+</style>
+@endsection
+
 @section('scripts')
 <script>
+function orderConfirmedPage() {
+    return {
+        isCalling: false,
+        toastShow: false,
+        toastMessage: '',
+        showToast(msg) {
+            this.toastMessage = msg;
+            this.toastShow = true;
+            setTimeout(() => this.toastShow = false, 2500);
+        },
+        callWaiter() {
+            if (this.isCalling) return;
+            this.isCalling = true;
+            axios.post('{{ route('table.call') }}')
+                .then(response => {
+                    this.isCalling = false;
+                    this.showToast('🔔 Waiter has been requested!');
+                })
+                .catch(error => {
+                    this.showToast(error.response?.data?.error || 'Something went wrong.');
+                    this.isCalling = false;
+                });
+        }
+    }
+}
+
 function countdown(targetTime) {
     return {
         target: new Date(targetTime).getTime(),

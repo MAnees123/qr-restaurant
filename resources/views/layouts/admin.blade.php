@@ -19,8 +19,8 @@
 <body class="font-sans antialiased bg-gray-100">
     <div class="h-screen flex">
         <!-- Sidebar -->
-        {{-- <aside class="w-64 bg-slate-800 text-white flex-shrink-0 sticky top-0 self-start h-screen overflow-y-auto"> --}}
-        <aside class="w-64 bg-slate-800 text-white flex-shrink-0 min-h-screen">
+
+        <aside class="w-64 bg-slate-900 text-white flex-shrink-0 min-h-screen border-r border-amber-500/20">
             <div class="p-6">
                 <h1 class="text-2xl font-bold text-amber-500">QR Order</h1>
                 <p class="text-sm text-slate-400 mt-1">{{ auth()->user()->restaurant->name ?? 'Admin Panel' }}</p>

@@ -43,6 +43,6 @@ class MenuController extends Controller
                 ->first();
         }
 
-        return view('guest.menu', compact('restaurant', 'table', 'categories', 'activeOrder'));
+        return view('guest.menu', compact('restaurant', 'table', 'categories', 'activeOrder', 'code'));
     }
 }

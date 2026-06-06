@@ -277,7 +277,7 @@
         <!-- Bottom Nav -->
         <div class="bottom-nav">
             <button class="nav-item" :class="activeTab === 'restaurant' ? 'active' : ''"
-                @click="activeTab = 'restaurant'; window.scrollTo({top: 0, behavior: 'smooth'})">
+                @click="activeTab = 'restaurant'; window.location.hash = 'restaurant'; window.scrollTo({top: 0, behavior: 'smooth'})">
                 <i class="fas fa-utensils"></i>
                 <span class="text-[9px] font-bold uppercase mt-0.5"
                     :style="activeTab === 'restaurant' ? 'color:#e8890c' : 'color:#fff'">Menu</span>
@@ -289,7 +289,7 @@
                 <span class="text-[9px] font-bold uppercase mt-0.5" style="color:#fff">Waiter</span>
             </button>
             <button class="nav-item relative" :class="activeTab === 'cart' ? 'active' : ''"
-                @click="activeTab = 'cart'; window.scrollTo({top: 0, behavior: 'smooth'})">
+                @click="activeTab = 'cart'; window.location.hash = 'cart'; window.scrollTo({top: 0, behavior: 'smooth'})">
                 <i class="fas fa-shopping-bag"></i>
                 <span class="text-[9px] font-bold uppercase mt-0.5"
                     :style="activeTab === 'cart' ? 'color:#e8890c' : 'color:#fff'">Basket</span>
@@ -298,7 +298,7 @@
                     style="min-width:16px;height:16px;padding:0 3px;" x-show="cartCount > 0" x-text="cartCount"></span>
             </button>
             <button class="nav-item" :class="activeTab === 'order' ? 'active' : ''"
-                @click="activeTab = 'order'; window.scrollTo({top: 0, behavior: 'smooth'})">
+                @click="activeTab = 'order'; window.location.hash = 'order'; window.scrollTo({top: 0, behavior: 'smooth'})">
                 <i class="fas fa-receipt"></i>
                 <span class="text-[9px] font-bold uppercase mt-0.5"
                     :style="activeTab === 'order' ? 'color:#e8890c' : 'color:#fff'">Order</span>
@@ -415,8 +415,8 @@
                     </div>
 
                     <!-- Place Order Button -->
-                    <button class="checkout-btn mt-3" style="background:#c0441a;" @click="placeOrder()"
-                        :disabled="isPlacing" x-text="isPlacing ? 'Processing...' : 'Place Order'">
+                    <button class="checkout-btn mt-3" style="background:#c0441a;" @click="window.location.href = '{{ route('payment.show', $code) }}'"
+                        x-text="'Proceed to Payment'">
                     </button>
                 </div>
             </template>
@@ -1170,6 +1170,19 @@
                     try {
                         this.likedItems = JSON.parse(localStorage.getItem('liked_items') || '[]');
                     } catch (e) {}
+
+                    // Check URL hash to switch active tab
+                    const handleHash = () => {
+                        if (window.location.hash === '#cart') {
+                            this.activeTab = 'cart';
+                        } else if (window.location.hash === '#order') {
+                            this.activeTab = 'order';
+                        } else if (window.location.hash === '#restaurant') {
+                            this.activeTab = 'restaurant';
+                        }
+                    };
+                    handleHash();
+                    window.addEventListener('hashchange', handleHash);
                 },
 
                 showToast(msg) {

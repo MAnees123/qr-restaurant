@@ -15,6 +15,7 @@ class Order extends Model
         'order_number',
         'status',
         'payment_status',
+        'payment_method',
         'subtotal',
         'coupon_code',
         'discount_amount',

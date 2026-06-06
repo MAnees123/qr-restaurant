@@ -109,7 +109,7 @@ class OrderController extends Controller
         }
 
         $request->validate([
-            'method' => 'required|in:cash,jazzcash,easypaisa,card',
+            'method' => 'required|in:cash,jazzcash,easypaisa,card,safepay,bitcoin',
             'amount' => 'required|numeric|min:0',
             'transaction_id' => 'nullable|string',
             'notes' => 'nullable|string',

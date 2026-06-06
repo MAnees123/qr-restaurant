@@ -22,6 +22,12 @@ class DiscountController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'starts_at' => $request->starts_at ?: null,
+            'expires_at' => $request->expires_at ?: null,
+            'usage_limit' => $request->usage_limit ?: null,
+        ]);
+
         $request->validate([
             'code' => 'required|unique:discounts,code',
             'type' => 'required|in:percentage,fixed',
@@ -48,6 +54,12 @@ class DiscountController extends Controller
     public function update(Request $request, Discount $discount)
     {
         if ($discount->restaurant_id !== auth()->user()->restaurant_id) abort(403);
+
+        $request->merge([
+            'starts_at' => $request->starts_at ?: null,
+            'expires_at' => $request->expires_at ?: null,
+            'usage_limit' => $request->usage_limit ?: null,
+        ]);
 
         $request->validate([
             'code' => 'required|unique:discounts,code,' . $discount->id,

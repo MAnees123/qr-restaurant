@@ -95,6 +95,17 @@
             </div>
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        // Set axios CSRF header from meta token
+        (function() {
+            var token = document.querySelector('meta[name="csrf-token"]');
+            if (token) {
+                axios.defaults.headers.common['X-CSRF-TOKEN'] = token.getAttribute('content');
+            }
+        })();
+    </script>
     @yield('scripts')
 </body>
 

@@ -33,6 +33,7 @@ Route::post('/cart/apply-discount', [CartController::class, 'applyDiscount'])->n
 Route::post('/cart/remove-discount', [CartController::class, 'removeDiscount'])->name('cart.discount.remove');
 
 // Order Route (Public)
+Route::get('/menu/{code}/payment', [GuestOrderController::class, 'paymentForm'])->name('payment.show');
 Route::post('/order/place', [GuestOrderController::class, 'place'])->name('order.place');
 Route::get('/order/confirmed/{order_number}', [GuestOrderController::class, 'confirmed'])->name('order.confirmed');
 Route::get('/order/status/{order_number}', [GuestOrderController::class, 'status'])->name('order.status');
