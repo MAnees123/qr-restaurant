@@ -93,6 +93,42 @@
 
                 @yield('content')
             </div>
+
+            <!-- Global Kitchen Order Status Notifications -->
+            <div class="fixed top-20 right-8 w-96 z-50 max-w-[calc(100vw-4rem)]" x-data="orderStatusNotifications()" x-init="initPolling()">
+                <template x-if="notifications.length > 0">
+                    <div class="bg-slate-900 text-white rounded-[2rem] p-6 shadow-lg animate-pulse hover:animate-none transition-all">
+                        <div class="flex items-center justify-between mb-4 gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-white text-slate-900 p-3 rounded-2xl shadow-lg shadow-slate-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h-4m0 0H6m4 0v4m0-4v-4m-2 8H6a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2h-2.5"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-black text-white">Kitchen Updates</h2>
+                                    <p class="text-xs font-bold uppercase tracking-widest text-slate-300">New orders & status changes</p>
+                                </div>
+                            </div>
+                            <button @click="notifications = []" type="button" class="text-[10px] font-black uppercase tracking-widest bg-slate-800/80 hover:bg-slate-700 px-3 py-2 rounded-full transition">
+                                Done
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                            <template x-for="(notification, index) in notifications" :key="notification.id + notification.updated_at">
+                                <div class="bg-slate-800/90 border border-slate-700 rounded-3xl p-4 flex items-start justify-between gap-4">
+                                    <div>
+                                        <p class="text-sm font-black text-white" x-text="notificationMessage(notification)"></p>
+                                        <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-1" x-text="formatTime(notification.updated_at)"></p>
+                                    </div>
+                                    <button @click="dismissNotification(index)" type="button" class="text-[10px] font-black uppercase tracking-widest text-amber-300 hover:text-white transition">Dismiss</button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -107,6 +143,64 @@
         })();
     </script>
     @yield('scripts')
+    <script>
+        function orderStatusNotifications() {
+            return {
+                notifications: [],
+                pollingInterval: null,
+                lastCheckedAt: new Date().toISOString(),
+                previousStates: {},
+                playSound() {
+                    const audio = new Audio('/audio/notification.mp3');
+                    audio.play().catch(e => console.log(e));
+                },
+                initPolling() {
+                    this.fetchNotifications();
+                    this.pollingInterval = setInterval(() => this.fetchNotifications(), 5000);
+                },
+                shouldShowNotification(order) {
+                    const prevState = this.previousStates[order.id];
+                    const isNewPendingOrder = order.status === 'pending' && !prevState;
+                    const isStatusChanged = prevState && prevState.status !== order.status;
+                    return isNewPendingOrder || isStatusChanged;
+                },
+                fetchNotifications() {
+                    axios.get('{{ route('admin.order-notifications') }}', { params: { since: this.lastCheckedAt } })
+                        .then(response => {
+                            const updates = response.data;
+                            updates.reverse().forEach(order => {
+                                if (this.shouldShowNotification(order)) {
+                                    const isDuplicate = this.notifications.some(note => note.id === order.id && note.updated_at === order.updated_at);
+                                    if (!isDuplicate) {
+                                        this.notifications.unshift(order);
+                                        this.playSound();
+                                    }
+                                }
+                                this.previousStates[order.id] = order;
+                            });
+                            this.lastCheckedAt = new Date().toISOString();
+                        })
+                        .catch(error => console.error('Kitchen notification error:', error));
+                },
+                dismissNotification(index) {
+                    this.notifications.splice(index, 1);
+                },
+                notificationMessage(notification) {
+                    const tableNum = notification.table?.table_number ?? '#';
+                    if (notification.status === 'pending') {
+                        return `New Order from Table ${tableNum}! Ready to be cooked.`;
+                    } else if (notification.status === 'ready') {
+                        return `Order Ready! Table ${tableNum}'s food is prepared.`;
+                    }
+                    return `Table ${tableNum} order status: ${notification.status}`;
+                },
+                formatTime(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>
