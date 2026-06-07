@@ -200,81 +200,81 @@
 
         <!-- ORDER STATUS TAB CONTENT -->
         <div x-show="activeTab === 'order'" class="flex-1 p-6 pb-20" style="display: none;">
-            <template x-if="!activeOrder">
+            <template x-if="guestOrders.length === 0">
                 <div class="min-h-[50vh] flex flex-col items-center justify-center text-center p-8">
                     <div class="w-20 h-20 bg-[#252525] rounded-full flex items-center justify-center mb-6">
                         <i class="fas fa-receipt text-3xl text-[#555]"></i>
                     </div>
                     <h3 class="text-lg font-bold text-white mb-2">No Active Orders</h3>
-                    <p class="text-xs text-[#888] leading-relaxed">Place an order from the menu to see its live tracking
-                        status here.</p>
-                    <button @click="activeTab = 'restaurant'"
-                        class="mt-6 bg-[#c0441a] text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition">Browse
-                        Menu</button>
+                    <p class="text-xs text-[#888] leading-relaxed">Place an order from the menu to see its live tracking status here.</p>
+                    <button @click="activeTab = 'restaurant'" class="mt-6 bg-[#c0441a] text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition">Browse Menu</button>
                 </div>
             </template>
 
-            <template x-if="activeOrder">
+            <template x-if="guestOrders.length > 0">
                 <div class="space-y-6">
-                    <!-- Status Card (replaces credit card layout for status) -->
-                    <div class="credit-card">
-                        <div class="card-chip"></div>
-                        <div class="card-label">
-                            <i class="fas fa-clock"></i> Estimated Prep Countdown
-                        </div>
-                        <div class="flex justify-center gap-4 py-2"
-                            x-show="activeOrder.status !== 'served' && activeOrder.status !== 'cancelled'">
-                            <div
-                                class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-2 w-16 text-center">
-                                <p class="text-2xl font-black text-white" x-text="countdown.minutes">00</p>
-                                <p class="text-[8px] uppercase font-black text-[#ccc] mt-0.5">Mins</p>
+                    <!-- Global Countdown for the most recent active order -->
+                    <template x-if="activeOrder && activeOrder.status !== 'served' && activeOrder.status !== 'cancelled'">
+                        <div class="credit-card">
+                            <div class="card-chip"></div>
+                            <div class="card-label">
+                                <i class="fas fa-clock"></i> Estimated Prep Countdown (Order #<span x-text="activeOrder.order_number"></span>)
                             </div>
-                            <div
-                                class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-2 w-16 text-center">
-                                <p class="text-2xl font-black text-white" x-text="countdown.seconds">00</p>
-                                <p class="text-[8px] uppercase font-black text-[#ccc] mt-0.5">Secs</p>
+                            <div class="flex justify-center gap-4 py-2">
+                                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-2 w-16 text-center">
+                                    <p class="text-2xl font-black text-white" x-text="countdown.minutes">00</p>
+                                    <p class="text-[8px] uppercase font-black text-[#ccc] mt-0.5">Mins</p>
+                                </div>
+                                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-2 w-16 text-center">
+                                    <p class="text-2xl font-black text-white" x-text="countdown.seconds">00</p>
+                                    <p class="text-[8px] uppercase font-black text-[#ccc] mt-0.5">Secs</p>
+                                </div>
                             </div>
+                            <div class="card-holder text-center mt-3 uppercase tracking-widest font-black text-white" x-text="'Status: ' + activeOrder.status"></div>
                         </div>
-                        <div class="card-holder text-center mt-3 uppercase tracking-widest font-black text-white"
-                            x-text="'Status: ' + activeOrder.status"></div>
-                    </div>
+                    </template>
 
-                    <!-- Order Details Card -->
-                    <div class="section-label">Order Details</div>
-                    <div class="bg-[#252525] rounded-2xl p-5 border border-[#3a3a3a] space-y-4">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-white">Order Number</span>
-                            <span class="text-white font-bold uppercase tracking-wider"
-                                x-text="activeOrder.order_number"></span>
-                        </div>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-white">Payment Status</span>
-                            <span
-                                class="bg-[#c0441a]/20 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-[#c0441a]/30"
-                                x-text="activeOrder.payment_status"></span>
-                        </div>
-                        <hr class="border-[#3a3a3a]" />
+                    <template x-for="order in guestOrders" :key="order.id">
+                        <div class="bg-[#252525] rounded-2xl p-5 border border-[#3a3a3a] space-y-4">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-white">Order Number</span>
+                                <span class="text-white font-bold uppercase tracking-wider" x-text="order.order_number"></span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-white">Order Status</span>
+                                <span class="text-[#e8890c] font-bold uppercase tracking-wider" x-text="order.status"></span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-white">Payment Status</span>
+                                <span class="bg-[#c0441a]/20 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border border-[#c0441a]/30" x-text="order.payment_status"></span>
+                            </div>
+                            <hr class="border-[#3a3a3a]" />
 
-                        <div class="space-y-3">
-                            <template x-for="item in activeOrder.order_items" :key="item.id">
-                                <div class="flex justify-between items-center text-xs">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-white font-black" x-text="item.quantity + 'x'"></span>
-                                        <span class="text-white font-medium" x-text="item.menu_item.name"></span>
+                            <div class="space-y-3">
+                                <template x-for="item in order.order_items" :key="item.id">
+                                    <div class="flex justify-between items-center text-xs">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-white font-black" x-text="item.quantity + 'x'"></span>
+                                            <span class="text-white font-medium" x-text="item.menu_item.name"></span>
+                                        </div>
+                                        <span class="text-white" x-text="'Rs ' + parseFloat(item.subtotal).toLocaleString()"></span>
                                     </div>
-                                    <span class="text-white"
-                                        x-text="'Rs ' + parseFloat(item.subtotal).toLocaleString()"></span>
+                                </template>
+                            </div>
+
+                            <hr class="border-[#3a3a3a] border-dashed" />
+                            <div class="flex justify-between items-center font-bold text-sm">
+                                <span class="text-white">Total Amount</span>
+                                <span class="text-white" x-text="'Rs ' + parseFloat(order.total_amount).toLocaleString()"></span>
+                            </div>
+                            
+                            <template x-if="order.payment_status !== 'paid' && order.status !== 'cancelled'">
+                                <div class="text-center mt-3 bg-[#e8890c]/20 border border-[#e8890c]/50 text-[#e8890c] py-2 rounded-lg font-bold text-[10px] uppercase tracking-wider">
+                                    Payment Pending (Pay at Counter)
                                 </div>
                             </template>
                         </div>
-
-                        <hr class="border-[#3a3a3a] border-dashed" />
-                        <div class="flex justify-between items-center font-bold text-sm">
-                            <span class="text-white">Total Amount</span>
-                            <span class="text-white"
-                                x-text="'Rs ' + parseFloat(activeOrder.total_amount).toLocaleString()"></span>
-                        </div>
-                    </div>
+                    </template>
                 </div>
             </template>
         </div>
@@ -1399,6 +1399,7 @@
                 allItems: [],
                 likedItems: [],
                 activeOrder: {!! $activeOrder ? json_encode($activeOrder) : 'null' !!},
+                guestOrders: [],
                 countdown: {
                     minutes: '00',
                     seconds: '00',
@@ -1455,12 +1456,15 @@
                         });
                     });
 
+                    this.fetchGuestOrders();
+
                     // Initialize active order timers
                     if (this.activeOrder) {
                         this.updateCountdown();
                         setInterval(() => this.updateCountdown(), 1000);
-                        setInterval(() => this.pollOrderStatus(), 5000);
                     }
+                    setInterval(() => this.fetchGuestOrders(), 5000);
+                    
                     setInterval(() => this.pollCallStatus(), 3000);
                     this.pollCallStatus();
 
@@ -1636,6 +1640,43 @@
                     });
                 },
 
+                fetchGuestOrders() {
+                    axios.get('{{ route('guest.active-orders') }}')
+                        .then(response => {
+                            const newOrders = response.data;
+                            
+                            // Check for status changes to trigger toasts
+                            newOrders.forEach(newOrder => {
+                                const oldOrder = this.guestOrders.find(o => o.id === newOrder.id);
+                                if (oldOrder) {
+                                    if (oldOrder.status !== newOrder.status) {
+                                        const statusMessages = {
+                                            'preparing': '🍳 Order #' + newOrder.order_number + ' is now being prepared!',
+                                            'ready': '🛎️ Order #' + newOrder.order_number + ' is ready to serve!',
+                                            'served': '✅ Order #' + newOrder.order_number + ' has been served. Enjoy!',
+                                            'cancelled': '❌ Order #' + newOrder.order_number + ' was cancelled.'
+                                        };
+                                        if (statusMessages[newOrder.status]) {
+                                            this.showToast(statusMessages[newOrder.status]);
+                                        }
+                                    }
+                                    if (oldOrder.payment_status !== newOrder.payment_status && newOrder.payment_status === 'paid') {
+                                        this.showToast('💳 Payment received for Order #' + newOrder.order_number);
+                                    }
+                                }
+                            });
+
+                            this.guestOrders = newOrders;
+                            if (this.guestOrders.length > 0) {
+                                this.activeOrder = this.guestOrders[0];
+                                this.updateCountdown();
+                            } else {
+                                this.activeOrder = null;
+                            }
+                        })
+                        .catch(err => console.error(err));
+                },
+
                 updateCountdown() {
                     if (!this.activeOrder || !this.activeOrder.estimated_completion_time) return;
                     const target = new Date(this.activeOrder.estimated_completion_time).getTime();
@@ -1652,38 +1693,6 @@
                     this.countdown.minutes = mins < 10 ? '0' + mins : mins;
                     this.countdown.seconds = secs < 10 ? '0' + secs : secs;
                     this.countdown.finished = false;
-                },
-
-                pollOrderStatus() {
-                    if (!this.activeOrder) return;
-                    axios.get('/order/status/' + this.activeOrder.order_number).then(response => {
-                        const oldStatus = this.activeOrder.status;
-                        const oldPaymentStatus = this.activeOrder.payment_status;
-
-                        this.activeOrder.status = response.data.status;
-                        this.activeOrder.estimated_completion_time = response.data.estimated_completion_time;
-                        this.activeOrder.payment_status = response.data.payment_status;
-
-                        // Notification for Order Status Change
-                        if (oldStatus && oldStatus !== this.activeOrder.status) {
-                            const statusMessages = {
-                                'preparing': '🍳 Your order is now being prepared!',
-                                'ready': '🛎️ Your order is ready to serve!',
-                                'served': '✅ Your order has been served. Enjoy!',
-                                'cancelled': '❌ Your order was cancelled.'
-                            };
-                            if (statusMessages[this.activeOrder.status]) {
-                                this.showToast(statusMessages[this.activeOrder.status]);
-                            }
-                        }
-
-                        // Notification for Payment Status Change
-                        if (oldPaymentStatus && oldPaymentStatus !== this.activeOrder.payment_status) {
-                            if (this.activeOrder.payment_status === 'paid') {
-                                this.showToast('💵 Payment received successfully!');
-                            }
-                        }
-                    });
                 },
 
                 getEmoji(name, categoryName) {

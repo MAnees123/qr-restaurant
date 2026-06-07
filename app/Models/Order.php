@@ -13,6 +13,7 @@ class Order extends Model
         'restaurant_id',
         'table_id',
         'order_number',
+        'guest_token',
         'status',
         'payment_status',
         'payment_method',

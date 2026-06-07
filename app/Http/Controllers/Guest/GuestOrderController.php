@@ -81,6 +81,7 @@ class GuestOrderController extends Controller
             'restaurant_id' => $restaurantId,
             'table_id' => $tableId,
             'order_number' => $orderNumber,
+            'guest_token' => $request->guest_token,
             'status' => 'pending',
             'payment_status' => $request->input('payment_status', 'pending'),
             'payment_method' => $request->input('payment_method'),
@@ -129,21 +130,44 @@ class GuestOrderController extends Controller
         ]);
     }
 
-    public function confirmed($orderNumber)
+    public function confirmed(Request $request, $orderNumber)
     {
-        $order = Order::where('order_number', $orderNumber)->with(['orderItems.menuItem', 'table.qrCode'])->firstOrFail();
+        $order = Order::where('order_number', $orderNumber)
+            ->where('guest_token', $request->guest_token)
+            ->with(['orderItems.menuItem', 'table.qrCode'])
+            ->firstOrFail();
         
         return view('guest.order-confirmed', compact('order'));
     }
 
-    public function status($orderNumber)
+    public function status(Request $request, $orderNumber)
     {
-        $order = Order::where('order_number', $orderNumber)->firstOrFail();
+        $order = Order::where('order_number', $orderNumber)
+            ->where('guest_token', $request->guest_token)
+            ->firstOrFail();
+            
         return response()->json([
             'status' => $order->status,
             'estimated_completion_time' => $order->estimated_completion_time ? $order->estimated_completion_time->toIso8601String() : null,
             'payment_status' => $order->payment_status,
         ]);
+    }
+
+    public function activeOrders(Request $request)
+    {
+        $token = $request->guest_token;
+        if (!$token) {
+            return response()->json([]);
+        }
+
+        // Return orders within the last 3 hours
+        $orders = Order::where('guest_token', $token)
+            ->where('created_at', '>=', now()->subHours(3))
+            ->with(['orderItems.menuItem'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($orders);
     }
 
     public function paymentForm($code)

@@ -21,24 +21,29 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+// Guest / Public Routes wrapped with guest tracker middleware
+Route::middleware(['guest.tracker'])->group(function() {
+    // QR Code Menu Route (Public)
+    Route::get('/menu/{code}', [MenuController::class, 'show'])->name('menu.show');
 
-// QR Code Menu Route (Public)
-Route::get('/menu/{code}', [MenuController::class, 'show'])->name('menu.show');
+    // Cart Routes (Session based)
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::post('/cart/apply-discount', [CartController::class, 'applyDiscount'])->name('cart.discount.apply');
+    Route::post('/cart/remove-discount', [CartController::class, 'removeDiscount'])->name('cart.discount.remove');
 
-// Cart Routes (Session based)
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
-Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
-Route::post('/cart/apply-discount', [CartController::class, 'applyDiscount'])->name('cart.discount.apply');
-Route::post('/cart/remove-discount', [CartController::class, 'removeDiscount'])->name('cart.discount.remove');
-
-// Order Route (Public)
-Route::get('/menu/{code}/payment', [GuestOrderController::class, 'paymentForm'])->name('payment.show');
-Route::post('/order/place', [GuestOrderController::class, 'place'])->name('order.place');
-Route::get('/order/confirmed/{order_number}', [GuestOrderController::class, 'confirmed'])->name('order.confirmed');
-Route::get('/order/status/{order_number}', [GuestOrderController::class, 'status'])->name('order.status');
-Route::post('/table/call', [TableCallController::class, 'call'])->name('table.call');
-Route::get('/table/call/status', [TableCallController::class, 'status'])->name('table.call.status');
+    // Order Route (Public)
+    Route::get('/menu/{code}/payment', [GuestOrderController::class, 'paymentForm'])->name('payment.show');
+    Route::post('/order/place', [GuestOrderController::class, 'place'])->name('order.place');
+    Route::get('/order/confirmed/{order_number}', [GuestOrderController::class, 'confirmed'])->name('order.confirmed');
+    Route::get('/order/status/{order_number}', [GuestOrderController::class, 'status'])->name('order.status');
+    Route::post('/table/call', [TableCallController::class, 'call'])->name('table.call');
+    Route::get('/table/call/status', [TableCallController::class, 'status'])->name('table.call.status');
+    
+    // New route for getting all active guest orders
+    Route::get('/guest/active-orders', [GuestOrderController::class, 'activeOrders'])->name('guest.active-orders');
+});
 
 // Redirect standard Breeze dashboard route based on role
 Route::middleware(['auth'])->get('/dashboard', function () {
