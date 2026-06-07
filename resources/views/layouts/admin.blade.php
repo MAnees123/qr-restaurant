@@ -39,6 +39,9 @@
                 <a href="{{ route('admin.discounts.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.discounts.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Coupons
                     & Offers</a>
+                <a href="{{ route('admin.banners.index') }}"
+                    class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.banners.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Hot Deals
+                    & Ads</a>
                 <a href="{{ route('admin.tables.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.tables.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Tables
                     & QR</a>

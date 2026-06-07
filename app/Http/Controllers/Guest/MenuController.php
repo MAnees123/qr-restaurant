@@ -43,6 +43,13 @@ class MenuController extends Controller
                 ->first();
         }
 
-        return view('guest.menu', compact('restaurant', 'table', 'categories', 'activeOrder', 'code'));
+        // Fetch active banners
+        $banners = \App\Models\Banner::where('restaurant_id', $restaurant->id)
+            ->where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('guest.menu', compact('restaurant', 'table', 'categories', 'activeOrder', 'code', 'banners'));
     }
 }

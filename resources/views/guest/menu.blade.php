@@ -94,6 +94,51 @@
 
         <!-- MAIN MENU TAB CONTENT -->
         <div x-show="activeTab === 'restaurant'" class="flex-1 pb-20">
+            <!-- Banners/Ads Slider -->
+            @if(isset($banners) && $banners->count() > 0)
+                <div class="px-4 mb-4" x-data="bannerSlider({{ $banners->count() }})">
+                    <div class="relative w-full rounded-2xl overflow-hidden shadow-lg h-40 bg-[#2a2a2a]"
+                         @mouseenter="pause()" @mouseleave="resume()">
+                        
+                        <!-- Slider Track -->
+                        <div class="flex transition-transform duration-500 ease-in-out h-full w-full"
+                             :style="`transform: translateX(-${currentIndex * 100}%)`"
+                             @touchstart="touchStart($event)"
+                             @touchmove="touchMove($event)"
+                             @touchend="touchEnd()">
+                            
+                            @foreach($banners as $index => $banner)
+                                <div class="w-full flex-shrink-0 h-full relative cursor-pointer" 
+                                     @if($banner->redirect_url) @click="window.location.href='{{ $banner->redirect_url }}'" @endif>
+                                    <img src="{{ asset('storage/' . $banner->image_path) }}" class="w-full h-full object-cover" alt="Banner">
+                                    
+                                    <!-- Overlay for Text -->
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 pointer-events-none">
+                                        @if($banner->title)
+                                            <h3 class="text-white font-black text-lg leading-tight">{{ $banner->title }}</h3>
+                                        @endif
+                                        @if($banner->subtitle)
+                                            <p class="text-slate-300 text-xs font-bold mt-1">{{ $banner->subtitle }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Dots Indicator -->
+                        @if($banners->count() > 1)
+                            <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
+                                <template x-for="i in {{ $banners->count() }}" :key="i">
+                                    <div class="h-1.5 rounded-full transition-all duration-300 cursor-pointer"
+                                         :class="(i - 1) === currentIndex ? 'w-4 bg-[#e8890c]' : 'w-1.5 bg-white/50'"
+                                         @click="goTo(i - 1)"></div>
+                                </template>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             <!-- Hero Banner (Featured Item) -->
             @if ($featured)
                 <div class="hero-banner"
@@ -1725,6 +1770,65 @@
                     if (categoryName.includes('dessert') || categoryName.includes('sweet')) return '🍮';
                     if (categoryName.includes('drink') || categoryName.includes('beverage')) return '🧃';
                     return '🍽️';
+                }
+            }
+        }
+
+        function bannerSlider(count) {
+            return {
+                currentIndex: 0,
+                count: count,
+                interval: null,
+                startX: 0,
+                init() {
+                    if (this.count > 1) {
+                        this.startAutoPlay();
+                    }
+                },
+                startAutoPlay() {
+                    this.interval = setInterval(() => {
+                        this.next();
+                    }, 4000);
+                },
+                pause() {
+                    clearInterval(this.interval);
+                },
+                resume() {
+                    if (this.count > 1) {
+                        this.startAutoPlay();
+                    }
+                },
+                next() {
+                    this.currentIndex = (this.currentIndex + 1) % this.count;
+                },
+                prev() {
+                    this.currentIndex = (this.currentIndex - 1 + this.count) % this.count;
+                },
+                goTo(index) {
+                    this.currentIndex = index;
+                    this.pause();
+                    this.resume();
+                },
+                touchStart(e) {
+                    this.startX = e.touches[0].clientX;
+                    this.pause();
+                },
+                touchMove(e) {
+                    // prevent default if we want pure swipe, but scrolling might be needed
+                },
+                touchEnd(e) {
+                    if (!e.changedTouches || e.changedTouches.length === 0) return;
+                    let endX = e.changedTouches[0].clientX;
+                    let diff = this.startX - endX;
+
+                    if (Math.abs(diff) > 50) { // threshold
+                        if (diff > 0) {
+                            this.next();
+                        } else {
+                            this.prev();
+                        }
+                    }
+                    this.resume();
                 }
             }
         }

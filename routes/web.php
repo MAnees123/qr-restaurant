@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\KitchenController;
 use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Guest\MenuController;
 use App\Http\Controllers\Guest\CartController;
 use App\Http\Controllers\Guest\GuestOrderController;
@@ -68,6 +69,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('menu-categories', MenuCategoryController::class);
     Route::resource('menu-items', MenuItemController::class);
     Route::resource('discounts', DiscountController::class);
+    Route::resource('banners', BannerController::class);
     Route::get('/orders/live-search', [OrderController::class, 'liveSearch'])->name('orders.live-search');
     Route::get('/orders/search', [OrderController::class, 'search'])->name('orders.search');
     Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
