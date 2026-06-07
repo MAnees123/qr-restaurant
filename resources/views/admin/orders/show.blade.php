@@ -99,15 +99,20 @@
             </div>
         </div>
 
-        @if($order->notes)
-        <div class="bg-amber-50 rounded-[2rem] border-2 border-amber-100 p-8">
-            <h3 class="text-sm font-black text-amber-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+        <!-- Special Instructions Section (always visible) -->
+        <div class="rounded-[2rem] border-2 p-8 {{ $order->notes ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-100' }}">
+            <h3 class="text-sm font-black uppercase tracking-widest mb-4 flex items-center gap-2 {{ $order->notes ? 'text-amber-800' : 'text-slate-400' }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
-                Customer Special Request
+                Customer Special Instructions
             </h3>
-            <p class="text-slate-700 font-medium leading-relaxed">{{ $order->notes }}</p>
+            @if($order->notes)
+                <div class="bg-white rounded-xl p-4 border border-amber-100">
+                    <p class="text-slate-700 font-medium leading-relaxed whitespace-pre-wrap">{{ $order->notes }}</p>
+                </div>
+            @else
+                <p class="text-slate-400 italic text-sm">No special instructions provided.</p>
+            @endif
         </div>
-        @endif
     </div>
 
     <!-- Sidebar Controls -->

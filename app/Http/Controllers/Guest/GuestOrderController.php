@@ -14,7 +14,7 @@ class GuestOrderController extends Controller
     public function place(Request $request)
     {
         $request->validate([
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:500',
             'payment_method' => 'nullable|string|in:safepay,bitcoin',
             'payment_status' => 'nullable|string|in:pending,paid',
             'transaction_id' => 'nullable|string',
@@ -69,12 +69,16 @@ class GuestOrderController extends Controller
             $maxPrepTime = max($prepTimes);
         }
 
+        // Build notes: read from request first, fallback to session
+        $specialInstruction = trim(strip_tags($request->input('notes', '') ?: session('order_notes', '')));
+
         $orderNotes = '';
-        if ($request->address) {
-            $orderNotes .= "Address: " . $request->address . "\n";
+        $address = $request->address ? trim(preg_replace('/^[\s,]+|[\s,]+$/', '', $request->address)) : '';
+        if ($address && $address !== ',') {
+            $orderNotes .= "Address: " . strip_tags($address) . "\n";
         }
-        if ($request->notes) {
-            $orderNotes .= "Notes: " . $request->notes;
+        if ($specialInstruction) {
+            $orderNotes .= $specialInstruction;
         }
 
         $order = Order::create([
@@ -118,6 +122,7 @@ class GuestOrderController extends Controller
 
         session()->forget('cart');
         session()->forget('discount');
+        session()->forget('order_notes');
         session(['active_order_number' => $orderNumber]);
 
         // Update table status to occupied

@@ -28,7 +28,24 @@
                     <i class="fas fa-credit-card"></i> Card / Gateway Info
                 </div>
                 <div class="cc-number" x-text="formattedCardNumber()" placeholder="0123 4567 8901 2345"></div>
-                <div class="cc-name" x-text="Name" placeholder="Muhammad Anees "></div>
+                <div class="cc-name" x-text="ccName || 'CARDHOLDER NAME'"></div>
+            </div>
+        </div>
+
+        <!-- Special Instructions (Moved here - before payment) -->
+        <div class="sec-label">
+            <i class="fas fa-clipboard-list" style="color:#e8890c;margin-right:6px;"></i>
+            Special Instructions
+        </div>
+        <div class="special-notes-card">
+            <textarea x-model="notes" placeholder="Any special cooking instructions?&#10;e.g. Less spicy, No onion, Extra sauce, No ice, Urgent order"
+                maxlength="500"
+                class="w-full bg-[#1c1c1c] text-white border border-[#383838] rounded-xl p-3 text-xs outline-none focus:border-[#e8890c] transition-colors" rows="3"></textarea>
+            <div class="notes-footer">
+                <span class="notes-hint">
+                    <i class="fas fa-info-circle"></i> Visible to kitchen staff
+                </span>
+                <span class="notes-counter" x-text="(500 - notes.length) + ' chars left'"></span>
             </div>
         </div>
 
@@ -36,10 +53,10 @@
         <div class="sec-label">Delivery Table & Address</div>
         <div class="addr-card">
             <div>
-                <div class="addr-name">Table {{ $table->table_number }} • <span x-text="addressName" placeholder="Muhammad Anees"></span></div>
+                <div class="addr-name">Table {{ $table->table_number }} • <span x-text="addressName || 'Your Name'"></span></div>
                 <div class="addr-text">
-                    <span x-text="addressStreet" placeholder="Ahmed Pur East"></span><br />
-                    <span x-text="addressCity" placeholder="Any City, ST 12345"></span>
+                    <span x-text="addressStreet || 'Street Address'"></span><br />
+                    <span x-text="addressCity || 'City, State ZIP'"></span>
                 </div>
             </div>
             <button class="btn-change" @click="openAddressModal()">
@@ -97,13 +114,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Special instructions block -->
-        <!-- <div class="sec-label">Order Notes</div>
-        <div style="padding: 0 18px;">
-            <textarea x-model="notes" placeholder="Any special cooking instructions (e.g. less spicy)?"
-                class="w-full bg-[#262626] text-white border border-[#383838] rounded-xl p-3 text-xs outline-none focus:border-[#e8890c]" rows="2"></textarea>
-        </div> -->
 
         <div class="spacer"></div>
 
@@ -551,6 +561,47 @@
             font-size: 12px;
             line-height: 1.55;
         }
+        /* Special Instruction card */
+        .special-notes-card {
+            margin: 0 18px;
+            background: #262626;
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1px solid #333;
+        }
+        .special-notes-card textarea {
+            resize: none;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+        }
+        .special-notes-card textarea:focus {
+            border-color: #e8890c;
+            box-shadow: 0 0 0 2px rgba(232,137,12,0.15);
+        }
+        .notes-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .notes-hint {
+            color: #666;
+            font-size: 10px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .notes-hint i {
+            font-size: 10px;
+            color: #e8890c;
+        }
+        .notes-counter {
+            color: #555;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
         .btn-change {
             background: none;
             border: none;
@@ -1179,7 +1230,7 @@
     <script>
         function paymentPage() {
             return {
-                notes: '',
+                notes: @js(session('order_notes', '')),
                 paymentMethod: 'safepay',
                 isModalOpen: false,
                 gatewayOpen: false,
@@ -1187,19 +1238,19 @@
                 gatewayMessage: '',
                 isCalling: false,
                 
-                addressName: 'Muhammad Anees ',
-                addressStreet: 'Ahmed Pur East',
-                addressCity: 'Any City, ST 12345',
+                addressName: '',
+                addressStreet: '',
+                addressCity: '',
                 
                 tempName: '',
                 tempStreet: '',
                 tempCity: '',
                 
                 // Credit card inputs
-                ccName: 'Muhammad Anees ',
-                ccNumber: '4000 1234 5678 9010',
-                ccExpiry: '12/28',
-                ccCvv: '123',
+                ccName: '',
+                ccNumber: '',
+                ccExpiry: '',
+                ccCvv: '',
                 
                 // Bitcoin Inputs
                 btcAmount: 0.0001, // will calculate dynamically based on totalAmount

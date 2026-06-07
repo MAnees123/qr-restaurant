@@ -54,19 +54,32 @@
                             <span class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-800 text-sm flex-shrink-0" x-text="item.quantity + 'x'"></span>
                             <div class="flex-1">
                                 <p class="font-bold text-slate-800 text-md leading-tight" x-text="item.menu_item ? item.menu_item.name : 'Deleted Item'"></p>
-                                <template x-if="item.special_instructions">
+                    <template x-if="item.special_instructions">
                                     <p class="text-xs text-red-500 mt-1 font-bold italic bg-red-50 p-1 px-2 rounded-lg inline-block" x-text="'NOTE: ' + item.special_instructions"></p>
                                 </template>
                             </div>
                         </div>
                     </template>
                     
-                    <template x-if="order.notes">
-                        <div class="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-100 text-sm text-slate-600">
-                            <span class="font-black block text-[10px] uppercase text-slate-400 mb-1 tracking-widest">Customer Request:</span>
-                            <span class="font-medium" x-text="order.notes"></span>
+                    <!-- Order-level Special Instructions (always visible) -->
+                    <div class="mt-4 rounded-xl border overflow-hidden"
+                         :class="order.notes ? 'border-amber-300 bg-amber-50' : 'border-slate-100 bg-slate-50'">
+                        <div class="px-3 py-2 flex items-center gap-2"
+                             :class="order.notes ? 'bg-amber-100/60' : 'bg-slate-100/60'">
+                            <svg class="w-4 h-4 flex-shrink-0" :class="order.notes ? 'text-amber-600' : 'text-slate-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                            <span class="font-black text-[10px] uppercase tracking-widest"
+                                  :class="order.notes ? 'text-amber-700' : 'text-slate-400'">Special Instructions</span>
                         </div>
-                    </template>
+                        <div class="px-3 py-2">
+                            <template x-if="order.notes">
+                                <p class="text-sm font-semibold whitespace-pre-wrap"
+                                   :class="order.notes ? 'text-amber-900' : ''" x-text="order.notes"></p>
+                            </template>
+                            <template x-if="!order.notes">
+                                <p class="text-xs text-slate-400 italic">No special notes</p>
+                            </template>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Action Footer -->

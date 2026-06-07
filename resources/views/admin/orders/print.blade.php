@@ -198,6 +198,14 @@
             <strong>Rs {{ number_format($order->total_amount, 2) }}</strong>
         </div>
 
+        @if($order->notes)
+        <hr />
+        <div style="border: 1px dashed #000; padding: 6px; margin: 6px 0; border-radius: 4px;">
+            <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; margin: 0 0 4px 0;">⚠ Special Instructions:</p>
+            <p style="font-size: 11px; margin: 0; white-space: pre-wrap;">{{ $order->notes }}</p>
+        </div>
+        @endif
+
         <hr />
         <p class="small2">
             Thank you for your visit. <br />

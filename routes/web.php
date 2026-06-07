@@ -32,6 +32,10 @@ Route::middleware(['guest.tracker'])->group(function() {
     Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
     Route::post('/cart/apply-discount', [CartController::class, 'applyDiscount'])->name('cart.discount.apply');
     Route::post('/cart/remove-discount', [CartController::class, 'removeDiscount'])->name('cart.discount.remove');
+    Route::post('/cart/save-notes', function (\Illuminate\Http\Request $request) {
+        session()->put('order_notes', $request->input('notes', ''));
+        return response()->json(['ok' => true]);
+    })->name('cart.save-notes');
 
     // Order Route (Public)
     Route::get('/menu/{code}/payment', [GuestOrderController::class, 'paymentForm'])->name('payment.show');

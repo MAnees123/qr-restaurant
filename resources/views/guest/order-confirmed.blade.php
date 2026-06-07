@@ -57,6 +57,15 @@
                     </div>
                 @endforeach
             </div>
+
+            @if($order->notes)
+            <div class="bg-amber-50 rounded-xl p-3 mb-4 border border-amber-100">
+                <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">
+                    <i class="fas fa-clipboard-list mr-1"></i> Special Instructions
+                </p>
+                <p class="text-xs text-amber-800 font-medium whitespace-pre-wrap">{{ $order->notes }}</p>
+            </div>
+            @endif
             
             <div class="flex justify-between items-center border-t border-stone-100 pt-4">
                 <span class="font-bold text-slate-800">Total</span>

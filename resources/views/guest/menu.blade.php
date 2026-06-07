@@ -373,7 +373,7 @@
                         <label class="text-xs text-[#ccc] text-white font-semibold mb-1.5 block">Special
                             instructions</label>
                         <textarea x-model="notes" placeholder="Any special cooking instructions (e.g. less spicy)?"
-                            class="w-full bg-[#252525] text-black border border-[#3a3a3a] rounded-xl p-3 text-xs outline-none" rows="2"></textarea>
+                            class="w-full bg-[#252525] text-white border border-[#3a3a3a] rounded-xl p-3 text-xs outline-none focus:border-[#e8890c]" rows="2"></textarea>
                     </div>
                 </template>
             </div>
@@ -420,8 +420,11 @@
                     </div>
 
                     <!-- Place Order Button -->
-                    <button class="checkout-btn mt-3" style="background:#c0441a;" @click="window.location.href = '{{ route('payment.show', $code) }}'"
-                        x-text="'Proceed to Payment'">
+                    <button class="checkout-btn mt-3" style="background:#c0441a;" @click="
+                        axios.post('{{ route('cart.save-notes') }}', { notes: notes }).then(() => {
+                            window.location.href = '{{ route('payment.show', $code) }}';
+                        });
+                    " x-text="'Proceed to Payment'">
                     </button>
                 </div>
             </template>
