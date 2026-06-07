@@ -28,6 +28,31 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Badge Text</label>
+                    <input type="text" name="badge_text" value="{{ old('badge_text', 'FEATURED') }}" placeholder="e.g., FEATURED, HOT DEAL"
+                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Original Price (Rs)</label>
+                        <input type="number" step="0.01" name="original_price" value="{{ old('original_price') }}" placeholder="e.g., 200"
+                            class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Discounted Price (Rs)</label>
+                        <input type="number" step="0.01" name="discounted_price" value="{{ old('discounted_price') }}" placeholder="e.g., 150"
+                            class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Preparation Time (e.g., 15 Minutes)</label>
+                    <input type="text" name="prep_time" value="{{ old('prep_time') }}" placeholder="e.g., 15 Minutes"
+                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition">
+                </div>
+
+                <div>
                     <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Banner Image <span class="text-red-500">*</span></label>
                     <input type="file" name="image" required accept="image/*"
                         class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">

@@ -17,6 +17,10 @@ class Banner extends Model
         'redirect_url',
         'is_active',
         'sort_order',
+        'badge_text',
+        'original_price',
+        'discounted_price',
+        'prep_time',
     ];
 
     public function restaurant()

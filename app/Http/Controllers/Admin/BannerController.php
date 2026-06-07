@@ -33,7 +33,11 @@ class BannerController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'redirect_url' => 'nullable|url|max:255',
             'is_active' => 'boolean',
-            'sort_order' => 'integer'
+            'sort_order' => 'integer',
+            'badge_text' => 'nullable|string|max:50',
+            'original_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
+            'prep_time' => 'nullable|string|max:50',
         ]);
 
         $imagePath = $request->file('image')->store('banners', 'public');
@@ -46,6 +50,10 @@ class BannerController extends Controller
             'redirect_url' => $request->redirect_url,
             'is_active' => $request->has('is_active'),
             'sort_order' => $request->sort_order ?? 0,
+            'badge_text' => $request->badge_text ?? 'FEATURED',
+            'original_price' => $request->original_price,
+            'discounted_price' => $request->discounted_price,
+            'prep_time' => $request->prep_time,
         ]);
 
         return redirect()->route('admin.banners.index')->with('success', 'Banner created successfully.');
@@ -72,7 +80,11 @@ class BannerController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'redirect_url' => 'nullable|url|max:255',
             'is_active' => 'boolean',
-            'sort_order' => 'integer'
+            'sort_order' => 'integer',
+            'badge_text' => 'nullable|string|max:50',
+            'original_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
+            'prep_time' => 'nullable|string|max:50',
         ]);
 
         if ($request->hasFile('image')) {
@@ -87,6 +99,10 @@ class BannerController extends Controller
         $banner->redirect_url = $request->redirect_url;
         $banner->is_active = $request->has('is_active');
         $banner->sort_order = $request->sort_order ?? 0;
+        $banner->badge_text = $request->badge_text ?? 'FEATURED';
+        $banner->original_price = $request->original_price;
+        $banner->discounted_price = $request->discounted_price;
+        $banner->prep_time = $request->prep_time;
         $banner->save();
 
         return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully.');

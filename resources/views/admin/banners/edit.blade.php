@@ -29,6 +29,31 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Badge Text</label>
+                    <input type="text" name="badge_text" value="{{ old('badge_text', $banner->badge_text) }}" placeholder="e.g., FEATURED"
+                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Original Price (Rs)</label>
+                        <input type="number" step="0.01" name="original_price" value="{{ old('original_price', $banner->original_price) }}" placeholder="e.g., 200"
+                            class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Discounted Price (Rs)</label>
+                        <input type="number" step="0.01" name="discounted_price" value="{{ old('discounted_price', $banner->discounted_price) }}" placeholder="e.g., 150"
+                            class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Preparation Time (e.g., 15 Minutes)</label>
+                    <input type="text" name="prep_time" value="{{ old('prep_time', $banner->prep_time) }}" placeholder="e.g., 15 Minutes"
+                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-0 transition">
+                </div>
+
+                <div>
                     <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Current Image</label>
                     <img src="{{ asset('storage/' . $banner->image_path) }}" alt="Current Banner" class="h-32 object-cover rounded-xl border border-slate-200 mb-4">
                     

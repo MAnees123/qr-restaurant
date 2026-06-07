@@ -96,29 +96,55 @@
         <div x-show="activeTab === 'restaurant'" class="flex-1 pb-20">
             <!-- Banners/Ads Slider -->
             @if(isset($banners) && $banners->count() > 0)
-                <div class="px-4 mb-4" x-data="bannerSlider({{ $banners->count() }})">
-                    <div class="relative w-full rounded-2xl overflow-hidden shadow-lg h-40 bg-[#2a2a2a]"
-                         @mouseenter="pause()" @mouseleave="resume()">
+                <div class="mb-2" x-data="bannerSlider({{ $banners->count() }})" @mouseenter="pause()" @mouseleave="resume()">
+                    <div class="relative w-full overflow-hidden">
                         
                         <!-- Slider Track -->
-                        <div class="flex transition-transform duration-500 ease-in-out h-full w-full"
+                        <div class="flex transition-transform duration-500 ease-in-out w-full"
                              :style="`transform: translateX(-${currentIndex * 100}%)`"
                              @touchstart="touchStart($event)"
                              @touchmove="touchMove($event)"
                              @touchend="touchEnd()">
                             
                             @foreach($banners as $index => $banner)
-                                <div class="w-full flex-shrink-0 h-full relative cursor-pointer" 
-                                     @if($banner->redirect_url) @click="window.location.href='{{ $banner->redirect_url }}'" @endif>
-                                    <img src="{{ asset('storage/' . $banner->image_path) }}" class="w-full h-full object-cover" alt="Banner">
-                                    
-                                    <!-- Overlay for Text -->
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 pointer-events-none">
-                                        @if($banner->title)
-                                            <h3 class="text-white font-black text-lg leading-tight">{{ $banner->title }}</h3>
-                                        @endif
-                                        @if($banner->subtitle)
-                                            <p class="text-slate-300 text-xs font-bold mt-1">{{ $banner->subtitle }}</p>
+                                <div class="w-full flex-shrink-0 relative">
+                                    <div class="hero-banner" @if($banner->redirect_url) @click="window.location.href='{{ $banner->redirect_url }}'" style="cursor: pointer;" @endif>
+                                        <div>
+                                            <div class="hero-badge">{{ $banner->badge_text ?? 'FEATURED' }}</div>
+                                            <div class="hero-title">{{ $banner->title ?? 'Hot Deal' }}</div>
+                                            
+                                            <div class="hero-meta">
+                                                @if($banner->prep_time)
+                                                <div class="hero-meta-item">
+                                                    <i class="fas fa-clock"></i>
+                                                    <span>{{ $banner->prep_time }}</span>
+                                                </div>
+                                                @endif
+                                                
+                                                <div class="hero-meta-item mt-1">
+                                                    <i class="fas fa-utensils"></i>
+                                                    <span style="display:flex; align-items:center; gap:6px;">
+                                                        @if($banner->original_price && $banner->discounted_price)
+                                                            <span style="text-decoration: line-through; color: #888; font-size: 10px;">Rs {{ number_format($banner->original_price) }}</span>
+                                                            <span style="color: #4ade80; font-size: 14px; font-weight: 700;">Rs {{ number_format($banner->discounted_price) }}</span>
+                                                        @elseif($banner->discounted_price)
+                                                            <span style="color: #4ade80; font-size: 14px; font-weight: 700;">Rs {{ number_format($banner->discounted_price) }}</span>
+                                                        @elseif($banner->original_price)
+                                                            <span>Rs {{ number_format($banner->original_price) }}</span>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                                
+                                                @if($banner->subtitle)
+                                                <div class="hero-meta-item mt-1" style="margin-top: 4px;">
+                                                    <i class="fas fa-info-circle"></i>
+                                                    <span>{{ $banner->subtitle }}</span>
+                                                </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @if ($banner->image_path)
+                                            <img src="{{ asset('storage/' . $banner->image_path) }}" class="hero-img" alt="Ad">
                                         @endif
                                     </div>
                                 </div>
@@ -127,7 +153,7 @@
 
                         <!-- Dots Indicator -->
                         @if($banners->count() > 1)
-                            <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
+                            <div class="absolute bottom-6 left-0 right-0 flex justify-center gap-1.5 z-10" style="margin-bottom: -10px;">
                                 <template x-for="i in {{ $banners->count() }}" :key="i">
                                     <div class="h-1.5 rounded-full transition-all duration-300 cursor-pointer"
                                          :class="(i - 1) === currentIndex ? 'w-4 bg-[#e8890c]' : 'w-1.5 bg-white/50'"
@@ -139,7 +165,8 @@
                 </div>
             @endif
 
-            <!-- Hero Banner (Featured Item) -->
+            <!-- Hero Banner (Featured Item) [COMMENTED OUT AS PER REQUEST] -->
+            {{--
             @if ($featured)
                 <div class="hero-banner"
                     @click="searchQuery = '{{ addslashes($featured->name) }}'; window.scrollTo({top: 280, behavior: 'smooth'})"
@@ -165,6 +192,7 @@
                     @endif
                 </div>
             @endif
+            --}}
 
             <!-- Category Section -->
             <div class="section-header">
