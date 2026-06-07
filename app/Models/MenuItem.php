@@ -15,6 +15,7 @@ class MenuItem extends Model
         'name',
         'description',
         'price',
+        'original_price',
         'image',
         'is_available',
         'sort_order',

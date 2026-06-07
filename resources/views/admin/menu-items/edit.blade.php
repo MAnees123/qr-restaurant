@@ -13,7 +13,7 @@
             <input type="text" name="name" value="{{ old('name', $menuItem->name) }}" class="w-full rounded-lg border-gray-300" required>
         </div>
         
-        <div class="grid grid-cols-2 gap-6">
+        <div class="grid grid-cols-3 gap-6">
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
                 <select name="menu_category_id" class="w-full rounded-lg border-gray-300" required>
@@ -23,7 +23,11 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Price (Rs)</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Real Price (Rs) - Cut</label>
+                <input type="number" step="0.01" name="original_price" value="{{ old('original_price', $menuItem->original_price) }}" class="w-full rounded-lg border-gray-300">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Discount Price (Rs)</label>
                 <input type="number" step="0.01" name="price" value="{{ old('price', $menuItem->price) }}" class="w-full rounded-lg border-gray-300" required>
             </div>
         </div>

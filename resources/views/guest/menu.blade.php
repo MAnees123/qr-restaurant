@@ -248,11 +248,19 @@
                         <div class="food-card-body">
                             <div>
                                 <div class="food-card-name" x-text="item.name"></div>
-                                <div class="food-card-rating">
-                                    <i class="fas fa-star"></i>
-                                    <span>4.9</span>
-                                    <span class="food-card-price"
-                                        x-text="'Rs ' + parseFloat(item.price).toLocaleString()"></span>
+                                <div class="food-card-rating" style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-top:4px;">
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <i class="fas fa-star" style="color:#e8890c; font-size:10px;"></i>
+                                        <span style="font-size:11px; color:#888;">4.9</span>
+                                    </div>
+                                    <div style="display:flex; flex-direction:column; align-items:flex-end; line-height:1.2;">
+                                        <template x-if="item.original_price && parseFloat(item.original_price) > parseFloat(item.price)">
+                                            <span style="text-decoration: line-through; color: #888; font-size: 10px;"
+                                                x-text="'Rs ' + parseFloat(item.original_price).toLocaleString()"></span>
+                                        </template>
+                                        <span class="food-card-price" :style="item.original_price && parseFloat(item.original_price) > parseFloat(item.price) ? 'color: #4ade80; font-size: 14px; font-weight: 900;' : ''"
+                                            x-text="'Rs ' + parseFloat(item.price).toLocaleString()"></span>
+                                    </div>
                                 </div>
                             </div>
                             <div>
