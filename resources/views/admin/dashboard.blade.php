@@ -287,14 +287,17 @@
                         </div>
                         <div class="flex justify-between items-center text-sm font-bold">
                             <span class="text-slate-400">Payment</span>
-                            <span
-                                class="px-3 py-1 text-[10px] font-black uppercase rounded-lg tracking-widest shadow-sm border"
-                                :class="{
-                                    'bg-emerald-100 text-emerald-700 border-emerald-200': order
-                                        .payment_status === 'paid',
-                                    'bg-red-50 text-red-600 border-red-100': order.payment_status === 'pending'
-                                }"
-                                x-text="order.payment_status"></span>
+                            <div class="flex gap-2">
+                                <span class="px-2 py-1 text-[10px] font-black uppercase rounded-lg tracking-widest bg-slate-100 text-slate-600" x-text="order.payment_method || 'Cash'"></span>
+                                <span
+                                    class="px-3 py-1 text-[10px] font-black uppercase rounded-lg tracking-widest shadow-sm border"
+                                    :class="{
+                                        'bg-emerald-100 text-emerald-700 border-emerald-200': order
+                                            .payment_status === 'paid',
+                                        'bg-red-50 text-red-600 border-red-100': order.payment_status === 'pending'
+                                    }"
+                                    x-text="order.payment_status"></span>
+                            </div>
                         </div>
 
                         <!-- Special Instructions preview -->

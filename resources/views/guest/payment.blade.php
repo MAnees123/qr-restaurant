@@ -67,6 +67,20 @@
         <!-- Payment Method: ONLY SafePay + Bitcoin -->
         <div class="sec-label">Payment Method</div>
         <div class="pay-list">
+            <!-- Cash Payment -->
+            <div class="pay-opt" :class="paymentMethod === 'cash' ? 'active' : ''" @click="paymentMethod = 'cash'">
+                <div class="pay-icon" style="background:#142319;">
+                    <i class="fas fa-money-bill-wave" style="color:#4ade80; font-size:18px;"></i>
+                </div>
+                <div class="pay-info">
+                    <div class="pay-name">Cash Payment</div>
+                    <div class="pay-sub">Pay via cash or POS at your table</div>
+                </div>
+                <div class="pay-radio">
+                    <div class="pay-radio-dot"></div>
+                </div>
+            </div>
+
             <!-- 1️⃣ Safe Pay (active by default, only secure payment) -->
             <div class="pay-opt" :class="paymentMethod === 'safepay' ? 'active' : ''" @click="paymentMethod = 'safepay'">
                 <div class="pay-icon">
@@ -1231,7 +1245,7 @@
         function paymentPage() {
             return {
                 notes: @js(session('order_notes', '')),
-                paymentMethod: 'safepay',
+                paymentMethod: 'cash',
                 isModalOpen: false,
                 gatewayOpen: false,
                 gatewayState: 'idle', // idle, connecting, processing, authorizing, success, failed
@@ -1339,6 +1353,11 @@
                 },
                 
                 processPaymentGateways() {
+                    if (this.paymentMethod === 'cash') {
+                        this.submitOrderToBackend('cash', null);
+                        return;
+                    }
+
                     this.gatewayOpen = true;
                     if (this.paymentMethod === 'safepay') {
                         this.gatewayState = 'idle';
@@ -1399,16 +1418,21 @@
                 
                 submitOrderToBackend(method, txId) {
                     const addressStr = `${this.addressName}, ${this.addressStreet}, ${this.addressCity}`;
+                    const pStatus = (method === 'cash') ? 'pending' : 'paid';
                     
                     axios.post('{{ route('order.place') }}', {
                         notes: this.notes,
                         payment_method: method,
-                        payment_status: 'paid',
+                        payment_status: pStatus,
                         transaction_id: txId,
                         address: addressStr
                     })
                     .then(response => {
-                        this.showToast('🎉 Order placed and paid successfully!');
+                        if (method === 'cash') {
+                            this.showToast('🎉 Order placed successfully!');
+                        } else {
+                            this.showToast('🎉 Order placed and paid successfully!');
+                        }
                         setTimeout(() => {
                             if (response.data.redirect) {
                                 window.location.href = response.data.redirect;

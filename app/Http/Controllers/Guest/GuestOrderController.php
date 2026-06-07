@@ -15,7 +15,7 @@ class GuestOrderController extends Controller
     {
         $request->validate([
             'notes' => 'nullable|string|max:500',
-            'payment_method' => 'nullable|string|in:safepay,bitcoin',
+            'payment_method' => 'nullable|string|in:cash,safepay,bitcoin',
             'payment_status' => 'nullable|string|in:pending,paid',
             'transaction_id' => 'nullable|string',
             'address' => 'nullable|string',
