@@ -108,7 +108,7 @@
     </div>
 
     <!-- Order Status Notifications -->
-    <div class="mb-8 z-40 relative" x-data="orderStatusNotifications()" x-init="initPolling()">
+    <div class="fixed top-20 right-8 w-96 z-50 max-w-[calc(100vw-4rem)]" x-data="orderStatusNotifications()" x-init="initPolling()">
         <template x-if="notifications.length > 0">
             <div
                 class="bg-slate-900 text-white rounded-[2rem] p-6 shadow-lg animate-pulse hover:animate-none transition-all">
@@ -152,7 +152,7 @@
     </div>
 
     <!-- Waiter Notifications (Bell System) -->
-    <div class="mb-8 z-40 relative" x-data="waiterCalls()" x-init="initPolling()">
+    <div class="fixed bottom-8 right-8 w-96 z-50 max-w-[calc(100vw-4rem)]" x-data="waiterCalls()" x-init="initPolling()">
         <template x-if="calls.length > 0">
             <div
                 class="bg-amber-50 border-2 border-amber-200 rounded-[2rem] p-6 shadow-lg animate-pulse hover:animate-none transition-all">
@@ -561,6 +561,10 @@
             return {
                 calls: [],
                 pollingInterval: null,
+                playSound() {
+                    const audio = new Audio('/audio/notification.mp3');
+                    audio.play().catch(e => console.log(e));
+                },
                 initPolling() {
                     this.fetchCalls();
                     this.pollingInterval = setInterval(() => this.fetchCalls(), 5000);
@@ -568,6 +572,11 @@
                 fetchCalls() {
                     axios.get('{{ route('admin.table-calls.index') }}')
                         .then(response => {
+                            if (response.data.length > this.calls.length && this.calls.length !== 0) {
+                                this.playSound(); // Play sound if there's a new call
+                            } else if (response.data.length > 0 && this.calls.length === 0) {
+                                this.playSound(); // Play sound for initial load if there are calls
+                            }
                             this.calls = response.data;
                         })
                         .catch(error => console.error('Error fetching table calls:', error));
@@ -588,6 +597,10 @@
                 pollingInterval: null,
                 lastCheckedAt: new Date().toISOString(),
                 previousStates: {},
+                playSound() {
+                    const audio = new Audio('/audio/notification.mp3');
+                    audio.play().catch(e => console.log(e));
+                },
                 initPolling() {
                     this.fetchNotifications();
                     this.pollingInterval = setInterval(() => this.fetchNotifications(), 5000);
@@ -613,6 +626,7 @@
                                         note.updated_at === order.updated_at);
                                     if (!isDuplicate) {
                                         this.notifications.unshift(order);
+                                        this.playSound();
                                         console.log('Added notification:', order);
                                     }
                                 }

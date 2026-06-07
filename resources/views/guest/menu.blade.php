@@ -41,7 +41,7 @@
         }
     @endphp
 
-    <div class="phone-shell max-w-md mx-auto min-h-screen bg-[#1c1c1c] text-[#ccc] relative" x-data="customerSPA()"
+    <div class="phone-shell max-w-md mx-auto min-h-screen relative" :class="darkMode ? '' : 'light-theme'" x-data="customerSPA()"
         x-init="init()">
 
         <!-- Waiter Status Banner (Dismissible) -->
@@ -81,9 +81,14 @@
 
         <!-- Search Section -->
         <div class="search-wrap px-6 pb-4" x-show="activeTab === 'restaurant'">
-            <div class="search-box">
-                <input type="text" placeholder="Search menu..." x-model="searchQuery" />
-                <i class="fas fa-search"></i>
+            <div class="search-row">
+                <div class="search-box">
+                    <input type="text" placeholder="Search menu..." x-model="searchQuery" />
+                    <i class="fas fa-search"></i>
+                </div>
+                <button class="theme-toggle-btn" :class="!darkMode ? 'active' : ''" @click="toggleTheme()" :title="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+                    <i class="fas" :class="darkMode ? 'fa-sun' : 'fa-moon'"></i>
+                </button>
             </div>
         </div>
 
@@ -480,6 +485,12 @@
             background: #1c1c1c;
         }
 
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .search-box {
             background: #2a2a2a;
             border-radius: 12px;
@@ -488,6 +499,44 @@
             padding: 10px 14px;
             gap: 8px;
             border: 1px solid #333;
+            flex: 1;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background: #2a2a2a;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: #e8890c;
+            color: #e8890c;
+        }
+
+        .theme-toggle-btn.active {
+            background: #e8890c;
+            border-color: #e8890c;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(232, 137, 12, 0.4);
+        }
+
+        .theme-toggle-btn i {
+            transition: transform 0.4s ease;
+        }
+
+        .theme-toggle-btn:active i {
+            transform: rotate(180deg);
         }
 
         .search-box input {
@@ -1077,7 +1126,251 @@
             margin: 22px 0 10px;
             letter-spacing: 0.2px;
         }
+
+        /* ===== LIGHT THEME ===== */
+        .phone-shell {
+            background: #1c1c1c;
+            color: #ccc;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        .light-theme.phone-shell {
+            background: #f5f5f5 !important;
+            color: #333 !important;
+        }
+
+        .light-theme .app-header {
+            background: #f5f5f5 !important;
+        }
+
+        .light-theme .greeting-name {
+            color: #1a1a1a;
+        }
+
+        .light-theme .greeting-sub {
+            color: #666;
+        }
+
+        .light-theme .search-wrap {
+            background: #f5f5f5;
+        }
+
+        .light-theme .search-box {
+            background: #fff;
+            border-color: #ddd;
+        }
+
+        .light-theme .search-box input {
+            color: #333;
+        }
+
+        .light-theme .search-box input::placeholder {
+            color: #999;
+        }
+
+        .light-theme .search-box i {
+            color: #999;
+        }
+
+        .light-theme .theme-toggle-btn {
+            background: #fff;
+            border-color: #ddd;
+            color: #666;
+        }
+
+        .light-theme .theme-toggle-btn:hover {
+            border-color: #e8890c;
+            color: #e8890c;
+        }
+
+        .light-theme .hero-banner {
+            background: linear-gradient(135deg, #fff 0%, #f0ebe4 100%);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .light-theme .hero-banner::before {
+            background: linear-gradient(135deg, rgba(232, 137, 12, 0.06) 0%, transparent 60%);
+        }
+
+        .light-theme .hero-title {
+            color: #1a1a1a;
+        }
+
+        .light-theme .hero-meta-item {
+            color: #555;
+        }
+
+        .light-theme .hero-img-placeholder {
+            background: linear-gradient(135deg, #f0e6d6, #e8dcc8);
+        }
+
+        .light-theme .section-title {
+            color: #1a1a1a;
+        }
+
+        .light-theme .cat-btn:not(.active) {
+            background: #fff;
+            color: #555;
+            border: 1px solid #e0e0e0;
+        }
+
+        .light-theme .best-seller-title {
+            color: #1a1a1a;
+        }
+
+        .light-theme .food-card {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .light-theme .food-card-img-wrap {
+            background: #f0f0f0;
+        }
+
+        .light-theme .food-card-name {
+            color: #1a1a1a;
+        }
+
+        .light-theme .food-card-rating span {
+            color: #555;
+        }
+
+        .light-theme .food-card-price {
+            color: #1a1a1a;
+        }
+
+        .light-theme .food-card-meta {
+            color: #888;
+        }
+
+        .light-theme .bottom-nav {
+            background: #fff;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .light-theme .nav-item i {
+            color: #555;
+        }
+
+        .light-theme .nav-item.active i {
+            color: #e8890c;
+        }
+
+        /* Light theme - Cart */
+        .light-theme .my-order-title {
+            color: #1a1a1a;
+        }
+
+        .light-theme .cart-item-card {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .light-theme .cart-item-img {
+            background: #f0f0f0;
+        }
+
+        .light-theme .cart-item-name {
+            color: #1a1a1a;
+        }
+
+        .light-theme .cart-item-price {
+            color: #555;
+        }
+
+        .light-theme .qty-num {
+            color: #1a1a1a;
+        }
+
+        .light-theme .promo-wrap {
+            background: #fff !important;
+            border-color: #ddd !important;
+        }
+
+        .light-theme .promo-input {
+            color: #333;
+        }
+
+        .light-theme .promo-input::placeholder {
+            color: #999;
+        }
+
+        .light-theme .summary-label {
+            color: #1a1a1a;
+        }
+
+        .light-theme .summary-value {
+            color: #1a1a1a;
+        }
+
+        .light-theme .summary-divider {
+            border-top-color: #e0e0e0;
+        }
+
+        /* Light theme - Order Status */
+        .light-theme .section-label {
+            color: #555;
+        }
+
+        /* Light theme - various background overrides */
+        .light-theme [class*="bg-[#1c1c1c]"] {
+            background: #f5f5f5 !important;
+        }
+
+        .light-theme [class*="bg-[#252525]"] {
+            background: #fff !important;
+        }
+
+        .light-theme [class*="border-[#2a2a2a]"],
+        .light-theme [class*="border-[#3a3a3a]"] {
+            border-color: #e0e0e0 !important;
+        }
+
+        .light-theme [class*="text-[#ccc]"] {
+            color: #555 !important;
+        }
+
+        .light-theme [class*="text-[#888]"] {
+            color: #888 !important;
+        }
+
+        .light-theme .text-white,
+        .light-theme [class*="text-white"] {
+            color: #1a1a1a !important;
+        }
+
+        /* Keep accent-colored text white */
+        .light-theme .cat-btn.active,
+        .light-theme .checkout-btn,
+        .light-theme .promo-apply-btn,
+        .light-theme .hero-badge,
+        .light-theme .cart-badge,
+        .light-theme .credit-card .text-white,
+        .light-theme .credit-card [class*="text-white"],
+        .light-theme .toast-msg,
+        .light-theme button[class*="bg-[#c0441a]"] {
+            color: #fff !important;
+        }
+
+        .light-theme textarea {
+            background: #f5f5f5 !important;
+            color: #333 !important;
+            border-color: #ddd !important;
+        }
+
+        .light-theme .back-btn {
+            color: #333 !important;
+        }
+
+        .light-theme .back-btn i {
+            color: #333 !important;
+        }
+
+        .light-theme .page-title {
+            color: #1a1a1a !important;
+        }
     </style>
+
 
 @endsection
 
@@ -1085,6 +1378,7 @@
     <script>
         function customerSPA() {
             return {
+                darkMode: true,
                 activeTab: 'restaurant',
                 activeCategory: 'all',
                 cart: {},
@@ -1139,6 +1433,10 @@
                 },
 
                 init() {
+                    // Load theme preference
+                    const savedTheme = localStorage.getItem('customer_theme');
+                    this.darkMode = savedTheme !== 'light';
+
                     this.cart = {!! json_encode(session('cart', [])) !!};
                     if (Array.isArray(this.cart) && this.cart.length === 0) {
                         this.cart = {};
@@ -1185,10 +1483,22 @@
                     window.addEventListener('hashchange', handleHash);
                 },
 
+                playSound() {
+                    const audio = new Audio('/audio/notification.mp3');
+                    audio.play().catch(e => console.log('Audio playback prevented by browser'));
+                },
+
                 showToast(msg) {
                     this.toastMessage = msg;
                     this.toastShow = true;
+                    this.playSound();
                     setTimeout(() => this.toastShow = false, 2500);
+                },
+
+                toggleTheme() {
+                    this.darkMode = !this.darkMode;
+                    localStorage.setItem('customer_theme', this.darkMode ? 'dark' : 'light');
+                    this.showToast(this.darkMode ? '🌙 Dark mode activated' : '☀️ Light mode activated');
                 },
 
                 toggleLike(id) {
@@ -1204,9 +1514,15 @@
                 pollCallStatus() {
                     axios.get('{{ route('table.call.status') }}')
                         .then(response => {
+                            const oldCallStatus = this.callStatus;
                             if (this.callStatus !== response.data.status) {
                                 this.callStatus = response.data.status;
                                 this.statusDismissed = false;
+
+                                // Notification for Waiter Call Acceptance
+                                if (oldCallStatus !== 'accepted' && this.callStatus === 'accepted') {
+                                    this.showToast('🏃 Waiter is coming to your table!');
+                                }
                             }
                         });
                 },
@@ -1341,9 +1657,32 @@
                 pollOrderStatus() {
                     if (!this.activeOrder) return;
                     axios.get('/order/status/' + this.activeOrder.order_number).then(response => {
+                        const oldStatus = this.activeOrder.status;
+                        const oldPaymentStatus = this.activeOrder.payment_status;
+
                         this.activeOrder.status = response.data.status;
                         this.activeOrder.estimated_completion_time = response.data.estimated_completion_time;
                         this.activeOrder.payment_status = response.data.payment_status;
+
+                        // Notification for Order Status Change
+                        if (oldStatus && oldStatus !== this.activeOrder.status) {
+                            const statusMessages = {
+                                'preparing': '🍳 Your order is now being prepared!',
+                                'ready': '🛎️ Your order is ready to serve!',
+                                'served': '✅ Your order has been served. Enjoy!',
+                                'cancelled': '❌ Your order was cancelled.'
+                            };
+                            if (statusMessages[this.activeOrder.status]) {
+                                this.showToast(statusMessages[this.activeOrder.status]);
+                            }
+                        }
+
+                        // Notification for Payment Status Change
+                        if (oldPaymentStatus && oldPaymentStatus !== this.activeOrder.payment_status) {
+                            if (this.activeOrder.payment_status === 'paid') {
+                                this.showToast('💵 Payment received successfully!');
+                            }
+                        }
                     });
                 },
 
