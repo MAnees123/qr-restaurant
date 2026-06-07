@@ -18,6 +18,7 @@ class Reservation extends Model
         'reservation_time',
         'guests',
         'status',
+        'event_type',
         'notes',
     ];
 

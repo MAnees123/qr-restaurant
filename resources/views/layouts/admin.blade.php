@@ -31,9 +31,9 @@
                 <a href="{{ route('kitchen.dashboard') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('kitchen.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Kitchen
                     Dashboard</a>
-                {{-- <a href="{{ route('admin.reservations.index') }}"
+                <a href="{{ route('admin.reservations.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.reservations.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Table
-                    Reservations</a> --}}
+                    Reservations</a>
                 <a href="{{ route('admin.orders.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.orders.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Orders</a>
                 <a href="{{ route('admin.discounts.index') }}"

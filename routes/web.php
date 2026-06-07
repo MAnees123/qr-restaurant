@@ -75,7 +75,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/orders/{order}/print', [OrderController::class, 'print'])->name('orders.print');
     Route::resource('orders', OrderController::class)->only(['index', 'show', 'update']);
     Route::post('/orders/{order}/payment', [OrderController::class, 'recordPayment'])->name('orders.payment');
-    Route::resource('reservations', ReservationController::class)->only(['index', 'update']);
+    Route::resource('reservations', ReservationController::class);
     Route::get('/table-calls', [\App\Http\Controllers\Admin\TableCallController::class, 'index'])->name('table-calls.index');
     Route::get('/order-notifications', [DashboardController::class, 'orderNotifications'])->name('order-notifications');
     Route::post('/table-calls/{call}/accept', [\App\Http\Controllers\Admin\TableCallController::class, 'accept'])->name('table-calls.accept');
