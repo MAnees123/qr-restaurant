@@ -94,6 +94,38 @@ class OrderController extends Controller
 
         if ($request->has('status')) {
             $order->update(['status' => $request->status]);
+
+            // Auto-release table management
+            if ($order->table) {
+                $newStatus = $request->status;
+
+                if (in_array($newStatus, ['ready', 'served'])) {
+                    // Start 30-minute countdown — but only if no other active orders on this table
+                    if (!$order->table->orders()
+                        ->where('id', '!=', $order->id)
+                        ->whereNotIn('status', ['ready', 'served', 'cancelled'])
+                        ->exists()) {
+                        $order->table->scheduleAutoRelease();
+                    }
+                } elseif (in_array($newStatus, ['pending', 'preparing'])) {
+                    // Order went back to active state — cancel any pending release and keep occupied
+                    $order->table->update([
+                        'status' => 'occupied',
+                        'auto_release_at' => null,
+                    ]);
+                } elseif ($newStatus === 'cancelled') {
+                    // If cancelling and no other active orders, free the table immediately
+                    if (!$order->table->orders()
+                        ->where('id', '!=', $order->id)
+                        ->whereNotIn('status', ['served', 'cancelled'])
+                        ->exists()) {
+                        $order->table->update([
+                            'status' => 'free',
+                            'auto_release_at' => null,
+                        ]);
+                    }
+                }
+            }
         }
 
         if ($request->has('payment_status')) {

@@ -55,6 +55,27 @@ class KitchenController extends Controller
 
         $order->update(['status' => $request->status]);
 
+        // Auto-release table management
+        if ($order->table) {
+            $newStatus = $request->status;
+
+            if (in_array($newStatus, ['ready', 'served'])) {
+                // Start 30-minute countdown — only if no other active orders on this table
+                if (!$order->table->orders()
+                    ->where('id', '!=', $order->id)
+                    ->whereNotIn('status', ['ready', 'served', 'cancelled'])
+                    ->exists()) {
+                    $order->table->scheduleAutoRelease();
+                }
+            } elseif ($newStatus === 'preparing') {
+                // Order went back to active state — cancel any pending release
+                $order->table->update([
+                    'status' => 'occupied',
+                    'auto_release_at' => null,
+                ]);
+            }
+        }
+
         return response()->json(['success' => true]);
     }
 }
