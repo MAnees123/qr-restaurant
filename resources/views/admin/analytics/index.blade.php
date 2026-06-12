@@ -6,22 +6,22 @@
 <div class="mb-6 flex items-center justify-between">
     <div>
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Hot Items & Analytics</h2>
-        <p class="text-gray-500 text-sm">Track trending products, peak hours, and overall sales momentum.</p>
+        <p class="text-gray-500 text-sm">Track trending products, peak hours, and overall sales momentum. Data updates live with every sale.</p>
     </div>
     <div>
-        <button onclick="dispatchAggregation()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-xl shadow-sm transition">
+        <button onclick="window.location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-xl shadow-sm transition">
             <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            Recalculate Data
+            Refresh Data
         </button>
     </div>
 </div>
 
 <!-- Badges Legend -->
 <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-[#2a2a2a] mb-6 flex flex-wrap gap-4">
-    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">🔥 Hot Item</span><span class="text-sm text-gray-500">Consistent high sales volume</span></div>
-    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold">📈 Trending</span><span class="text-sm text-gray-500">Sales grew by > 50% recently</span></div>
-    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs font-bold">🏆 Best Seller</span><span class="text-sm text-gray-500">Top 15% of all products sold</span></div>
-    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-bold">⚡ Fast Selling</span><span class="text-sm text-gray-500">High volume today</span></div>
+    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">🔥 Hot Item</span><span class="text-sm text-gray-500">3+ items sold</span></div>
+    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold">📈 Trending</span><span class="text-sm text-gray-500">Sales grew by > 50%</span></div>
+    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs font-bold">🏆 Best Seller</span><span class="text-sm text-gray-500">Top 15% of all products</span></div>
+    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-bold">⚡ Fast Selling</span><span class="text-sm text-gray-500">10+ units sold</span></div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -32,6 +32,7 @@
             <table class="w-full text-left">
                 <thead>
                     <tr class="text-xs text-gray-500 uppercase border-b border-gray-100 dark:border-[#2a2a2a]">
+                        <th class="pb-3">#</th>
                         <th class="pb-3">Product Name</th>
                         <th class="pb-3 text-center">Badge</th>
                         <th class="pb-3 text-right">Qty Sold</th>
@@ -40,10 +41,11 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50 dark:divide-[#2a2a2a]">
-                    @forelse($hotItems as $item)
+                    @forelse($hotItems as $index => $item)
                         <tr class="hover:bg-gray-50 dark:hover:bg-[#111] transition">
+                            <td class="py-3 text-gray-400 font-bold">{{ $index + 1 }}</td>
                             <td class="py-3">
-                                <div class="font-semibold text-gray-800 dark:text-white">{{ $item->menuItem->name ?? 'Unknown' }}</div>
+                                <div class="font-semibold text-gray-800 dark:text-white">{{ $item->name ?? 'Unknown' }}</div>
                             </td>
                             <td class="py-3 text-center">
                                 @if($item->badge_type)
@@ -51,7 +53,7 @@
                                         {{ $item->badge_type }}
                                     </span>
                                 @else
-                                    -
+                                    <span class="text-gray-300">-</span>
                                 @endif
                             </td>
                             <td class="py-3 text-right font-bold text-blue-600 dark:text-blue-400">{{ $item->quantity_sold }}</td>
@@ -67,7 +69,13 @@
                             <td class="py-3 text-right text-gray-600 dark:text-gray-400 font-medium">PKR {{ number_format($item->total_revenue) }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="py-4 text-center text-gray-500">No analytics data available yet for this month.</td></tr>
+                        <tr><td colspan="6" class="py-8 text-center text-gray-400">
+                            <div class="flex flex-col items-center gap-2">
+                                <svg class="w-10 h-10 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                <p class="font-bold">No sales data this month yet</p>
+                                <p class="text-xs">Place orders from your menu to see analytics here.</p>
+                            </div>
+                        </td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -80,22 +88,24 @@
         <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
             <h3 class="text-md font-bold text-gray-800 dark:text-white mb-4 flex justify-between items-center">
                 Today's Fast Movers
-                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">Live</span>
+                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-bold">Live</span>
             </h3>
             <div class="space-y-3">
                 @forelse($todayTop as $item)
                     <div class="flex items-center justify-between border-b border-gray-50 dark:border-[#2a2a2a] pb-2 last:border-0">
                         <div>
-                            <div class="font-medium text-sm text-gray-800 dark:text-gray-200">{{ $item->menuItem->name ?? 'Unknown' }}</div>
-                            <div class="text-xs text-gray-500">{{ $item->badge_type ?? 'Trending' }}</div>
+                            <div class="font-medium text-sm text-gray-800 dark:text-gray-200">{{ $item->name }}</div>
                         </div>
                         <div class="text-right">
-                            <div class="font-bold text-sm">{{ $item->quantity_sold }} sold</div>
-                            <div class="text-xs text-emerald-500">+{{ number_format($item->growth_percentage, 0) }}%</div>
+                            <div class="font-bold text-sm text-blue-600">{{ $item->total_qty }} sold</div>
+                            <div class="text-xs text-gray-400">PKR {{ number_format($item->total_revenue) }}</div>
                         </div>
                     </div>
                 @empty
-                    <div class="text-sm text-gray-500 text-center py-2">No sales yet today.</div>
+                    <div class="text-sm text-gray-400 text-center py-4">
+                        <p class="font-bold">No sales yet today</p>
+                        <p class="text-xs mt-1">Items will appear here as orders come in.</p>
+                    </div>
                 @endforelse
             </div>
         </div>
@@ -104,17 +114,26 @@
         <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
             <h3 class="text-md font-bold text-gray-800 dark:text-white mb-4">This Week's Best</h3>
             <div class="space-y-3">
-                @forelse($weekTop as $item)
-                    <div class="flex items-center justify-between">
-                        <div class="font-medium text-sm text-gray-800 dark:text-gray-200">{{ $item->menuItem->name ?? 'Unknown' }}</div>
-                        <div class="font-bold text-sm text-blue-600">{{ $item->quantity_sold }}</div>
+                @forelse($weekTop as $index => $item)
+                    <div class="flex items-center justify-between border-b border-gray-50 dark:border-[#2a2a2a] pb-2 last:border-0">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">{{ $index + 1 }}</span>
+                            <div class="font-medium text-sm text-gray-800 dark:text-gray-200">{{ $item->name }}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-sm text-blue-600">{{ $item->total_qty }}</div>
+                            <div class="text-xs text-gray-400">PKR {{ number_format($item->total_revenue) }}</div>
+                        </div>
                     </div>
                 @empty
-                    <div class="text-sm text-gray-500 text-center py-2">No data for this week.</div>
+                    <div class="text-sm text-gray-400 text-center py-4">
+                        <p class="font-bold">No data for this week</p>
+                    </div>
                 @endforelse
             </div>
         </div>
     </div>
+
 </div>
 
 <!-- Demand Graph -->
@@ -141,12 +160,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         fetchGraphData();
     });
-
-    function dispatchAggregation() {
-        // Trigger calculation (we'll implement an endpoint or run job)
-        // For now, reload
-        window.location.reload();
-    }
 
     function fetchGraphData() {
         const filter = document.getElementById('graphFilter').value;
@@ -203,7 +216,7 @@
                 plugins: {
                     legend: {
                         position: 'top',
-                        labels: { color: document.documentElement.classList.contains('dark') ? '#fff' : '#4b5563' }
+                        labels: { color: '#4b5563' }
                     }
                 },
                 scales: {
