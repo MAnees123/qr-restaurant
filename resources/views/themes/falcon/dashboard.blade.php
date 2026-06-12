@@ -70,13 +70,9 @@
             </div>
         </div>
     </div>
-    <div class="card market-card">
-        <div class="market-top"><div class="market-title">Payment Methods</div></div>
-        <div class="market-body">
-            <div class="market-legend">
-                <div class="legend-item"><div class="legend-dot" style="background:#2c7be5"></div>Online</div>
-                <div class="legend-item"><div class="legend-dot" style="background:#6ec0f5"></div>Cash</div>
-            </div>
+    <div class="card market-card" x-data style="cursor:pointer;" @click="window.location.href='{{ route('admin.analytics.index') }}'">
+        <div class="market-top"><div class="market-title">Top 10 Products Sold</div></div>
+        <div class="market-body" style="justify-content:center;">
             <div class="market-donut-wrap">
                 <canvas id="marketDonut" width="90" height="90"></canvas>
             </div>
@@ -125,7 +121,14 @@
 <script>
     new Chart(document.getElementById('marketDonut').getContext('2d'),{
         type:'doughnut',
-        data:{ datasets:[{ data:[{{ $stats['online_payments'] }}, {{ $stats['cash_payments'] }}], backgroundColor:['#2c7be5','#6ec0f5'], borderWidth:0, hoverOffset:2 }] },
+        data:{ 
+            labels: {!! json_encode($topProductNames) !!},
+            datasets:[{ 
+                data: {!! json_encode($topProductQtys) !!}, 
+                backgroundColor: ['#2c7be5', '#e63757', '#00d97e', '#f5803e', '#6b5eae', '#0D49AB', '#3b82f6', '#06b6d4', '#10b981', '#14b8a6'], 
+                borderWidth:0, hoverOffset:2 
+            }] 
+        },
         options:{ responsive:false, cutout:'72%', plugins:{ legend:{ display:false } }, animation:{ duration:800 } }
     });
 

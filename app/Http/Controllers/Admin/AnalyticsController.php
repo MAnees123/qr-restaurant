@@ -177,4 +177,44 @@ class AnalyticsController extends Controller
             'revenue' => $rows->pluck('total_rev'),
         ]);
     }
+
+    public function topItemsApi(Request $request)
+    {
+        $restaurantId = auth()->user()->restaurant_id ?? null;
+        if (!$restaurantId) return response()->json(['names' => [], 'qty' => []]);
+
+        $filter = $request->query('filter', '7days');
+
+        if ($filter === 'today') {
+            $start = Carbon::today();
+            $dateCondition = ['orders.created_at', '>=', $start];
+        } elseif ($filter === '30days') {
+            $start = Carbon::now()->subDays(30);
+            $dateCondition = ['orders.created_at', '>=', $start];
+        } else {
+            $start = Carbon::now()->subDays(7);
+            $dateCondition = ['orders.created_at', '>=', $start];
+        }
+
+        $rows = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('menu_items', 'order_items.menu_item_id', '=', 'menu_items.id')
+            ->where('orders.restaurant_id', $restaurantId)
+            ->whereNotIn('orders.status', ['cancelled'])
+            ->where(...$dateCondition)
+            ->whereNotNull('order_items.menu_item_id')
+            ->select(
+                'menu_items.name',
+                DB::raw('SUM(order_items.quantity) as total_qty')
+            )
+            ->groupBy('menu_items.name')
+            ->orderByDesc('total_qty')
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'names' => $rows->pluck('name'),
+            'qty'   => $rows->pluck('total_qty'),
+        ]);
+    }
 }

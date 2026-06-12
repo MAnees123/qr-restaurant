@@ -23,10 +23,24 @@ class DashboardController extends Controller
             'active_tables' => Table::where('restaurant_id', $restaurantId)->where('status', 'occupied')->count(),
             'pending_reservations' => \App\Models\Reservation::where('restaurant_id', $restaurantId)->where('status', 'pending')->count(),
         ];
-
-        // Payment breakdown
+        // Payment breakdown (needed for stat cards)
         $stats['cash_payments'] = \App\Models\Payment::where('restaurant_id', $restaurantId)->where('status', 'paid')->where('method', 'cash')->sum('amount');
         $stats['online_payments'] = \App\Models\Payment::where('restaurant_id', $restaurantId)->where('status', 'paid')->where('method', '!=', 'cash')->sum('amount');
+        // Top 10 products sold (for Pie Chart)
+        $topProducts = \Illuminate\Support\Facades\DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('menu_items', 'order_items.menu_item_id', '=', 'menu_items.id')
+            ->where('orders.restaurant_id', $restaurantId)
+            ->whereNotIn('orders.status', ['cancelled'])
+            ->whereNotNull('order_items.menu_item_id')
+            ->select('menu_items.name', \Illuminate\Support\Facades\DB::raw('SUM(order_items.quantity) as total_qty'))
+            ->groupBy('menu_items.name')
+            ->orderByDesc('total_qty')
+            ->limit(10)
+            ->get();
+        
+        $topProductNames = $topProducts->pluck('name')->toArray();
+        $topProductQtys = $topProducts->pluck('total_qty')->toArray();
 
         $recentOrders = Order::where('restaurant_id', $restaurantId)
             ->with('table')
@@ -49,10 +63,10 @@ class DashboardController extends Controller
         $theme = auth()->user()->theme ?? 'default';
 
         if (view()->exists("themes.{$theme}.dashboard")) {
-            return view("themes.{$theme}.dashboard", compact('stats', 'recentOrders', 'chartData', 'upcomingReservations', 'range'));
+            return view("themes.{$theme}.dashboard", compact('stats', 'recentOrders', 'chartData', 'upcomingReservations', 'range', 'topProductNames', 'topProductQtys'));
         }
 
-        return view('themes.default.dashboard', compact('stats', 'recentOrders', 'chartData', 'upcomingReservations', 'range'));
+        return view('themes.default.dashboard', compact('stats', 'recentOrders', 'chartData', 'upcomingReservations', 'range', 'topProductNames', 'topProductQtys'));
     }
 
     private function getChartData($restaurantId, $range)

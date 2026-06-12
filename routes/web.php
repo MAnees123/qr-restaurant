@@ -66,6 +66,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/revenue', [DashboardController::class, 'revenue'])->name('revenue');
     Route::get('/analytics', [App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics.index');
     Route::get('/analytics/api/sales', [App\Http\Controllers\Admin\AnalyticsController::class, 'salesApi'])->name('analytics.api.sales');
+    Route::get('/analytics/api/top-items', [App\Http\Controllers\Admin\AnalyticsController::class, 'topItemsApi'])->name('analytics.api.topitems');
     Route::get('/menu/download', [RestaurantController::class, 'generateMenuPDF'])->name('menu.download');
 
     Route::resource('restaurant', RestaurantController::class)->only(['index', 'edit', 'update']);

@@ -91,11 +91,10 @@
         <canvas id="lineChart"></canvas>
     </div>
     <div class="chart-card">
-        <div class="chart-card-title">Payment Breakdown</div>
+        <div class="chart-card-title">Top 10 Products Sold</div>
         <div class="rev-body">
             <div>
-                <div class="rev-amount">PKR {{ number_format($stats['total_revenue']) }}</div>
-                <a href="{{ route('admin.revenue') }}" class="pay-btn">View Report</a>
+                <a href="{{ route('admin.analytics.index') }}" class="pay-btn">View Analytics</a>
             </div>
             <div class="donut-wrap">
                 <canvas id="donutChart"></canvas>
@@ -169,15 +168,11 @@
     });
 
     const dc = document.getElementById('donutChart').getContext('2d');
-    const total = {{ $stats['cash_payments'] + $stats['online_payments'] }};
-    const cashPct = total ? ({{ $stats['cash_payments'] }} / total * 100).toFixed(1) : 0;
-    const onlinePct = total ? ({{ $stats['online_payments'] }} / total * 100).toFixed(1) : 0;
-    
     new Chart(dc, {
         type: 'doughnut',
         data: {
-            labels: ['Cash', 'Online'],
-            datasets: [{ data: [cashPct, onlinePct], backgroundColor: ['#2563eb','#93c5fd'], borderWidth: 2, borderColor: '#fff' }]
+            labels: {!! json_encode($topProductNames) !!},
+            datasets: [{ data: {!! json_encode($topProductQtys) !!}, backgroundColor: ['#0D49AB', '#3b82f6', '#06b6d4', '#8b5cf6', '#ec4899', '#f59e0b', '#ef4444', '#10b981', '#14b8a6', '#6366f1'], borderWidth: 2, borderColor: '#fff' }]
         },
         options: {
             cutout: '65%', responsive: false, animation: { animateRotate: true, duration: 900 },

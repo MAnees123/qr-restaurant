@@ -133,21 +133,32 @@
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- Demand Graph -->
-<div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
-    <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold text-gray-800 dark:text-white">Product Demand & Sales Graph</h3>
-        <select id="graphFilter" onchange="fetchGraphData()" class="border border-gray-200 dark:border-[#2a2a2a] bg-gray-50 dark:bg-[#111] text-gray-700 dark:text-white rounded-lg px-3 py-1.5 text-sm outline-none">
-            <option value="today">Today (Hourly)</option>
-            <option value="7days" selected>Last 7 Days</option>
-            <option value="30days">Last 30 Days</option>
-        </select>
+<!-- Charts Row: Demand Graph + Pie Chart -->
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+    <!-- Demand & Sales Line Graph -->
+    <div class="lg:col-span-3 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-white">Product Demand & Sales</h3>
+            <select id="graphFilter" onchange="fetchAllCharts()" class="border border-gray-200 dark:border-[#2a2a2a] bg-gray-50 dark:bg-[#111] text-gray-700 dark:text-white rounded-lg px-3 py-1.5 text-sm outline-none">
+                <option value="today">Today (Hourly)</option>
+                <option value="7days" selected>Last 7 Days</option>
+                <option value="30days">Last 30 Days</option>
+            </select>
+        </div>
+        <div class="h-80 w-full relative">
+            <canvas id="salesDemandChart"></canvas>
+        </div>
     </div>
-    <div class="h-80 w-full relative">
-        <canvas id="salesDemandChart"></canvas>
+
+    <!-- Top 5 Items Pie Chart -->
+    <div class="lg:col-span-2 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
+        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Top 5 Items Sold</h3>
+        <div class="h-80 w-full relative flex items-center justify-center">
+            <canvas id="topItemsPieChart"></canvas>
+        </div>
+        <div id="pieChartLegend" class="mt-4 space-y-2"></div>
     </div>
 </div>
 
@@ -156,28 +167,55 @@
 @push('scripts')
 <script>
     let salesChart = null;
+    let pieChart = null;
+
+    // Theme-specific pie chart color palettes
+    const themePalettes = {
+        'default':  ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6'],
+        'modern':   ['#0D49AB', '#3b82f6', '#06b6d4', '#8b5cf6', '#ec4899'],
+        'falcon':   ['#2c7be5', '#e63757', '#00d97e', '#f5803e', '#6b5eae'],
+        'classic':  ['#1a2454', '#3b5bdb', '#e74c3c', '#27ae60', '#f39c12'],
+        'dark':     ['#c8f135', '#3b82f6', '#ef4444', '#a855f7', '#06b6d4'],
+    };
+
+    const currentTheme = '{{ $theme ?? "default" }}';
+    const colors = themePalettes[currentTheme] || themePalettes['default'];
 
     document.addEventListener('DOMContentLoaded', function() {
-        fetchGraphData();
+        fetchAllCharts();
     });
 
-    function fetchGraphData() {
+    function fetchAllCharts() {
         const filter = document.getElementById('graphFilter').value;
-        
+        fetchLineChart(filter);
+        fetchPieChart(filter);
+    }
+
+    function fetchLineChart(filter) {
         fetch(`{{ route('admin.analytics.api.sales') }}?filter=${filter}`)
             .then(res => res.json())
             .then(data => {
-                renderChart(data.labels, data.qty, data.revenue);
+                renderLineChart(data.labels, data.qty, data.revenue);
             })
             .catch(err => console.error(err));
     }
 
-    function renderChart(labels, qtyData, revData) {
+    function fetchPieChart(filter) {
+        fetch(`{{ route('admin.analytics.api.topitems') }}?filter=${filter}`)
+            .then(res => res.json())
+            .then(data => {
+                renderPieChart(data.names, data.qty);
+            })
+            .catch(err => console.error(err));
+    }
+
+    function renderLineChart(labels, qtyData, revData) {
         const ctx = document.getElementById('salesDemandChart').getContext('2d');
-        
-        if(salesChart) {
-            salesChart.destroy();
-        }
+        if (salesChart) salesChart.destroy();
+
+        const isDark = currentTheme === 'dark';
+        const textColor = isDark ? '#aaa' : '#4b5563';
+        const gridColor = isDark ? '#222' : '#f3f4f6';
 
         salesChart = new Chart(ctx, {
             type: 'line',
@@ -187,21 +225,25 @@
                     {
                         label: 'Quantity Sold',
                         data: qtyData,
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
+                        borderColor: colors[0],
+                        backgroundColor: colors[0] + '22',
+                        borderWidth: 2.5,
+                        tension: 0.4,
                         fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: colors[0],
                         yAxisID: 'y'
                     },
                     {
                         label: 'Revenue (PKR)',
                         data: revData,
-                        borderColor: '#10b981',
+                        borderColor: colors[2],
                         backgroundColor: 'transparent',
                         borderWidth: 2,
-                        borderDash: [5, 5],
-                        tension: 0.3,
+                        borderDash: [6, 4],
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointBackgroundColor: colors[2],
                         yAxisID: 'y1'
                     }
                 ]
@@ -209,36 +251,82 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
+                interaction: { mode: 'index', intersect: false },
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { color: '#4b5563' }
-                    }
+                    legend: { position: 'top', labels: { color: textColor, usePointStyle: true, padding: 16, font: { weight: '600' } } },
+                    tooltip: { backgroundColor: isDark ? '#1a1a1a' : '#fff', titleColor: isDark ? '#fff' : '#111', bodyColor: isDark ? '#ccc' : '#555', borderColor: isDark ? '#333' : '#e5e7eb', borderWidth: 1 }
                 },
                 scales: {
-                    x: {
-                        grid: { display: false }
-                    },
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: { display: true, text: 'Quantity' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: { display: true, text: 'Revenue' },
-                        grid: { drawOnChartArea: false }
+                    x: { grid: { display: false }, ticks: { color: textColor } },
+                    y: { type: 'linear', position: 'left', title: { display: true, text: 'Quantity', color: textColor }, ticks: { color: textColor }, grid: { color: gridColor } },
+                    y1: { type: 'linear', position: 'right', title: { display: true, text: 'Revenue (PKR)', color: textColor }, ticks: { color: textColor }, grid: { drawOnChartArea: false } }
+                }
+            }
+        });
+    }
+
+    function renderPieChart(names, qtyData) {
+        const ctx = document.getElementById('topItemsPieChart').getContext('2d');
+        if (pieChart) pieChart.destroy();
+
+        const isDark = currentTheme === 'dark';
+        const legendEl = document.getElementById('pieChartLegend');
+
+        if (!names || names.length === 0) {
+            legendEl.innerHTML = '<p class="text-center text-sm text-gray-400">No items sold in this period</p>';
+            return;
+        }
+
+        pieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: names,
+                datasets: [{
+                    data: qtyData,
+                    backgroundColor: colors,
+                    borderColor: isDark ? '#1a1a1a' : '#ffffff',
+                    borderWidth: 3,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '55%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: isDark ? '#1a1a1a' : '#fff',
+                        titleColor: isDark ? '#fff' : '#111',
+                        bodyColor: isDark ? '#ccc' : '#555',
+                        borderColor: isDark ? '#333' : '#e5e7eb',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const pct = ((context.parsed / total) * 100).toFixed(1);
+                                return ` ${context.label}: ${context.parsed} sold (${pct}%)`;
+                            }
+                        }
                     }
                 }
             }
         });
+
+        // Build custom legend
+        let html = '';
+        names.forEach((name, i) => {
+            const total = qtyData.reduce((a, b) => a + b, 0);
+            const pct = total > 0 ? ((qtyData[i] / total) * 100).toFixed(0) : 0;
+            html += `<div class="flex items-center justify-between text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:${colors[i]}"></span>
+                    <span class="${isDark ? 'text-gray-300' : 'text-gray-700'} font-medium">${name}</span>
+                </div>
+                <span class="${isDark ? 'text-gray-400' : 'text-gray-500'} font-bold">${qtyData[i]} <span class="text-xs font-normal">(${pct}%)</span></span>
+            </div>`;
+        });
+        legendEl.innerHTML = html;
     }
 </script>
 @endpush

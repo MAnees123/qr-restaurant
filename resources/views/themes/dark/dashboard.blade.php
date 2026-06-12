@@ -57,24 +57,10 @@
 </div>
 
 <div class="row2">
-    <div class="spending-card">
-        <div class="spending-title">Payment Types</div>
-        <div class="spending-body">
+    <div class="spending-card" x-data style="cursor:pointer;" @click="window.location.href='{{ route('admin.analytics.index') }}'">
+        <div class="spending-title">Top 10 Products Sold</div>
+        <div class="spending-body" style="justify-content:center;">
             <div class="donut-wrap"><canvas id="spendingDonut"></canvas></div>
-            <div class="spending-right">
-                <div class="total-spend-row">
-                    <div class="money-icon">💸</div>
-                    <div>
-                        <div class="ts-label">Total Amount</div>
-                        <div class="ts-value">PKR {{ number_format($stats['total_revenue']) }}</div>
-                    </div>
-                </div>
-                <hr class="spend-divider">
-                <div class="legend-list">
-                    <div class="legend-item"><div class="leg-dot" style="background:#c8f135"></div>Online Payments (PKR {{ number_format($stats['online_payments']) }})</div>
-                    <div class="legend-item"><div class="leg-dot" style="background:#8ab828"></div>Cash Payments (PKR {{ number_format($stats['cash_payments']) }})</div>
-                </div>
-            </div>
         </div>
         
         <div class="mt-8">
@@ -127,10 +113,10 @@
 new Chart(document.getElementById('spendingDonut').getContext('2d'),{
   type:'doughnut',
   data:{
-    labels:['Online','Cash'],
+    labels:{!! json_encode($topProductNames) !!},
     datasets:[{
-      data:[{{ $stats['online_payments'] }}, {{ $stats['cash_payments'] }}],
-      backgroundColor:['#c8f135','#8ab828'],
+      data:{!! json_encode($topProductQtys) !!},
+      backgroundColor:['#c8f135', '#3b82f6', '#ef4444', '#a855f7', '#06b6d4', '#0D49AB', '#f59e0b', '#10b981', '#14b8a6', '#6366f1'],
       borderWidth:0, borderRadius:4, hoverOffset:6, spacing:3
     }]
   },

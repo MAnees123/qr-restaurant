@@ -71,18 +71,10 @@
         </div>
         <canvas id="salesChart"></canvas>
     </div>
-    <div class="white-card">
-        <div class="card-title">Payment Types</div>
-        <div class="products-body">
+    <div class="white-card" x-data style="cursor:pointer;" @click="window.location.href='{{ route('admin.analytics.index') }}'">
+        <div class="card-title">Top 10 Products Sold</div>
+        <div class="products-body" style="justify-content:center;">
             <div class="pie-wrap"><canvas id="pieChart"></canvas></div>
-            <div class="prod-legend">
-                <div class="prod-leg-row">
-                    <div class="prod-leg-left"><div class="prod-dot" style="background:#3b5bdb"></div><span class="prod-name">Online</span></div>
-                </div>
-                <div class="prod-leg-row">
-                    <div class="prod-leg-left"><div class="prod-dot" style="background:#60a5fa"></div><span class="prod-name">Cash</span></div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -149,10 +141,10 @@ new Chart(sCtx,{
 new Chart(document.getElementById('pieChart').getContext('2d'),{
   type:'pie',
   data:{
-    labels:['Online', 'Cash'],
+    labels:{!! json_encode($topProductNames) !!},
     datasets:[{
-      data:[{{ $stats['online_payments'] }}, {{ $stats['cash_payments'] }}],
-      backgroundColor:['#3b5bdb','#60a5fa'],
+      data:{!! json_encode($topProductQtys) !!},
+      backgroundColor:['#1a2454', '#3b5bdb', '#e74c3c', '#27ae60', '#f39c12', '#0D49AB', '#3b82f6', '#06b6d4', '#10b981', '#14b8a6'],
       borderWidth:2,borderColor:'#fff',
       hoverOffset:6
     }]

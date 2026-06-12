@@ -232,6 +232,15 @@
         </div>
     </div>
     </div>
+    
+    <div class="bg-white rounded-[2rem] shadow-sm border p-8 mb-8" x-data style="cursor:pointer;" @click="window.location.href='{{ route('admin.analytics.index') }}'">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-lg font-black text-slate-800">Top 10 Products Sold</h2>
+        </div>
+        <div class="flex justify-center" style="height: 250px;">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
 
     <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden" x-data="liveOrders()"
         x-init="initPolling()">
@@ -487,6 +496,27 @@
             }
         }
 
-
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            new Chart(document.getElementById('pieChart').getContext('2d'),{
+                type:'doughnut',
+                data:{
+                    labels:{!! json_encode($topProductNames) !!},
+                    datasets:[{
+                        data:{!! json_encode($topProductQtys) !!},
+                        backgroundColor:['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#0D49AB', '#06b6d4', '#ec4899', '#14b8a6', '#6366f1'],
+                        borderWidth:2,borderColor:'#fff',
+                        hoverOffset:6
+                    }]
+                },
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false,
+                    animation:{duration:800},
+                    plugins:{legend:{display:false}}
+                }
+            });
+        });
     </script>
 @endsection
