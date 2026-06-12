@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200">
+<title>Streamline Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-family: 'DM Sans', sans-serif;
+  background: #edf2f7;
+  min-width: 1200px;       /* desktop dashboard — never collapse below this */
+}
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #edf2f7;
+  min-height: 100vh;
+  min-width: 1200px;
+  color: #0f172a;
+  overflow-x: auto;
+}
+
+/* ══════════════════════════════════════════
+   NAVBAR — spans full viewport, single row
+══════════════════════════════════════════ */
+.navbar {
+  width: 100%;
+  min-width: 1200px;
+  background: #ffffff;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid #e8edf4;
+  gap: 0;
+}
+
+/* Logo */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-right: 32px;
+}
+.diamond {
+  width: 34px; height: 34px;
+  background: #2563eb;
+  border-radius: 8px;
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.diamond svg { transform: rotate(-45deg); }
+.brand {
+  font-size: 13.5px; font-weight: 800;
+  letter-spacing: 2px; color: #0f172a; text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Nav pills — flex grow to center naturally */
+.nav-links {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;   /* left-aligned group, gap pushes them to center via margin */
+  gap: 6px;
+  /* push to visual center between logo and right */
+}
+/* use auto margins to center the pill group */
+.nav-links { justify-content: center; }
+
+.nav-btn {
+  padding: 9px 28px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nav-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+}
+.nav-btn:hover:not(.active) {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Right section */
+.nav-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 32px;
+}
+.search-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.user-wrap {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #92400e 0%, #d97706 100%);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.uname .hi { font-size: 10.5px; color: #94a3b8; font-weight: 400; line-height: 1.3; }
+.uname .nm { font-size: 13px;   color: #0f172a; font-weight: 700; line-height: 1.3; white-space: nowrap; }
+
+/* ══════════════════════════════════════════
+   PAGE WRAPPER — full width, consistent padding
+══════════════════════════════════════════ */
+.page {
+  width: 100%;
+  min-width: 1200px;
+  padding: 34px 40px 44px;
+}
+
+/* ══════════════════════════════════════════
+   PAGE HEADER
+══════════════════════════════════════════ */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  width: 100%;
+}
+.page-title {
+  font-size: 32px; font-weight: 800;
+  color: #0f172a; letter-spacing: -0.6px; line-height: 1.15;
+  margin-bottom: 5px;
+}
+.page-sub {
+  font-size: 13px; color: #94a3b8; font-weight: 400;
+}
+.hdr-controls {
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 3px; flex-shrink: 0;
+}
+.month-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: 50px;
+  border: 1.5px solid #dde3ed; background: #ffffff;
+  font-size: 13px; font-weight: 500; color: #334155;
+  cursor: pointer; white-space: nowrap;
+}
+.filter-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 20px; border-radius: 50px;
+  border: none; background: #2563eb;
+  font-size: 13px; font-weight: 600; color: #ffffff;
+  cursor: pointer; white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════
+   STAT CARDS — 4 equal columns, 100% width
+══════════════════════════════════════════ */
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);  /* 4 equal, no leftover */
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.scard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 22px 20px;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+  min-height: 122px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;           /* fill column completely */
+}
+.scard.blue {
+  background: #2563eb;
+  box-shadow: 0 4px 22px rgba(37,99,235,0.32);
+}
+
+.sc-label {
+  font-size: 12px; font-weight: 500; color: #94a3b8;
+  line-height: 1;
+}
+.scard.blue .sc-label { color: rgba(255,255,255,0.82); }
+
+.sc-icon {
+  position: absolute; top: 20px; right: 20px;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(15,23,42,0.07);
+  display: flex; align-items: center; justify-content: center;
+}
+.scard.blue .sc-icon { background: rgba(255,255,255,0.22); }
+
+.sc-value {
+  font-size: 29px; font-weight: 800; color: #0f172a;
+  letter-spacing: -1px; line-height: 1.1;
+  margin-top: 10px; margin-bottom: 6px;
+}
+.scard.blue .sc-value { color: #ffffff; }
+.accent { color: #2563eb !important; }
+
+.sc-growth { font-size: 11.5px; font-weight: 500; color: #22c55e; }
+.scard.blue .sc-growth { color: rgba(255,255,255,0.88); }
+
+/* ══════════════════════════════════════════
+   CHARTS — full width, 2 columns
+══════════════════════════════════════════ */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 20px;
+  width: 100%;
+}
+
+.chart-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px 24px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+  width: 100%;
+}
+.chart-card-title {
+  font-size: 13px; font-weight: 700; color: #0f172a;
+  margin-bottom: 18px;
+}
+
+/* Revenue analytics */
+.rev-body {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 16px;
+}
+.rev-amount {
+  font-size: 30px; font-weight: 800; color: #0f172a;
+  letter-spacing: -1px; margin-bottom: 16px;
+}
+.pay-btn {
+  display: inline-flex; align-items: center;
+  padding: 9px 24px; border-radius: 50px;
+  background: #2563eb; color: #ffffff;
+  font-size: 13px; font-weight: 600;
+  border: none; cursor: pointer;
+}
+.donut-wrap {
+  width: 160px; height: 160px;
+  flex-shrink: 0; position: relative;
+}
+.donut-wrap canvas {
+  width: 160px !important; height: 160px !important;
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ NAVBAR ════════ -->
+<nav class="navbar">
+
+  <!-- Logo left -->
+  <div class="nav-logo">
+    <div class="diamond">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <path d="M7 1.5L12.5 7L7 12.5L1.5 7Z" fill="white"/>
+      </svg>
+    </div>
+    <span class="brand">Streamline</span>
+  </div>
+
+  <!-- Nav pills centered via flex:1 + justify-content:center -->
+  <div class="nav-links">
+    <button class="nav-btn active">Dashboard</button>
+    <button class="nav-btn">Analytics</button>
+    <button class="nav-btn">Projects</button>
+  </div>
+
+  <!-- Right side -->
+  <div class="nav-right">
+    <button class="search-btn">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <circle cx="6.5" cy="6.5" r="4.5" stroke="#6b7280" stroke-width="1.6"/>
+        <path d="M10 10L13 13" stroke="#6b7280" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="user-wrap">
+      <div class="avatar">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="7.5" r="3" fill="rgba(255,255,255,0.93)"/>
+          <path d="M3.5 18c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5"
+                stroke="rgba(255,255,255,0.93)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="uname">
+        <div class="hi">Hello!</div>
+        <div class="nm">Jack Rowe</div>
+      </div>
+    </div>
+  </div>
+
+</nav>
+
+<!-- ════════ PAGE ════════ -->
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard Overview</h1>
+      <p class="page-sub">Monitor your business performance in real-time</p>
+    </div>
+    <div class="hdr-controls">
+      <button class="month-pill">
+        This Month
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+          <path d="M2 3.5L5.5 7L9 3.5" stroke="#334155"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="filter-pill">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M1 2h11l-4 5v4l-3-1.5V7L1 2Z" fill="white"/>
+        </svg>
+        Filter
+      </button>
+    </div>
+  </div>
+
+  <!-- 4 STAT CARDS — equal columns, full width -->
+  <div class="cards-row">
+
+    <!-- 1 Total Revenue -->
+    <div class="scard blue">
+      <div class="sc-label">Total Revenue</div>
+      <div class="sc-icon">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <path d="M7.5 1.5v12" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M5 5c0-1.1 1.12-2 2.5-2S10 3.9 10 5s-1.12 2-2.5 2S5 8.9 5 10s1.12 2 2.5 2 2.5-.9 2.5-2"
+                stroke="white" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sc-value">$24,580</div>
+        <div class="sc-growth">+12% from last month</div>
+      </div>
+    </div>
+
+    <!-- 2 Active Users -->
+    <div class="scard">
+      <div class="sc-label">Active Users</div>
+      <div class="sc-icon">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <circle cx="7.5" cy="5.5" r="2.5" stroke="#334155" stroke-width="1.5"/>
+          <path d="M2 13.5c0-3.04 2.46-5.5 5.5-5.5s5.5 2.46 5.5 5.5"
+                stroke="#334155" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sc-value">1,245</div>
+        <div class="sc-growth">+8% growth</div>
+      </div>
+    </div>
+
+    <!-- 3 New Signups -->
+    <div class="scard">
+      <div class="sc-label">New Signups</div>
+      <div class="sc-icon">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <path d="M9.5 2.5H12.5V12.5H9.5" stroke="#2563eb"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 10L9 7.5L6 5" stroke="#2563eb"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 7.5H9" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sc-value accent">320</div>
+        <div class="sc-growth">+5% this week</div>
+      </div>
+    </div>
+
+    <!-- 4 Conversion Rate -->
+    <div class="scard">
+      <div class="sc-label">Conversion Rate</div>
+      <div class="sc-icon">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <circle cx="7.5" cy="7.5" r="5.5" stroke="#334155" stroke-width="1.5"/>
+          <path d="M7.5 7.5V3.5" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M7.5 7.5L10.5 9.5" stroke="#334155" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sc-value">4.8%</div>
+        <div class="sc-growth">+12% increase</div>
+      </div>
+    </div>
+
+  </div><!-- /cards-row -->
+
+  <!-- CHARTS — full width -->
+  <div class="charts-row">
+
+    <!-- Line chart -->
+    <div class="chart-card">
+      <canvas id="lineChart"></canvas>
+    </div>
+
+    <!-- Revenue analytics -->
+    <div class="chart-card">
+      <div class="chart-card-title">Revenue Analytics</div>
+      <div class="rev-body">
+        <div>
+          <div class="rev-amount">$120</div>
+          <button class="pay-btn">Payment</button>
+        </div>
+        <div class="donut-wrap">
+          <canvas id="donutChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /charts-row -->
+
+</div><!-- /page -->
+
+<script>
+/* ── LINE CHART ─────────────────────── */
+const lc = document.getElementById('lineChart').getContext('2d');
+const gb = lc.createLinearGradient(0,0,0,230);
+gb.addColorStop(0,'rgba(37,99,235,0.15)');
+gb.addColorStop(1,'rgba(37,99,235,0.01)');
+const gl = lc.createLinearGradient(0,0,0,230);
+gl.addColorStop(0,'rgba(147,197,253,0.22)');
+gl.addColorStop(1,'rgba(147,197,253,0.01)');
+
+new Chart(lc, {
+  type: 'line',
+  data: {
+    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
+    datasets: [
+      {
+        data: [12,19,14,28,22,32,40],
+        borderColor: '#2563eb', borderWidth: 2.2,
+        backgroundColor: gb, fill: true, tension: 0.44,
+        pointRadius: 0, pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#2563eb',
+        pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2
+      },
+      {
+        data: [7,14,22,16,30,20,27],
+        borderColor: '#93c5fd', borderWidth: 2,
+        backgroundColor: gl, fill: true, tension: 0.44,
+        pointRadius: 0, pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#93c5fd',
+        pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    aspectRatio: 2.4,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#fff', titleColor: '#0f172a', bodyColor: '#64748b',
+        borderColor: '#e2e8f0', borderWidth: 1, padding: 10, cornerRadius: 8,
+        titleFont: { family: "'DM Sans',sans-serif", weight: '700', size: 12 },
+        bodyFont:  { family: "'DM Sans',sans-serif", size: 11 }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false }, border: { display: false },
+        ticks: {
+          color: '#94a3b8',
+          font: { family: "'DM Sans',sans-serif", size: 12, weight: '500' },
+          padding: 6
+        }
+      },
+      y: {
+        min: 0, max: 40,
+        grid: { color: '#f1f5f9' }, border: { display: false },
+        ticks: {
+          stepSize: 10, color: '#94a3b8',
+          font: { family: "'DM Sans',sans-serif", size: 12, weight: '500' },
+          padding: 8
+        }
+      }
+    }
+  }
+});
+
+/* ── DONUT CHART ─────────────────────── */
+const dc = document.getElementById('donutChart').getContext('2d');
+const DL = ['Q1','Q2','Q3','Q4'];
+const DV = ['19.1%','28.6%','28%','23.7%'];
+const DD = [19.1, 28.6, 28.0, 24.3];
+const DK = ['#2563eb','#93c5fd','#bfdbfe','#60a5fa'];
+
+Chart.register({
+  id: 'outerLabels',
+  afterDraw(chart) {
+    if (chart.canvas.id !== 'donutChart') return;
+    const { ctx } = chart;
+    const meta = chart.getDatasetMeta(0);
+    meta.data.forEach((arc, i) => {
+      const mid = (arc.startAngle + arc.endAngle) / 2;
+      const R   = arc.outerRadius + 20;
+      const x   = arc.x + R * Math.cos(mid);
+      const y   = arc.y + R * Math.sin(mid);
+      ctx.save();
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = "600 9.5px 'DM Sans',sans-serif";
+      ctx.fillStyle = '#475569';
+      ctx.fillText(DL[i], x, y - 5.5);
+      ctx.font = "500 9px 'DM Sans',sans-serif";
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText(DV[i], x, y + 5.5);
+      ctx.restore();
+    });
+  }
+});
+
+new Chart(dc, {
+  type: 'doughnut',
+  data: {
+    labels: DL,
+    datasets: [{ data: DD, backgroundColor: DK, borderWidth: 2, borderColor: '#fff', hoverOffset: 3 }]
+  },
+  options: {
+    cutout: '65%',
+    responsive: false,
+    animation: { animateRotate: true, duration: 900 },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#fff', titleColor: '#0f172a', bodyColor: '#64748b',
+        borderColor: '#e2e8f0', borderWidth: 1, padding: 8, cornerRadius: 7,
+        titleFont: { family: "'DM Sans',sans-serif", weight: '700', size: 11 },
+        bodyFont:  { family: "'DM Sans',sans-serif", size: 10.5 },
+        callbacks: { label: c => ` ${c.label}: ${c.parsed}%` }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

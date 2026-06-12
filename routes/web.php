@@ -61,6 +61,8 @@ Route::middleware(['auth'])->get('/dashboard', function () {
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/themes', [App\Http\Controllers\Admin\ThemeController::class, 'index'])->name('themes.index');
+    Route::post('/themes/apply', [App\Http\Controllers\Admin\ThemeController::class, 'apply'])->name('themes.apply');
     Route::get('/revenue', [DashboardController::class, 'revenue'])->name('revenue');
     Route::get('/menu/download', [RestaurantController::class, 'generateMenuPDF'])->name('menu.download');
 

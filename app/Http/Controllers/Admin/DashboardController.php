@@ -46,7 +46,13 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recentOrders', 'chartData', 'upcomingReservations', 'range'));
+        $theme = auth()->user()->theme ?? 'default';
+
+        if (view()->exists("themes.{$theme}.dashboard")) {
+            return view("themes.{$theme}.dashboard", compact('stats', 'recentOrders', 'chartData', 'upcomingReservations', 'range'));
+        }
+
+        return view('themes.default.dashboard', compact('stats', 'recentOrders', 'chartData', 'upcomingReservations', 'range'));
     }
 
     private function getChartData($restaurantId, $range)
