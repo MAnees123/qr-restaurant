@@ -50,6 +50,10 @@
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2" fill="currentColor"/></svg>
                 Dashboard
             </a>
+            <a href="{{ route('admin.analytics.index') }}" class="classic-sb-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 14v-4M6 14V6M10 14v-8M14 14V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Analytics
+            </a>
             <a href="{{ route('kitchen.dashboard') }}" class="classic-sb-item {{ request()->routeIs('kitchen.*') ? 'active' : '' }}">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 14V9M8 14V4M13 14V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                 Kitchen Dashboard
@@ -97,9 +101,7 @@
         <header class="classic-topbar">
             <span class="classic-topbar-title">@yield('title', 'Admin Dashboard')</span>
             <div class="classic-topbar-right">
-                <button class="classic-tb-icon">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#6b7280" stroke-width="1.5"/><path d="M8 5V8l2 1.5" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round"/></svg>
-                </button>
+                @include('components.header-notifications')
                 
                 <div x-data="{ open: false }" class="relative">
                     <div @click="open = !open" class="classic-admin-pill">
@@ -147,5 +149,6 @@
 </script>
 @stack('scripts')
 @include('components.order-modal')
+@include('components.global-notifications')
 </body>
 </html>

@@ -53,6 +53,10 @@
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5" height="5" rx="1" fill="currentColor"/><rect x="9.5" y="1.5" width="5" height="5" rx="1" fill="currentColor"/><rect x="1.5" y="9.5" width="5" height="5" rx="1" fill="currentColor"/><rect x="9.5" y="9.5" width="5" height="5" rx="1" fill="currentColor"/></svg>
                 Dashboard
             </a>
+            <a href="{{ route('admin.analytics.index') }}" class="modern-sb-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 14v-4M6 14V6M10 14v-8M14 14V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Analytics
+            </a>
             <a href="{{ route('kitchen.dashboard') }}" class="modern-sb-item {{ request()->routeIs('kitchen.*') ? 'active' : '' }}">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 14V9M8 14V4M13 14V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                 Kitchen Dashboard
@@ -125,7 +129,8 @@
         <header class="modern-topbar">
             <span class="modern-topbar-title">@yield('title', 'Admin Dashboard')</span>
             <div class="modern-topbar-right">
-                <span class="text-sm text-slate-500">{{ now()->format('l, d M Y') }}</span>
+                @include('components.header-notifications')
+                <span class="text-sm text-slate-500 ml-4">{{ now()->format('l, d M Y') }}</span>
             </div>
         </header>
         <div class="modern-content">
@@ -150,5 +155,6 @@
 </script>
 @stack('scripts')
 @include('components.order-modal')
+@include('components.global-notifications')
 </body>
 </html>

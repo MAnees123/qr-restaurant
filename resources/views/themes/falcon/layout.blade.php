@@ -57,6 +57,10 @@
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor"/></svg>
                     Dashboard
                 </a>
+                <a href="{{ route('admin.analytics.index') }}" class="theme-sb-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 13v-4M6 13V6M10 13V3M13 13V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Analytics
+                </a>
                 <a href="{{ route('kitchen.dashboard') }}" class="theme-sb-item {{ request()->routeIs('kitchen.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 13V8M7 13V3M11 13V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     Kitchen Dashboard
@@ -108,10 +112,7 @@
                     <input type="text" placeholder="Search...">
                 </div>
                 <div class="theme-topbar-right">
-                    <button class="theme-tb-icon-btn">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a5 5 0 015 5v2.5l1.5 2H1.5L3 9V6.5a5 5 0 015-5z" stroke="#5e6e82" stroke-width="1.4"/><path d="M6.5 13.5a1.5 1.5 0 003 0" stroke="#5e6e82" stroke-width="1.4"/></svg>
-                        <div class="theme-tb-badge"></div>
-                    </button>
+                    @include('components.header-notifications')
                     
                     <div x-data="{ open: false }" class="relative">
                         <div @click="open = !open" class="theme-tb-avatar overflow-hidden">
@@ -155,5 +156,6 @@
     </script>
     @stack('scripts')
     @include('components.order-modal')
+    @include('components.global-notifications')
 </body>
 </html>

@@ -92,6 +92,10 @@
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4l2-2 1 1 2-2 2 2 1-1 2 2" stroke="#888" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="4" width="12" height="9" rx="1.5" stroke="#888" stroke-width="1.3"/></svg>
             Dashboard
         </a>
+        <a href="{{ route('admin.analytics.index') }}" class="{{ request()->routeIs('admin.analytics.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 13v-4M6 13V6M10 13V3M13 13V8" stroke="#888" stroke-width="1.3" stroke-linecap="round"/></svg>
+            Analytics
+        </a>
         <a href="{{ route('kitchen.dashboard') }}" class="{{ request()->routeIs('kitchen.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 13V8M7 13V3M11 13V6" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
             Kitchen Dashboard
@@ -143,10 +147,13 @@
                 <h1 class="dark-page-title">@yield('title', 'Dashboard Overview')</h1>
                 <p class="dark-page-sub">Here's your overview for today.</p>
             </div>
-            <a href="{{ route('admin.orders.index') }}" class="dark-month-pill" style="text-decoration:none;">
-                View All Orders
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5.5L7 9.5L11 5.5" stroke="#0d0d0d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
+            <div style="display:flex; align-items:center; gap:16px;">
+                @include('components.header-notifications')
+                <a href="{{ route('admin.orders.index') }}" class="dark-month-pill" style="text-decoration:none;">
+                    View All Orders
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5.5L7 9.5L11 5.5" stroke="#0d0d0d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+            </div>
         </div>
 
         @if(session('success'))
@@ -170,5 +177,6 @@
 </script>
 @stack('scripts')
 @include('components.order-modal')
+@include('components.global-notifications')
 </body>
 </html>
