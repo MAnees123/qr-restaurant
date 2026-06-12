@@ -50,7 +50,7 @@ class KitchenController extends Controller
         }
 
         $request->validate([
-            'status' => 'required|in:preparing,ready,served',
+            'status' => 'required|in:preparing,ready,served,cancelled',
         ]);
 
         $order->update(['status' => $request->status]);
@@ -73,9 +73,30 @@ class KitchenController extends Controller
                     'status' => 'occupied',
                     'auto_release_at' => null,
                 ]);
+            } elseif ($newStatus === 'cancelled') {
+                // If cancelling and no other active orders, free the table immediately
+                if (!$order->table->orders()
+                    ->where('id', '!=', $order->id)
+                    ->whereNotIn('status', ['served', 'cancelled'])
+                    ->exists()) {
+                    $order->table->update([
+                        'status' => 'free',
+                        'auto_release_at' => null,
+                    ]);
+                }
             }
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function orderDetails(Order $order)
+    {
+        if ($order->restaurant_id !== auth()->user()->restaurant_id) {
+            abort(403);
+        }
+
+        $order->load(['table', 'orderItems.menuItem', 'payments']);
+        return response()->json($order);
     }
 }

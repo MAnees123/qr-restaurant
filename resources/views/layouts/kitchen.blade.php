@@ -201,6 +201,7 @@
             }
         }
     </script>
+    @include('components.order-modal')
 </body>
 
 </html>

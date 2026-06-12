@@ -78,6 +78,11 @@ class OrderController extends Controller
         }
         
         $order->load(['table', 'orderItems.menuItem', 'payments']);
+        
+        if (request()->wantsJson()) {
+            return response()->json($order);
+        }
+        
         return view('admin.orders.show', compact('order'));
     }
 
@@ -130,6 +135,10 @@ class OrderController extends Controller
 
         if ($request->has('payment_status')) {
             $order->update(['payment_status' => $request->payment_status]);
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'order' => $order]);
         }
 
         return redirect()->route('admin.orders.show', $order)->with('success', 'Order updated successfully.');

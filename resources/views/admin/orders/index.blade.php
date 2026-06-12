@@ -18,29 +18,34 @@
         </thead>
         <tbody class="divide-y divide-slate-100">
             @foreach($orders as $order)
-                <tr>
+                <tr x-data="{ localStatus: '{{ $order->status }}' }"
+                    @order-updated.window="if ($event.detail.id == {{ $order->id }}) localStatus = $event.detail.status"
+                    class="hover:bg-slate-50 cursor-pointer transition"
+                    @click="$dispatch('open-order-modal', {{ $order->id }})">
                     <td class="px-6 py-4 font-bold text-slate-800">{{ $order->order_number }}</td>
                     <td class="px-6 py-4 font-medium">{{ $order->table ? $order->table->table_number : 'N/A' }}</td>
                     <td class="px-6 py-4 text-sm text-slate-500">{{ $order->created_at->format('M d, h:i A') }}</td>
                     <td class="px-6 py-4 font-bold text-amber-600">PKR {{ number_format($order->total_amount, 2) }}</td>
                     <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs rounded-full 
-                            {{ $order->status === 'pending' ? 'bg-amber-100 text-amber-700' : '' }}
-                            {{ $order->status === 'preparing' ? 'bg-blue-100 text-blue-700' : '' }}
-                            {{ $order->status === 'ready' ? 'bg-indigo-100 text-indigo-700' : '' }}
-                            {{ $order->status === 'served' ? 'bg-emerald-100 text-emerald-700' : '' }}
-                            {{ $order->status === 'cancelled' ? 'bg-red-100 text-red-700' : '' }}">
-                            {{ ucfirst($order->status) }}
+                        <span class="px-2 py-1 text-[10px] font-black uppercase rounded-lg tracking-widest inline-block shadow-sm" 
+                            :class="{
+                                'bg-amber-100 text-amber-700': localStatus === 'pending',
+                                'bg-blue-100 text-blue-700': localStatus === 'preparing',
+                                'bg-indigo-100 text-indigo-700': localStatus === 'ready',
+                                'bg-emerald-100 text-emerald-700': localStatus === 'served',
+                                'bg-red-100 text-red-700': localStatus === 'cancelled'
+                            }"
+                            x-text="localStatus">
                         </span>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs rounded-full 
+                        <span class="px-2 py-1 text-[10px] font-black uppercase rounded-lg tracking-widest inline-block shadow-sm 
                             {{ $order->payment_status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' }}">
-                            {{ ucfirst($order->payment_status) }}
+                            {{ $order->payment_status }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-right font-medium">
-                        <a href="{{ route('admin.orders.show', $order) }}" class="text-amber-500 hover:underline">View Details</a>
+                    <td class="px-6 py-4 text-right font-medium text-slate-300">
+                        <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </td>
                 </tr>
             @endforeach

@@ -3,7 +3,7 @@
 @section('header', ucfirst($status) . ' Orders')
 
 @section('content')
-<div x-data="kitchenOrders('{{ $status }}')" x-init="initPolling()" class="space-y-6">
+<div x-data="kitchenOrders('{{ $status }}')" x-init="initPolling()" @order-updated.window="fetchOrders()" class="space-y-6">
     <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl"
@@ -25,11 +25,12 @@
     <!-- Orders Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <template x-for="order in orders" :key="order.id">
-            <div class="bg-white border-2 rounded-2xl shadow-sm overflow-hidden flex flex-col transition hover:shadow-md"
+            <div @click="$dispatch('open-order-modal', order.id)" 
+                 class="bg-white border-2 rounded-2xl shadow-sm overflow-hidden flex flex-col transition hover:shadow-md cursor-pointer group"
                  :class="{
-                    'border-amber-200': order.status === 'pending',
-                    'border-blue-200': order.status === 'preparing',
-                    'border-emerald-200': order.status === 'ready'
+                    'border-amber-200 hover:border-amber-400': order.status === 'pending',
+                    'border-blue-200 hover:border-blue-400': order.status === 'preparing',
+                    'border-emerald-200 hover:border-emerald-400': order.status === 'ready'
                  }">
                 <!-- Order Header -->
                 <div class="p-4 flex justify-between items-center border-b"
@@ -82,17 +83,9 @@
                     </div>
                 </div>
 
-                <!-- Action Footer -->
-                <div class="p-4 bg-slate-50 border-t flex gap-2">
-                    <template x-if="order.status === 'pending'">
-                        <button @click="updateStatus(order.id, 'preparing')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded-xl transition shadow-lg shadow-amber-200 text-sm tracking-widest uppercase">START COOKING</button>
-                    </template>
-                    <template x-if="order.status === 'preparing'">
-                        <button @click="updateStatus(order.id, 'ready')" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-black py-4 rounded-xl transition shadow-lg shadow-blue-200 text-sm tracking-widest uppercase">MARK READY</button>
-                    </template>
-                    <template x-if="order.status === 'ready'">
-                        <button @click="updateStatus(order.id, 'served')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl transition shadow-lg shadow-emerald-200 text-sm tracking-widest uppercase">COMPLETE SERVING</button>
-                    </template>
+                <!-- Action Footer Indicator -->
+                <div class="p-4 bg-slate-50 border-t flex justify-center items-center text-slate-300 group-hover:text-slate-500 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </div>
             </div>
         </template>

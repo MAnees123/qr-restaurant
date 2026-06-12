@@ -252,10 +252,10 @@
                 </span>
             </div>
         </div>
-        <div class="p-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 bg-white">
+        <div class="p-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 bg-white" @order-updated.window="fetchOrders()">
             <template x-for="order in orders" :key="order.id">
-                <div
-                    class="bg-slate-50 rounded-[2rem] border border-slate-100 p-6 hover:shadow-xl hover:shadow-slate-200/50 transition duration-300 group relative overflow-hidden">
+                <div @click="$dispatch('open-order-modal', order.id)"
+                    class="bg-slate-50 rounded-[2rem] border border-slate-100 p-6 hover:shadow-xl hover:shadow-slate-200/50 transition duration-300 group relative overflow-hidden cursor-pointer">
                     <div class="absolute top-0 right-0 p-4">
                         <span class="px-3 py-1 text-[10px] font-black uppercase rounded-lg tracking-widest shadow-sm"
                             :class="{
@@ -309,14 +309,11 @@
                         </template>
                     </div>
 
-                    <a :href="'/admin/orders/' + order.id"
-                        class="w-full flex items-center justify-center gap-2 py-3 bg-white border border-slate-200 rounded-xl font-black text-xs uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-black hover:border-slate-900 transition duration-300">
-                        View Details
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
+                    <div class="mt-4 flex items-center justify-center text-slate-300 group-hover:text-emerald-500 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
-                    </a>
+                    </div>
                 </div>
             </template>
         </div>
