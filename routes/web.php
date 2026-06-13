@@ -71,6 +71,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::resource('restaurant', RestaurantController::class)->only(['index', 'edit', 'update']);
     Route::resource('tables', TableController::class);
+    Route::resource('branches', App\Http\Controllers\Admin\BranchController::class)->except(['create', 'show', 'edit']);
+    Route::resource('portions', App\Http\Controllers\Admin\PortionController::class)->except(['create', 'show', 'edit']);
     Route::resource('menu-categories', MenuCategoryController::class);
     Route::resource('menu-items', MenuItemController::class);
     Route::resource('discounts', DiscountController::class);

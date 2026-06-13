@@ -11,11 +11,14 @@ class Table extends Model
 
     protected $fillable = [
         'restaurant_id',
+        'branch_id',
+        'portion_id',
         'table_number',
         'capacity',
         'is_active',
         'status',
         'auto_release_at',
+        'secure_token',
     ];
 
     protected $casts = [
@@ -25,6 +28,16 @@ class Table extends Model
     public function restaurant()
     {
         return $this->belongsTo(Restaurant::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function portion()
+    {
+        return $this->belongsTo(Portion::class);
     }
 
     public function qrCode()
@@ -61,5 +74,16 @@ class Table extends Model
     public function cancelAutoRelease(): void
     {
         $this->update(['auto_release_at' => null]);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($table) {
+            if (empty($table->secure_token)) {
+                $table->secure_token = bin2hex(random_bytes(16));
+            }
+        });
     }
 }

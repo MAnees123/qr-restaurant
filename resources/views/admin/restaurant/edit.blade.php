@@ -3,6 +3,11 @@
 @section('header', 'Restaurant Settings')
 
 @section('content')
+<div class="mb-6 flex gap-4">
+    <a href="{{ route('admin.branches.index') }}" class="bg-blue-50 text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-100 flex-1 text-center border border-blue-100 shadow-sm">Manage Restaurant Branches</a>
+    <a href="{{ route('admin.portions.index') }}" class="bg-indigo-50 text-indigo-600 px-6 py-3 rounded-xl font-bold hover:bg-indigo-100 flex-1 text-center border border-indigo-100 shadow-sm">Manage Portions & Sections</a>
+</div>
+
 <div class="bg-white rounded-xl shadow-sm border p-6 max-w-3xl">
     <form action="{{ route('admin.restaurant.update', $restaurant) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf

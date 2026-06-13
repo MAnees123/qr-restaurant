@@ -10,10 +10,17 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
-    public function show($code)
+    public function show(Request $request, $code)
     {
-        $qrCode = QrCode::where('code', $code)->with('table.restaurant')->firstOrFail();
-        $table = $qrCode->table;
+        // Try looking up by new secure_token first
+        $table = \App\Models\Table::where('secure_token', $code)->with('restaurant')->first();
+        
+        // Fallback to legacy QrCode for existing printed codes
+        if (!$table) {
+            $qrCode = QrCode::where('code', $code)->with('table.restaurant')->firstOrFail();
+            $table = $qrCode->table;
+        }
+
         $restaurant = $table->restaurant;
 
         if (!$table->is_active) {
