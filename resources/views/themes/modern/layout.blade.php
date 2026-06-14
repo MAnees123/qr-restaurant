@@ -46,41 +46,24 @@
             <div class="modern-sb-diamond">
                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L12.5 7L7 12.5L1.5 7Z" fill="white"/></svg>
             </div>
-            <span class="modern-sb-brand">{{ auth()->user()->restaurant->name ?? 'Admin' }}</span>
+            <span class="modern-sb-brand">{{ auth()->user()->restaurant?->name ?? 'Admin' }}</span>
         </div>
+        @php $u = auth()->user(); @endphp
         <nav class="modern-sb-nav">
+
+            {{-- Dashboard: always visible --}}
             <a href="{{ route('admin.dashboard') }}" class="modern-sb-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5" height="5" rx="1" fill="currentColor"/><rect x="9.5" y="1.5" width="5" height="5" rx="1" fill="currentColor"/><rect x="1.5" y="9.5" width="5" height="5" rx="1" fill="currentColor"/><rect x="9.5" y="9.5" width="5" height="5" rx="1" fill="currentColor"/></svg>
                 Dashboard
             </a>
-            <a href="{{ route('admin.analytics.index') }}" class="modern-sb-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 14v-4M6 14V6M10 14v-8M14 14V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                Analytics
-            </a>
-            <a href="{{ route('kitchen.dashboard') }}" class="modern-sb-item {{ request()->routeIs('kitchen.*') ? 'active' : '' }}">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 14V9M8 14V4M13 14V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                Kitchen Dashboard
-            </a>
-            <a href="{{ route('admin.reservations.index') }}" class="modern-sb-item {{ request()->routeIs('admin.reservations.*') ? 'active' : '' }}">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 6h12" stroke="currentColor" stroke-width="1.4"/></svg>
-                Table Reservations
-            </a>
+
+            {{-- Orders: always visible --}}
             <a href="{{ route('admin.orders.index') }}" class="modern-sb-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12L5 8l3 3 3-4 3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Orders
             </a>
-            <a href="{{ route('admin.discounts.index') }}" class="modern-sb-item {{ request()->routeIs('admin.discounts.*') ? 'active' : '' }}">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="11" cy="11" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M12 4L4 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-                Coupons & Offers
-            </a>
-            <a href="{{ route('admin.banners.index') }}" class="modern-sb-item {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/><path d="M5 7l3 3 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Hot Deals & Ads
-            </a>
-            <a href="{{ route('admin.tables.index') }}" class="modern-sb-item {{ request()->routeIs('admin.tables.*') ? 'active' : '' }}">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                Tables & QR
-            </a>
+
+            {{-- Menu: always visible --}}
             <a href="{{ route('admin.menu-categories.index') }}" class="modern-sb-item {{ request()->routeIs('admin.menu-categories.*') ? 'active' : '' }}">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9.5" y="1.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9.5" y="9.5" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
                 Menu Categories
@@ -89,20 +72,91 @@
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
                 Menu Items
             </a>
-            <a href="{{ route('admin.restaurant.index') }}" class="modern-sb-item {{ request()->routeIs('admin.restaurant.*') ? 'active' : '' }}">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-                Restaurant Settings
+
+            {{-- Kitchen Screen --}}
+            @if($u->hasFeature('kitchen_screen'))
+            <a href="{{ route('kitchen.dashboard') }}" class="modern-sb-item {{ request()->routeIs('kitchen.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 14V9M8 14V4M13 14V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Kitchen Screen
             </a>
+            @endif
+
+            {{-- QR Tables --}}
+            @if($u->hasFeature('table_ordering'))
+            <a href="{{ route('admin.tables.index') }}" class="modern-sb-item {{ request()->routeIs('admin.tables.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                Tables & QR
+            </a>
+            @endif
+
+            {{-- Table Reservations --}}
+            @if($u->hasFeature('table_reservation'))
+            <a href="{{ route('admin.reservations.index') }}" class="modern-sb-item {{ request()->routeIs('admin.reservations.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2 6h12" stroke="currentColor" stroke-width="1.4"/></svg>
+                Table Reservations
+            </a>
+            @endif
+
+            {{-- Analytics --}}
+            @if($u->hasFeature('analytics'))
+            <a href="{{ route('admin.analytics.index') }}" class="modern-sb-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 14v-4M6 14V6M10 14v-8M14 14V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Analytics
+            </a>
+            @endif
+
+            {{-- Coupons & Discounts --}}
+            @if($u->hasFeature('coupons'))
+            <a href="{{ route('admin.discounts.index') }}" class="modern-sb-item {{ request()->routeIs('admin.discounts.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="5" r="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="11" cy="11" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M12 4L4 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Coupons & Offers
+            </a>
+            @endif
+
+            {{-- Hot Deals & Banners --}}
+            @if($u->hasFeature('banners'))
+            <a href="{{ route('admin.banners.index') }}" class="modern-sb-item {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2h12a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/><path d="M5 7l3 3 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Hot Deals & Ads
+            </a>
+            @endif
+
+            {{-- Multi-Branch --}}
+            @if($u->hasFeature('multi_branch'))
+            <a href="{{ route('admin.branches.index') }}" class="modern-sb-item {{ request()->routeIs('admin.branches.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v12M4 6l4-4 4 4M3 14h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Branches
+            </a>
+            @endif
+
+            {{-- Inventory / Portions --}}
+            @if($u->hasFeature('inventory'))
+            <a href="{{ route('admin.portions.index') }}" class="modern-sb-item {{ request()->routeIs('admin.portions.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M4 4V2h8v2M4 14V4M12 14V4M2 14h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Inventory
+            </a>
+            @endif
+
+            {{-- Theme Customization --}}
+            @if($u->hasFeature('theme_custom'))
             <a href="{{ route('admin.themes.index') }}" class="modern-sb-item {{ request()->routeIs('admin.themes.*') ? 'active' : '' }}">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 4v4l2.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
                 Themes
             </a>
+            @endif
+
+            {{-- Restaurant Settings: always visible --}}
+            <a href="{{ route('admin.restaurant.index') }}" class="modern-sb-item {{ request()->routeIs('admin.restaurant.*') ? 'active' : '' }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                Restaurant Settings
+            </a>
+
         </nav>
 
         <div class="modern-sb-user" x-data="{ open: false }">
             <div class="relative">
                 <div @click="open = !open" class="modern-sb-avatar cursor-pointer">
-                    @if(auth()->user()->restaurant && auth()->user()->restaurant->logo)
+                    @if(auth()->user()->restaurant?->logo)
                         <img src="{{ asset('storage/' . auth()->user()->restaurant->logo) }}" alt="Logo" class="w-full h-full object-cover">
                     @else
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7.5" r="3" fill="rgba(255,255,255,0.93)"/><path d="M3.5 18c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5" stroke="rgba(255,255,255,0.93)" stroke-width="1.5" stroke-linecap="round"/></svg>

@@ -13,7 +13,9 @@ class User extends Authenticatable
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'name', 'email', 'password', 'is_super_admin', 'avatar',
+        'name', 'email', 'password',
+        'restaurant_id', 'role',
+        'is_super_admin', 'is_suspended', 'avatar',
     ];
 
     /**
@@ -29,7 +31,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_super_admin'    => 'boolean',
+        'is_suspended'      => 'boolean',
     ];
+
+    // ─── Relationships ────────────────────────────────────────────────────────
+
+    /**
+     * The restaurant this user belongs to (null for Super Admins).
+     */
+    public function restaurant(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Restaurant::class);
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────
 
     /**
      * Determine if the user is a Super Admin.
@@ -37,5 +52,18 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return $this->is_super_admin === true;
+    }
+
+    /**
+     * Check whether the user's restaurant has a specific feature enabled.
+     * Super admins always return true.
+     */
+    public function hasFeature(string $feature): bool
+    {
+        if ($this->is_super_admin) {
+            return true;
+        }
+
+        return $this->restaurant?->hasFeature($feature) ?? false;
     }
 }
