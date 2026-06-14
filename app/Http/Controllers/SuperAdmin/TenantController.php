@@ -271,4 +271,19 @@ class TenantController extends Controller
 
         return back()->with('success', 'Admin user password has been reset successfully.');
     }
+
+    public function resetUserPassword(Request $request, User $user)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        \App\Models\ActivityLog::log('user_password_reset', "Password for user '{$user->email}' ({$user->role}) has been reset by Super Admin.", $user->restaurant_id);
+
+        return back()->with('success', "Password for user '{$user->name}' ({$user->email}) has been reset successfully.");
+    }
 }

@@ -23,15 +23,17 @@
             <div class="p-6">
                 <h1 class="text-2xl font-bold text-amber-400">Kitchen KOT</h1>
                 <p class="text-xs text-emerald-300 mt-1 uppercase tracking-widest font-bold">
-                    {{ auth()->user()->restaurant->name }}</p>
+                    {{ auth()->user()->restaurant->name ?? 'System' }}</p>
             </div>
             <nav class="mt-6">
                 <a href="{{ route('kitchen.dashboard') }}"
                     class="block px-6 py-3 hover:bg-emerald-800 {{ request()->routeIs('kitchen.dashboard') ? 'bg-emerald-800 border-l-4 border-amber-400' : '' }}">Kitchen
                     Overview</a>
+                @if(auth()->user()->role === 'admin' || auth()->user()->is_super_admin)
                 <a href="{{ route('admin.dashboard') }}"
-                    class="block px-6 py-3 hover:bg-emerald-800 {{ request()->routeIs('kitchen.dashboard') ? 'bg-emerald-800 border-l-4 border-amber-400' : '' }}">Admin
+                    class="block px-6 py-3 hover:bg-emerald-800 {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-800 border-l-4 border-amber-400' : '' }}">Admin
                     Dashboard</a>
+                @endif
 
                 <div class="px-6 py-2 text-xs font-bold text-emerald-400 uppercase mt-4">Order Status</div>
                 <a href="{{ route('kitchen.orders.status', 'pending') }}"

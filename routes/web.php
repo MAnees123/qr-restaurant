@@ -161,6 +161,7 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
     Route::post('/tenants/{restaurant}/features',       [\App\Http\Controllers\SuperAdmin\TenantController::class, 'updateFeatures'])->name('tenants.update-features');
     Route::post('/tenants/{restaurant}/impersonate',     [\App\Http\Controllers\SuperAdmin\TenantController::class, 'impersonate'])->name('tenants.impersonate');
     Route::post('/tenants/{restaurant}/reset-password',   [\App\Http\Controllers\SuperAdmin\TenantController::class, 'resetPassword'])->name('tenants.reset-password');
+    Route::post('/users/{user}/reset-password',           [\App\Http\Controllers\SuperAdmin\TenantController::class, 'resetUserPassword'])->name('tenants.reset-user-password');
 
     // Subscription Plans Management
     Route::resource('plans', \App\Http\Controllers\SuperAdmin\PlanController::class);

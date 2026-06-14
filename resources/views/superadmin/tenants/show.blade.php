@@ -227,6 +227,7 @@
                             <th class="px-5 py-3">Email</th>
                             <th class="px-5 py-3">Role</th>
                             <th class="px-5 py-3">Joined</th>
+                            <th class="px-5 py-3 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50 text-slate-600">
@@ -240,10 +241,15 @@
                                     </span>
                                 </td>
                                 <td class="px-5 py-3 text-slate-400 text-xs">{{ $user->created_at ? $user->created_at->format('M d, Y') : '—' }}</td>
+                                <td class="px-5 py-3 text-right">
+                                    <button type="button" onclick="openResetUserModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}')" class="btn btn-secondary btn-sm" style="color: var(--accent2); background: rgba(108,99,255,.08); padding: 4px 10px; font-size: 11px;">
+                                        <i class="fa-solid fa-key"></i> Reset Password
+                                    </button>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-5 py-8 text-center text-slate-400 text-sm">No users found.</td>
+                                <td colspan="5" class="px-5 py-8 text-center text-slate-400 text-sm">No users found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -283,4 +289,54 @@
         </div>
     </div>
 </div>
+
+{{-- ── Reset User Password Dialog ──────────────────────── --}}
+<dialog id="resetUserPasswordDialog" style="border: none; border-radius: var(--radius); padding: 24px; max-width: 420px; width: 90%; background: var(--bg-card); color: var(--text); box-shadow: 0 10px 30px rgba(0,0,0,0.35); border: 1px solid var(--border);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-key" style="color: var(--accent2);"></i> Reset User Password
+        </h3>
+        <button type="button" onclick="document.getElementById('resetUserPasswordDialog').close()" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 0 4px;">&times;</button>
+    </div>
+    
+    <form id="resetUserPasswordForm" method="POST" style="display: flex; flex-direction: column; gap: 16px;">
+        @csrf
+        <div>
+            <p style="font-size: 13px; color: var(--muted); line-height: 1.4;" id="modalSubTitle"></p>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="modalPassword">New Password</label>
+            <input type="password" id="modalPassword" name="password" class="form-control" required minlength="8" placeholder="At least 8 characters">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="modalPasswordConfirm">Confirm Password</label>
+            <input type="password" id="modalPasswordConfirm" name="password_confirmation" class="form-control" required minlength="8" placeholder="Confirm new password">
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('resetUserPasswordDialog').close()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update Password</button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+function openResetUserModal(userId, userName, userEmail) {
+    const dialog = document.getElementById('resetUserPasswordDialog');
+    const form = document.getElementById('resetUserPasswordForm');
+    const modalSubTitle = document.getElementById('modalSubTitle');
+    
+    // Set dynamic action route
+    form.action = `/superadmin/users/${userId}/reset-password`;
+    modalSubTitle.innerHTML = `Set a new password for user <strong>${userName}</strong> (${userEmail}). The old password is not required.`;
+    
+    // Reset values
+    document.getElementById('modalPassword').value = '';
+    document.getElementById('modalPasswordConfirm').value = '';
+    
+    dialog.showModal();
+}
+</script>
 @endsection
