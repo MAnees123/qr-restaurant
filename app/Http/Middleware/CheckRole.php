@@ -19,6 +19,12 @@ class CheckRole
             abort(403, 'Unauthorized action.');
         }
 
+        // Check for tenant suspension
+        if (auth()->user()->restaurant && auth()->user()->restaurant->is_suspended) {
+            auth()->logout();
+            return redirect()->route('login')->withErrors(['email' => 'Your restaurant account has been suspended by the administrator.']);
+        }
+
         return $next($request);
     }
 }

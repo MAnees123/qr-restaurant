@@ -12,8 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
+            'role'          => \App\Http\Middleware\CheckRole::class,
             'guest.tracker' => \App\Http\Middleware\GuestTrackerMiddleware::class,
+            'superadmin'    => \App\Http\Middleware\SuperAdmin::class,
+            'feature'       => \App\Http\Middleware\CheckFeature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

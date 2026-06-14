@@ -54,6 +54,17 @@
 @stack('styles')
 </head>
 <body>
+@if(session()->has('impersonator_id'))
+    <div class="bg-indigo-650 text-white px-6 py-3 flex items-center justify-between text-sm font-bold shadow-sm z-50 relative">
+        <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            <span>Impersonating: <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->restaurant->name ?? '' }})</span>
+        </div>
+        <a href="{{ route('superadmin.tenants.leave-impersonate') }}" class="bg-white/25 hover:bg-white/40 text-white px-4 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">
+            Return to Super Admin
+        </a>
+    </div>
+@endif
 <div class="dark-shell">
     <aside class="dark-sidebar">
         <div x-data="{ open: false }" class="relative">
@@ -75,6 +86,9 @@
                 class="absolute left-0 mt-1 w-48 bg-[#1e1e1e] rounded-xl shadow-xl border border-[#2a2a2a] z-50 overflow-hidden text-left">
                 <a href="{{ route('admin.restaurant.index') }}" class="block px-4 py-3 text-sm text-[#ccc] hover:bg-[#2a2a2a] border-b border-[#2a2a2a]">Restaurant Profile</a>
                 <a href="{{ route('profile.edit') }}" class="block px-4 py-3 text-sm text-[#ccc] hover:bg-[#2a2a2a] border-b border-[#2a2a2a]">Update Password</a>
+                @if(auth()->user()->is_super_admin)
+                    <a href="{{ route('superadmin.dashboard') }}" class="block px-4 py-3 text-sm text-[#818cf8] hover:bg-[#2a2a2a] border-b border-[#2a2a2a] font-bold">Super Admin</a>
+                @endif
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-full text-left block px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 font-bold">Logout</button>
@@ -92,37 +106,47 @@
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4l2-2 1 1 2-2 2 2 1-1 2 2" stroke="#888" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="4" width="12" height="9" rx="1.5" stroke="#888" stroke-width="1.3"/></svg>
             Dashboard
         </a>
+        @if(auth()->user()->restaurant?->hasFeature('analytics'))
         <a href="{{ route('admin.analytics.index') }}" class="{{ request()->routeIs('admin.analytics.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 13v-4M6 13V6M10 13V3M13 13V8" stroke="#888" stroke-width="1.3" stroke-linecap="round"/></svg>
             Analytics
         </a>
+        @endif
         <a href="{{ route('kitchen.dashboard') }}" class="{{ request()->routeIs('kitchen.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 13V8M7 13V3M11 13V6" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
             Kitchen Dashboard
         </a>
+        @if(auth()->user()->restaurant?->hasFeature('table_reservation'))
         <a href="{{ route('admin.reservations.index') }}" class="{{ request()->routeIs('admin.reservations.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="2" stroke="#888" stroke-width="1.3"/><path d="M1 5h12" stroke="#888" stroke-width="1.3"/></svg>
             Table Reservations
         </a>
+        @endif
         <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 10L4 6l3 3 3-4 3 2" stroke="#888" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Orders
         </a>
+        @if(auth()->user()->restaurant?->hasFeature('coupons'))
         <a href="{{ route('admin.discounts.index') }}" class="{{ request()->routeIs('admin.discounts.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="4" cy="4" r="1.5" stroke="#888" stroke-width="1.3"/><circle cx="10" cy="10" r="1.5" stroke="#888" stroke-width="1.3"/><path d="M11 3L3 11" stroke="#888" stroke-width="1.3" stroke-linecap="round"/></svg>
             Coupons & Offers
         </a>
+        @endif
+        @if(auth()->user()->restaurant?->hasFeature('banners'))
         <a href="{{ route('admin.banners.index') }}" class="{{ request()->routeIs('admin.banners.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="#888" stroke-width="1.3"/><path d="M5 6l2 2 4-4" stroke="#888" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V3a1 1 0 012-2z" stroke="#888" stroke-width="1.3"/><path d="M5 6l2 2 4-4" stroke="#888" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
             Hot Deals & Ads
         </a>
+        @endif
 
         <hr class="dark-sb-divider">
 
+        @if(auth()->user()->restaurant?->hasFeature('table_ordering'))
         <a href="{{ route('admin.tables.index') }}" class="{{ request()->routeIs('admin.tables.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v2M7 11v2M1 7h2M11 7h2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="7" cy="7" r="3.5" stroke="#888" stroke-width="1.3"/></svg>
             Tables & QR
         </a>
+        @endif
         <a href="{{ route('admin.menu-categories.index') }}" class="{{ request()->routeIs('admin.menu-categories.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" stroke="#888" stroke-width="1.3"/><rect x="8" y="1" width="5" height="5" rx="1" stroke="#888" stroke-width="1.3"/><rect x="1" y="8" width="5" height="5" rx="1" stroke="#888" stroke-width="1.3"/><rect x="8" y="8" width="5" height="5" rx="1" stroke="#888" stroke-width="1.3"/></svg>
             Menu Categories
@@ -135,10 +159,12 @@
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" stroke="#888" stroke-width="1.3"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.75 2.75l1.06 1.06M10.19 10.19l1.06 1.06M2.75 11.25l1.06-1.06M10.19 3.81l1.06-1.06" stroke="#888" stroke-width="1.2" stroke-linecap="round"/></svg>
             Restaurant Settings
         </a>
+        @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
         <a href="{{ route('admin.themes.index') }}" class="{{ request()->routeIs('admin.themes.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#888" stroke-width="1.3"/><path d="M7 4v3l2 1.5" stroke="#888" stroke-width="1.3" stroke-linecap="round"/></svg>
             Themes
         </a>
+        @endif
     </aside>
 
     <div class="dark-main">

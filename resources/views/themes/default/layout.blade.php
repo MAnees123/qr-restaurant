@@ -17,6 +17,17 @@
 </head>
 
 <body class="font-sans antialiased bg-gray-100">
+    @if(session()->has('impersonator_id'))
+        <div class="bg-indigo-650 text-white px-6 py-3 flex items-center justify-between text-sm font-bold shadow-sm z-50 relative">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                <span>Impersonating: <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->restaurant->name ?? '' }})</span>
+            </div>
+            <a href="{{ route('superadmin.tenants.leave-impersonate') }}" class="bg-white/25 hover:bg-white/40 text-white px-4 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">
+                Return to Super Admin
+            </a>
+        </div>
+    @endif
     <div class="h-screen flex">
         <!-- Sidebar -->
 
@@ -28,25 +39,43 @@
             <nav class="mt-6">
                 <a href="{{ route('admin.dashboard') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.dashboard') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Dashboard</a>
+                
+                @if(auth()->user()->restaurant?->hasFeature('analytics'))
                 <a href="{{ route('admin.analytics.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.analytics.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Analytics</a>
+                @endif
+
                 <a href="{{ route('kitchen.dashboard') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('kitchen.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Kitchen
                     Dashboard</a>
+
+                @if(auth()->user()->restaurant?->hasFeature('table_reservation'))
                 <a href="{{ route('admin.reservations.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.reservations.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Table
                     Reservations</a>
+                @endif
+
                 <a href="{{ route('admin.orders.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.orders.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Orders</a>
+
+                @if(auth()->user()->restaurant?->hasFeature('coupons'))
                 <a href="{{ route('admin.discounts.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.discounts.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Coupons
                     & Offers</a>
+                @endif
+
+                @if(auth()->user()->restaurant?->hasFeature('banners'))
                 <a href="{{ route('admin.banners.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.banners.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Hot Deals
                     & Ads</a>
+                @endif
+
+                @if(auth()->user()->restaurant?->hasFeature('table_ordering'))
                 <a href="{{ route('admin.tables.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.tables.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Tables
                     & QR</a>
+                @endif
+
                 <a href="{{ route('admin.menu-categories.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.menu-categories.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Menu
                     Categories</a>
@@ -57,8 +86,10 @@
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.restaurant.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Restaurant
                     Settings</a>
 
+                @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
                 <a href="{{ route('admin.themes.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.themes.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Themes</a>
+                @endif
             </nav>
         </aside>
 
@@ -146,7 +177,17 @@
                                                 </svg>
                                                 Update Password
                                             </a>
+                                        </div>                                        </div>
+
+                                        @if(auth()->user()->is_super_admin)
+                                        <div class="py-2 border-t border-slate-100 bg-indigo-50">
+                                            <a href="{{ route('superadmin.dashboard') }}"
+                                                class="flex items-center gap-3 px-6 py-3 text-sm font-bold text-indigo-700 hover:bg-indigo-100 transition">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                                                Super Admin
+                                            </a>
                                         </div>
+                                        @endif
 
                                         <!-- Logout -->
                                         <div class="border-t border-slate-100 py-2 bg-slate-50">

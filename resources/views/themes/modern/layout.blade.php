@@ -112,6 +112,9 @@
                     class="absolute left-0 bottom-full mb-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 z-50 overflow-hidden text-left">
                     <a href="{{ route('admin.restaurant.index') }}" class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100">Restaurant Profile</a>
                     <a href="{{ route('profile.edit') }}" class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100">Update Password</a>
+                    @if(auth()->user()->is_super_admin)
+                        <a href="{{ route('superadmin.dashboard') }}" class="block px-4 py-3 text-sm text-indigo-700 hover:bg-indigo-50 border-b border-slate-100 font-bold">Super Admin</a>
+                    @endif
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="w-full text-left block px-4 py-3 text-sm text-red-600 hover:bg-red-50 font-bold">Logout</button>
