@@ -1,0 +1,501 @@
+{
+    "activity_logs": {
+        "count": 3,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "user_id",
+            "action",
+            "description",
+            "ip_address",
+            "user_agent",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "banners": {
+        "count": 3,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "title",
+            "subtitle",
+            "image_path",
+            "redirect_url",
+            "is_active",
+            "sort_order",
+            "created_at",
+            "updated_at",
+            "badge_text",
+            "original_price",
+            "discounted_price",
+            "prep_time"
+        ]
+    },
+    "billing_invoices": {
+        "count": 0,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "plan_id",
+            "invoice_number",
+            "amount",
+            "tax",
+            "discount",
+            "payment_status",
+            "billing_cycle",
+            "payment_method",
+            "paid_at",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "branches": {
+        "count": 1,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "name",
+            "is_active",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "cache": {
+        "count": 1,
+        "columns": [
+            "key",
+            "value",
+            "expiration"
+        ]
+    },
+    "cache_locks": {
+        "count": 0,
+        "columns": [
+            "key",
+            "owner",
+            "expiration"
+        ]
+    },
+    "discounts": {
+        "count": 2,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "code",
+            "type",
+            "value",
+            "is_active",
+            "starts_at",
+            "expires_at",
+            "usage_limit",
+            "used_count",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "failed_jobs": {
+        "count": 0,
+        "columns": [
+            "id",
+            "uuid",
+            "connection",
+            "queue",
+            "payload",
+            "exception",
+            "failed_at"
+        ]
+    },
+    "features": {
+        "count": 0,
+        "columns": [
+            "id",
+            "code",
+            "label",
+            "category",
+            "default_limit",
+            "meta",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "hot_item_caches": {
+        "count": 0,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "menu_item_id",
+            "rank_score",
+            "badge_type",
+            "period_type",
+            "quantity_sold",
+            "total_revenue",
+            "growth_percentage",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "job_batches": {
+        "count": 0,
+        "columns": [
+            "id",
+            "name",
+            "total_jobs",
+            "pending_jobs",
+            "failed_jobs",
+            "failed_job_ids",
+            "options",
+            "cancelled_at",
+            "created_at",
+            "finished_at"
+        ]
+    },
+    "jobs": {
+        "count": 0,
+        "columns": [
+            "id",
+            "queue",
+            "payload",
+            "attempts",
+            "reserved_at",
+            "available_at",
+            "created_at"
+        ]
+    },
+    "menu_categories": {
+        "count": 4,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "name",
+            "description",
+            "sort_order",
+            "is_active",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "menu_items": {
+        "count": 9,
+        "columns": [
+            "id",
+            "menu_category_id",
+            "restaurant_id",
+            "name",
+            "description",
+            "price",
+            "original_price",
+            "preparation_time",
+            "image",
+            "is_available",
+            "sort_order",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "migrations": {
+        "count": 43,
+        "columns": [
+            "id",
+            "migration",
+            "batch"
+        ]
+    },
+    "notifications": {
+        "count": 0,
+        "columns": [
+            "id",
+            "type",
+            "notifiable_type",
+            "notifiable_id",
+            "data",
+            "read_at",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "order_items": {
+        "count": 152,
+        "columns": [
+            "id",
+            "order_id",
+            "menu_item_id",
+            "quantity",
+            "unit_price",
+            "subtotal",
+            "special_instructions",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "orders": {
+        "count": 85,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "table_id",
+            "subtotal",
+            "coupon_code",
+            "discount_amount",
+            "order_number",
+            "guest_token",
+            "status",
+            "estimated_completion_time",
+            "payment_status",
+            "payment_method",
+            "total_amount",
+            "notes",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "password_reset_tokens": {
+        "count": 0,
+        "columns": [
+            "email",
+            "token",
+            "created_at"
+        ]
+    },
+    "payments": {
+        "count": 44,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "order_id",
+            "amount",
+            "method",
+            "transaction_id",
+            "status",
+            "notes",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "permissions": {
+        "count": 0,
+        "columns": [
+            "id",
+            "name",
+            "description",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "plans": {
+        "count": 4,
+        "columns": [
+            "id",
+            "name",
+            "price_monthly",
+            "price_yearly",
+            "trial_days",
+            "max_branches",
+            "max_users",
+            "max_tables",
+            "max_storage_mb",
+            "features",
+            "is_active",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "portions": {
+        "count": 1,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "branch_id",
+            "name",
+            "is_active",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "product_analytics": {
+        "count": 0,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "menu_item_id",
+            "quantity_sold",
+            "total_revenue",
+            "total_discount",
+            "total_profit",
+            "period_type",
+            "period_date",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "qr_codes": {
+        "count": 6,
+        "columns": [
+            "id",
+            "table_id",
+            "code",
+            "qr_image_path",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "reservations": {
+        "count": 1,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "table_id",
+            "customer_name",
+            "customer_phone",
+            "reservation_date",
+            "reservation_time",
+            "guests",
+            "status",
+            "event_type",
+            "notes",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "restaurant_feature": {
+        "count": 0,
+        "columns": [
+            "restaurant_id",
+            "feature_id",
+            "enabled",
+            "limit_value"
+        ]
+    },
+    "restaurant_role": {
+        "count": 0,
+        "columns": [
+            "restaurant_id",
+            "role_id"
+        ]
+    },
+    "restaurants": {
+        "count": 1,
+        "columns": [
+            "id",
+            "name",
+            "owner_name",
+            "domain",
+            "cuisine_type",
+            "theme",
+            "logo",
+            "address",
+            "country",
+            "city",
+            "timezone",
+            "currency",
+            "phone",
+            "is_active",
+            "is_suspended",
+            "subscription_plan",
+            "granted_features",
+            "subscription_ends_at",
+            "billing_cycle",
+            "payment_status",
+            "trial_ends_at",
+            "max_branches",
+            "max_users",
+            "max_tables",
+            "max_storage_mb",
+            "created_at",
+            "updated_at",
+            "plan_id"
+        ]
+    },
+    "role_permission": {
+        "count": 0,
+        "columns": [
+            "role_id",
+            "permission_id"
+        ]
+    },
+    "roles": {
+        "count": 0,
+        "columns": [
+            "id",
+            "name",
+            "description",
+            "tenant_id",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "sessions": {
+        "count": 7,
+        "columns": [
+            "id",
+            "user_id",
+            "ip_address",
+            "user_agent",
+            "payload",
+            "last_activity"
+        ]
+    },
+    "subscriptions": {
+        "count": 0,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "plan_id",
+            "starts_at",
+            "ends_at",
+            "status",
+            "trial_ends_at",
+            "payment_status",
+            "billing_cycle",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "table_calls": {
+        "count": 23,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "table_id",
+            "status",
+            "created_at",
+            "updated_at"
+        ]
+    },
+    "tables": {
+        "count": 6,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "table_number",
+            "capacity",
+            "is_active",
+            "status",
+            "secure_token",
+            "auto_release_at",
+            "created_at",
+            "updated_at",
+            "branch_id",
+            "portion_id"
+        ]
+    },
+    "users": {
+        "count": 4,
+        "columns": [
+            "id",
+            "restaurant_id",
+            "name",
+            "email",
+            "email_verified_at",
+            "password",
+            "role",
+            "is_super_admin",
+            "avatar",
+            "is_suspended",
+            "theme",
+            "remember_token",
+            "created_at",
+            "updated_at"
+        ]
+    }
+}

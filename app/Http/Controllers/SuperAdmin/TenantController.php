@@ -81,7 +81,7 @@ class TenantController extends Controller
         // Create the restaurant record
         $trialEndsAt = null;
         if ($request->payment_status === 'trial' && $request->trial_days) {
-            $trialEndsAt = now()->addDays($request->trial_days);
+            $trialEndsAt = now()->addDays((int) $request->trial_days);
         }
 
         $restaurant = Restaurant::create([

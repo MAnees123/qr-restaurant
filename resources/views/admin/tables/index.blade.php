@@ -82,6 +82,7 @@
                 </div>
                 
                 <div class="flex justify-center gap-2 mt-3">
+                    <a href="{{ route('menu.show', $table->secure_token ?? ($table->qrCode->code ?? 'none')) }}" target="_blank" class="px-3 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold hover:bg-blue-100 border border-blue-100">View Menu</a>
                     <button type="button" onclick="downloadTableQR({{ $table->id }}, '{{ $table->table_number }}')" class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded text-xs font-bold hover:bg-emerald-100 border border-emerald-100">Download SVG</button>
                     <button type="button" onclick="printTableQR({{ $table->id }}, '{{ $table->table_number }}')" class="px-3 py-1 bg-slate-50 text-slate-600 rounded text-xs font-bold hover:bg-slate-100 border border-slate-200">Print</button>
                 </div>

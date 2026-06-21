@@ -171,8 +171,8 @@
                     <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border);">
                         <span style="font-size:13px;">{{ $feature['label'] }}</span>
                         <label class="toggle">
-                            <input type="checkbox" name="features[]" value="{{ $feature['code'] }}"
-                                {{ in_array($feature['code'], old('features', \App\Services\FeatureRegistry::freeFeatures())) ? 'checked' : '' }}>
+                            <input type="checkbox" name="granted_features[]" value="{{ $feature['code'] }}"
+                                {{ in_array($feature['code'], old('granted_features', \App\Services\FeatureRegistry::freeFeatures())) ? 'checked' : '' }}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
