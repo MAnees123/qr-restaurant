@@ -13,6 +13,7 @@ $migrationContent .= "    public function up(): void\n    {\n";
 
 // Tables to process in order (to respect foreign keys)
 $tablesOrder = [
+    'plans',
     'restaurants',
     'users',
     'restaurant_feature',

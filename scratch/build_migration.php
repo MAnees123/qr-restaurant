@@ -22,6 +22,10 @@ function getTableData($table, $column, $values) {
 }
 
 $restaurantData = (array)$restaurant;
+$plans = [];
+if (isset($restaurant->plan_id)) {
+    $plans = getTableData('plans', 'id', [$restaurant->plan_id]);
+}
 $users = getTableData('users', 'restaurant_id', [$restaurantId]);
 // add user if not in the list
 $userIds = array_column($users, 'id');
@@ -49,6 +53,7 @@ $orderItems = getTableData('order_items', 'order_id', $orderIds);
 $payments = getTableData('payments', 'order_id', $orderIds);
 
 $exportData = [
+    'plans' => $plans,
     'restaurants' => [$restaurantData],
     'users' => $users,
     'restaurant_feature' => $features,
