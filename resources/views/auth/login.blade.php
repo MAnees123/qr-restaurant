@@ -319,10 +319,20 @@
     #toast.error  { border-left: 4px solid #e63911; }
     #toast.success{ border-left: 4px solid #22c55e; }
 
-    /* ── Responsive ── */
+    /* ── Responsive Adjustments ── */
     @media(max-width:540px){
-      .glass-card { padding:36px 22px 30px; border-radius:18px; }
-      .title-main { font-size:1.7rem; }
+            .glass-card { padding:28px 18px 24px; border-radius:14px; max-width:100%; margin:0 1rem; }
+      .title-main { font-size:1.5rem; }
+      .logo-wrap { width:56px; height:56px; margin-bottom:14px; }
+      .role-selector, .input-group-float input, .btn-login { font-size:0.85rem; padding:12px 36px 6px; }
+      .btn-login { padding:10px; }
+    }
+    @media(max-width:375px){
+      .glass-card { padding:20px 12px 18px; }
+      .title-main { font-size:1.3rem; }
+      .logo-wrap { width:48px; height:48px; margin-bottom:10px; }
+      .role-selector, .input-group-float input, .btn-login { font-size:0.78rem; padding:10px 30px 4px; }
+      .btn-login { padding:8px; }
     }
 </style>
 
