@@ -26,9 +26,14 @@
                 <h2 class="text-xl font-black text-slate-800" x-text="order ? 'Order #' + order.order_number : 'Loading...'"></h2>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5" x-text="order ? formatTime(order.created_at) : ''"></p>
             </div>
-            <button @click="closeModal()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-xl transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <div class="flex items-center gap-2">
+                <button @click="printBill()" x-show="order" title="Print Bill" class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                </button>
+                <button @click="closeModal()" class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-xl transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
         </div>
 
         <!-- Body -->
@@ -155,13 +160,17 @@
             
         </div>
         <!-- Read-only footer if served/cancelled -->
-        <div class="p-6 border-t bg-slate-50 flex justify-center relative z-10" x-show="order && ['served', 'cancelled'].includes(order.status)">
+        <div class="p-6 border-t bg-slate-50 flex items-center justify-center gap-3 relative z-10" x-show="order && ['served', 'cancelled'].includes(order.status)">
              <span class="px-6 py-3 text-xs font-black uppercase rounded-xl tracking-widest border"
                    :class="{
                        'bg-emerald-50 text-emerald-700 border-emerald-200': order && order.status === 'served',
                        'bg-red-50 text-red-700 border-red-200': order && order.status === 'cancelled'
                    }"
                    x-text="order ? 'Order ' + order.status : ''"></span>
+             <button @click="printBill()" class="px-5 py-3 text-xs font-black uppercase rounded-xl tracking-widest border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 transition flex items-center gap-2 shadow-sm">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                 Print Bill
+             </button>
         </div>
     </div>
 </div>
@@ -224,6 +233,12 @@ document.addEventListener('alpine:init', () => {
                 .finally(() => {
                     this.isLoading = false;
                 });
+        },
+
+        printBill() {
+            if (!this.order) return;
+            const prefix = window.location.pathname.startsWith('/kitchen') ? '/kitchen' : '/admin';
+            window.open(`${prefix}/orders/${this.orderId}/print`, '_blank');
         },
 
         formatTime(dateString) {

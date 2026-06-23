@@ -127,6 +127,7 @@ Route::middleware(['auth', 'role:kitchen,admin'])->prefix('kitchen')->name('kitc
     Route::get('/orders/{status}', [KitchenController::class, 'statusView'])->name('orders.status');
     Route::put('/orders/{order}/status', [KitchenController::class, 'updateStatus'])->name('orders.update');
     Route::get('/orders/{order}/details', [KitchenController::class, 'orderDetails'])->name('orders.details');
+    Route::get('/orders/{order}/print', [KitchenController::class, 'print'])->name('orders.print');
 });
 
 // Guest Reservations

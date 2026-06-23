@@ -177,8 +177,13 @@ class GuestOrderController extends Controller
 
     public function paymentForm($code)
     {
-        $qrCode = \App\Models\QrCode::where('code', $code)->with('table.restaurant')->firstOrFail();
-        $table = $qrCode->table;
+        $table = \App\Models\Table::where('secure_token', $code)->with('restaurant')->first();
+        
+        if (!$table) {
+            $qrCode = \App\Models\QrCode::where('code', $code)->with('table.restaurant')->firstOrFail();
+            $table = $qrCode->table;
+        }
+
         $restaurant = $table->restaurant;
 
         if (!$table->is_active) {

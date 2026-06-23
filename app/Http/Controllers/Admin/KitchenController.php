@@ -99,4 +99,14 @@ class KitchenController extends Controller
         $order->load(['table', 'orderItems.menuItem', 'payments']);
         return response()->json($order);
     }
+
+    public function print(Order $order)
+    {
+        if ($order->restaurant_id !== auth()->user()->restaurant_id) {
+            abort(403);
+        }
+
+        $order->load(['table', 'orderItems.menuItem', 'restaurant']);
+        return view('admin.orders.print', compact('order'));
+    }
 }
