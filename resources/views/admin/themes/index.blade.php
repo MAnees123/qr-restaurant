@@ -5,12 +5,6 @@
 
 @section('content')
 <div class="max-w-6xl mx-auto">
-    @if(session('success'))
-        <div class="mb-6 bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded-xl flex items-center justify-between">
-            <span class="block sm:inline font-bold">{{ session('success') }}</span>
-        </div>
-    @endif
-
     <div class="mb-8">
         <h2 class="text-2xl font-black text-slate-800 tracking-tight">Select your dashboard theme</h2>
         <p class="text-slate-500 mt-2">Customize your workspace. Changes will only apply to your account and preserve all your data.</p>

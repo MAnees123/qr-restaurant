@@ -55,6 +55,6 @@ class ThemeController extends Controller
         $user->theme = $request->theme;
         $user->save();
 
-        return redirect()->back()->with('success', 'Theme updated successfully!');
+        return redirect()->route('admin.dashboard')->with('success', 'Theme updated successfully!');
     }
 }
