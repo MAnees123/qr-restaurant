@@ -45,7 +45,7 @@
                         <form action="{{ route('admin.menu-items.destroy', $item) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" onclick="return confirm('Delete item?')" class="text-red-500 hover:text-red-700">Delete</button>
+                            <button type="submit" data-confirm="Delete item?" class="text-red-500 hover:text-red-700">Delete</button>
                         </form>
                     </td>
                 </tr>

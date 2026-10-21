@@ -85,6 +85,15 @@
                             <a href="{{ route('superadmin.tenants.edit', $r) }}" class="btn btn-secondary btn-sm" title="Edit">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
+                            @php $hasDemo = app(\App\Services\DemoDataService::class)->hasData($r); @endphp
+                            <form action="{{ route('superadmin.tenants.seed-demo', $r) }}" method="POST" style="display:inline;"
+                                  data-confirm="Add demo data (menu, tables, orders, kitchen staff...) to {{ $r->name }}?">
+                                @csrf
+                                <button type="submit" class="btn btn-secondary btn-sm" {{ $hasDemo ? 'disabled' : '' }}
+                                        title="{{ $hasDemo ? 'Demo data already exists' : 'Seed demo data' }}">
+                                    <i class="fa-solid fa-database"></i>
+                                </button>
+                            </form>
                             <form action="{{ route('superadmin.tenants.toggle-suspension', $r) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn btn-sm {{ $r->is_suspended ? 'btn-success' : 'btn-danger' }}" title="{{ $r->is_suspended ? 'Activate' : 'Suspend' }}">
@@ -92,7 +101,7 @@
                                 </button>
                             </form>
                             <form action="{{ route('superadmin.tenants.destroy', $r) }}" method="POST" style="display:inline;"
-                                  onsubmit="return confirm('Delete {{ $r->name }}? This cannot be undone.')">
+                                  data-confirm="Delete {{ $r->name }}? This cannot be undone.">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" title="Delete">
                                     <i class="fa-solid fa-trash"></i>

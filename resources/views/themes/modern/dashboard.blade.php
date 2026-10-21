@@ -67,7 +67,7 @@
             <div class="sc-growth">{{ $stats['pending_orders'] }} pending</div>
         </div>
     </div>
-    <div class="scard" x-data style="cursor: pointer;" @click="window.location.href='{{ route('admin.tables.index') }}'">
+    <div class="scard" x-data style="cursor: pointer;" @if(auth()->user()->restaurant?->hasFeature('table_ordering')) @click="window.location.href='{{ route('admin.tables.index') }}'" @endif>
         <div class="sc-label">Active Tables</div>
         <div class="sc-icon"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M9.5 2.5H12.5V12.5H9.5" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10L9 7.5L6 5" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 7.5H9" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <div>
@@ -94,7 +94,9 @@
         <div class="chart-card-title">Top 10 Products Sold</div>
         <div class="rev-body">
             <div>
+                @if(auth()->user()->restaurant?->hasFeature('analytics'))
                 <a href="{{ route('admin.analytics.index') }}" class="pay-btn">View Analytics</a>
+                @endif
             </div>
             <div class="donut-wrap">
                 <canvas id="donutChart"></canvas>

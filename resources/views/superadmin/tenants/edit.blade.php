@@ -194,11 +194,21 @@
                         Update Account
                     </button>
                 </div>
+                @php $hasDemo = app(\App\Services\DemoDataService::class)->hasData($restaurant); @endphp
+                <button type="submit" form="seed-demo-form" {{ $hasDemo ? 'disabled' : '' }}
+                        class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-sm font-semibold rounded-xl text-center transition-colors shadow-lg {{ $hasDemo ? 'opacity-50 cursor-not-allowed' : '' }}">
+                    {{ $hasDemo ? 'Demo Data Already Added' : 'Seed Demo Data' }}
+                </button>
                 <a href="{{ route('superadmin.tenants.show', $restaurant) }}" class="block text-center text-xs text-slate-400 hover:text-white underline">
                     Cancel & Go Back
                 </a>
             </div>
         </div>
     </div>
+</form>
+
+<form id="seed-demo-form" method="POST" action="{{ route('superadmin.tenants.seed-demo', $restaurant) }}"
+      data-confirm="Add demo data (menu, tables, orders, kitchen staff...) to this restaurant only?">
+    @csrf
 </form>
 @endsection

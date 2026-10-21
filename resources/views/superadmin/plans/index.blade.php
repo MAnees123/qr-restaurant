@@ -62,7 +62,7 @@
                 <i class="fa-solid fa-pen"></i> Edit
             </a>
             <form action="{{ route('superadmin.plans.destroy', $plan) }}" method="POST"
-                  onsubmit="return confirm('Delete this plan?')">
+                  data-confirm="Delete this plan?">
                 @csrf @method('DELETE')
                 <button type="submit" class="btn btn-danger btn-sm">
                     <i class="fa-solid fa-trash"></i>

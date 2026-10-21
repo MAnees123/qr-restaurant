@@ -121,13 +121,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 // Kitchen Routes
+// Order details / status / print are shared with the admin Orders screens, so they only need the role.
 Route::middleware(['auth', 'role:kitchen,admin'])->prefix('kitchen')->name('kitchen.')->group(function () {
+    Route::get('/orders/{order}/details', [KitchenController::class, 'orderDetails'])->name('orders.details');
+    Route::put('/orders/{order}/status', [KitchenController::class, 'updateStatus'])->name('orders.update');
+    Route::get('/orders/{order}/print', [KitchenController::class, 'print'])->name('orders.print');
+});
+
+// The live kitchen screens themselves require the kitchen_screen feature.
+Route::middleware(['auth', 'role:kitchen,admin', 'feature:kitchen_screen'])->prefix('kitchen')->name('kitchen.')->group(function () {
     Route::get('/dashboard', [KitchenController::class, 'index'])->name('dashboard');
     Route::get('/orders', [KitchenController::class, 'getOrders'])->name('orders');
     Route::get('/orders/{status}', [KitchenController::class, 'statusView'])->name('orders.status');
-    Route::put('/orders/{order}/status', [KitchenController::class, 'updateStatus'])->name('orders.update');
-    Route::get('/orders/{order}/details', [KitchenController::class, 'orderDetails'])->name('orders.details');
-    Route::get('/orders/{order}/print', [KitchenController::class, 'print'])->name('orders.print');
 });
 
 // Guest Reservations
@@ -160,6 +165,7 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
     Route::delete('/tenants/{restaurant}',              [\App\Http\Controllers\SuperAdmin\TenantController::class, 'destroy'])->name('tenants.destroy');
     Route::post('/tenants/{restaurant}/toggle-suspension', [\App\Http\Controllers\SuperAdmin\TenantController::class, 'toggleSuspension'])->name('tenants.toggle-suspension');
     Route::post('/tenants/{restaurant}/features',       [\App\Http\Controllers\SuperAdmin\TenantController::class, 'updateFeatures'])->name('tenants.update-features');
+    Route::post('/tenants/{restaurant}/seed-demo',      [\App\Http\Controllers\SuperAdmin\TenantController::class, 'seedDemo'])->name('tenants.seed-demo');
     Route::post('/tenants/{restaurant}/impersonate',     [\App\Http\Controllers\SuperAdmin\TenantController::class, 'impersonate'])->name('tenants.impersonate');
     Route::post('/tenants/{restaurant}/reset-password',   [\App\Http\Controllers\SuperAdmin\TenantController::class, 'resetPassword'])->name('tenants.reset-password');
     Route::post('/users/{user}/reset-password',           [\App\Http\Controllers\SuperAdmin\TenantController::class, 'resetUserPassword'])->name('tenants.reset-user-password');

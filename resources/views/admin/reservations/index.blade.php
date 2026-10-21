@@ -99,7 +99,7 @@
                             </a>
 
                             <!-- Delete -->
-                            <form action="{{ route('admin.reservations.destroy', $res) }}" method="POST" onsubmit="return confirm('Delete this reservation?');">
+                            <form action="{{ route('admin.reservations.destroy', $res) }}" method="POST" data-confirm="Delete this reservation?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition" title="Delete">

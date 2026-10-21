@@ -55,7 +55,7 @@
                     <a href="{{ route('admin.discounts.edit', $discount) }}" class="text-blue-500 hover:text-blue-700 font-black text-sm">Edit</a>
                     <form action="{{ route('admin.discounts.destroy', $discount) }}" method="POST" class="inline">
                         @csrf @method('DELETE')
-                        <button type="submit" class="text-red-500 hover:text-red-700 font-black text-sm" onclick="return confirm('Delete this coupon?')">Delete</button>
+                        <button type="submit" class="text-red-500 hover:text-red-700 font-black text-sm" data-confirm="Delete this coupon?">Delete</button>
                     </form>
                 </td>
             </tr>

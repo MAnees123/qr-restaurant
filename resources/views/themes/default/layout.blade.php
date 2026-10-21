@@ -45,9 +45,11 @@
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.analytics.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Analytics</a>
                 @endif
 
+                @if(auth()->user()->restaurant?->hasFeature('kitchen_screen'))
                 <a href="{{ route('kitchen.dashboard') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('kitchen.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Kitchen
                     Dashboard</a>
+                @endif
 
                 @if(auth()->user()->restaurant?->hasFeature('table_reservation'))
                 <a href="{{ route('admin.reservations.index') }}"
@@ -86,6 +88,14 @@
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.restaurant.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Restaurant
                     Settings</a>
 
+                @if(auth()->user()->restaurant?->hasFeature('multi_branch'))
+                <a href="{{ route('admin.branches.index') }}"
+                    class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.branches.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Branches</a>
+                @endif
+                @if(auth()->user()->restaurant?->hasFeature('inventory'))
+                <a href="{{ route('admin.portions.index') }}"
+                    class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.portions.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Inventory</a>
+                @endif
                 @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
                 <a href="{{ route('admin.themes.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.themes.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Themes</a>

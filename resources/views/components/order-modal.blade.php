@@ -195,7 +195,7 @@ document.addEventListener('alpine:init', () => {
                 })
                 .catch(error => {
                     console.error('Error fetching order details:', error);
-                    alert('Error loading order details.');
+                    window.alertDialog('Could not load the order details. Please try again.');
                     this.closeModal();
                 })
                 .finally(() => {
@@ -212,9 +212,9 @@ document.addEventListener('alpine:init', () => {
         },
 
         confirmCancel() {
-            if (confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
-                this.updateStatus('cancelled');
-            }
+            window.confirmDialog('This action cannot be undone.', { title: 'Cancel this order?', confirmText: 'Yes, cancel order' }).then((ok) => {
+                if (ok) this.updateStatus('cancelled');
+            });
         },
 
         updateStatus(status) {
@@ -228,7 +228,7 @@ document.addEventListener('alpine:init', () => {
                 })
                 .catch(error => {
                     console.error('Error updating status:', error);
-                    alert('Error updating status.');
+                    window.alertDialog('Could not update the order status. Please try again.');
                 })
                 .finally(() => {
                     this.isLoading = false;

@@ -57,34 +57,46 @@
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="1" width="5" height="5" rx="1" fill="currentColor"/><rect x="1" y="8" width="5" height="5" rx="1" fill="currentColor"/><rect x="8" y="8" width="5" height="5" rx="1" fill="currentColor"/></svg>
                     Dashboard
                 </a>
+                @if(auth()->user()->restaurant?->hasFeature('analytics'))
                 <a href="{{ route('admin.analytics.index') }}" class="theme-sb-item {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 13v-4M6 13V6M10 13V3M13 13V8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
                     Analytics
                 </a>
+                @endif
+                @if(auth()->user()->restaurant?->hasFeature('kitchen_screen'))
                 <a href="{{ route('kitchen.dashboard') }}" class="theme-sb-item {{ request()->routeIs('kitchen.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 13V8M7 13V3M11 13V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
                     Kitchen Dashboard
                 </a>
+                @endif
+                @if(auth()->user()->restaurant?->hasFeature('table_reservation'))
                 <a href="{{ route('admin.reservations.index') }}" class="theme-sb-item {{ request()->routeIs('admin.reservations.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M1 5h12" stroke="currentColor" stroke-width="1.3"/></svg>
                     Table Reservations
                 </a>
+                @endif
                 <a href="{{ route('admin.orders.index') }}" class="theme-sb-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3h10M2 7h10M2 11h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
                     Orders
                 </a>
+                @if(auth()->user()->restaurant?->hasFeature('coupons'))
                 <a href="{{ route('admin.discounts.index') }}" class="theme-sb-item {{ request()->routeIs('admin.discounts.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="4" cy="4" r="1.5" stroke="currentColor" stroke-width="1.3"/><circle cx="10" cy="10" r="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 3L3 11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
                     Coupons & Offers
                 </a>
+                @endif
+                @if(auth()->user()->restaurant?->hasFeature('banners'))
                 <a href="{{ route('admin.banners.index') }}" class="theme-sb-item {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/><path d="M5 6l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Hot Deals & Ads
                 </a>
+                @endif
+                @if(auth()->user()->restaurant?->hasFeature('table_ordering'))
                 <a href="{{ route('admin.tables.index') }}" class="theme-sb-item {{ request()->routeIs('admin.tables.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10a1 1 0 011 1v6a1 1 0 01-1 1H7l-3 2v-2H2a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/></svg>
                     Tables & QR
                 </a>
+                @endif
                 <a href="{{ route('admin.menu-categories.index') }}" class="theme-sb-item {{ request()->routeIs('admin.menu-categories.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
                     Menu Categories
@@ -99,10 +111,22 @@
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.75 2.75l1.06 1.06M10.19 10.19l1.06 1.06M2.75 11.25l1.06-1.06M10.19 3.81l1.06-1.06" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
                     Restaurant Settings
                 </a>
+                @if(auth()->user()->restaurant?->hasFeature('multi_branch'))
+                <a href="{{ route('admin.branches.index') }}" class="theme-sb-item {{ request()->routeIs('admin.branches.*') ? 'active' : '' }}">
+                    Branches
+                </a>
+                @endif
+                @if(auth()->user()->restaurant?->hasFeature('inventory'))
+                <a href="{{ route('admin.portions.index') }}" class="theme-sb-item {{ request()->routeIs('admin.portions.*') ? 'active' : '' }}">
+                    Inventory
+                </a>
+                @endif
+                @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
                 <a href="{{ route('admin.themes.index') }}" class="theme-sb-item {{ request()->routeIs('admin.themes.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
                     Themes
                 </a>
+                @endif
             </nav>
         </aside>
         <div class="theme-main">

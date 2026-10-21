@@ -112,10 +112,12 @@
             Analytics
         </a>
         @endif
+        @if(auth()->user()->restaurant?->hasFeature('kitchen_screen'))
         <a href="{{ route('kitchen.dashboard') }}" class="{{ request()->routeIs('kitchen.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 13V8M7 13V3M11 13V6" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
             Kitchen Dashboard
         </a>
+        @endif
         @if(auth()->user()->restaurant?->hasFeature('table_reservation'))
         <a href="{{ route('admin.reservations.index') }}" class="{{ request()->routeIs('admin.reservations.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="2" stroke="#888" stroke-width="1.3"/><path d="M1 5h12" stroke="#888" stroke-width="1.3"/></svg>
@@ -159,6 +161,18 @@
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="3" stroke="#888" stroke-width="1.3"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.75 2.75l1.06 1.06M10.19 10.19l1.06 1.06M2.75 11.25l1.06-1.06M10.19 3.81l1.06-1.06" stroke="#888" stroke-width="1.2" stroke-linecap="round"/></svg>
             Restaurant Settings
         </a>
+        @if(auth()->user()->restaurant?->hasFeature('multi_branch'))
+        <a href="{{ route('admin.branches.index') }}" class="{{ request()->routeIs('admin.branches.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#888" stroke-width="1.3"/></svg>
+            Branches
+        </a>
+        @endif
+        @if(auth()->user()->restaurant?->hasFeature('inventory'))
+        <a href="{{ route('admin.portions.index') }}" class="{{ request()->routeIs('admin.portions.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#888" stroke-width="1.3"/></svg>
+            Inventory
+        </a>
+        @endif
         @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
         <a href="{{ route('admin.themes.index') }}" class="{{ request()->routeIs('admin.themes.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#888" stroke-width="1.3"/><path d="M7 4v3l2 1.5" stroke="#888" stroke-width="1.3" stroke-linecap="round"/></svg>

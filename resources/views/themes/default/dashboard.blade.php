@@ -136,6 +136,7 @@
             <p class="text-[10px] font-bold text-slate-500 mt-2">{{ $stats['pending_orders'] }} currently in kitchen</p>
         </a>
 
+        @if(auth()->user()->restaurant?->hasFeature('table_ordering'))
         <a href="{{ route('admin.tables.index') }}"
             class="bg-white rounded-[2rem] shadow-sm border p-8 transition duration-300 transform hover:-translate-y-1 hover:shadow-lg block">
             <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Active Tables</h3>
@@ -143,6 +144,7 @@
             <p class="text-[10px] font-bold text-blue-600 mt-2">{{ $stats['pending_reservations'] }} pending reservations
             </p>
         </a>
+        @endif
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
@@ -184,6 +186,7 @@
                     </div>
                 </a>
 
+                @if(auth()->user()->restaurant?->hasFeature('coupons'))
                 <a href="{{ route('admin.discounts.create') }}"
                     class="flex items-center gap-4 p-4 bg-amber-50 rounded-2xl border border-amber-100 hover:bg-amber-100 transition">
                     <div class="bg-amber-600 text-white p-3 rounded-xl shadow-lg shadow-amber-200">
@@ -198,6 +201,7 @@
                         <p class="text-xs text-amber-600 font-bold uppercase">Marketing Tool</p>
                     </div>
                 </a>
+                @endif
 
                 <a href="{{ route('admin.menu-items.create') }}"
                     class="flex items-center gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100 hover:bg-blue-100 transition">
@@ -233,7 +237,7 @@
     </div>
     </div>
     
-    <div class="bg-white rounded-[2rem] shadow-sm border p-8 mb-8" x-data style="cursor:pointer;" @click="window.location.href='{{ route('admin.analytics.index') }}'">
+    <div class="bg-white rounded-[2rem] shadow-sm border p-8 mb-8" x-data style="cursor:pointer;" @if(auth()->user()->restaurant?->hasFeature('analytics')) @click="window.location.href='{{ route('admin.analytics.index') }}'" @endif>
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-black text-slate-800">Top 10 Products Sold</h2>
         </div>

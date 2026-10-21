@@ -52,7 +52,7 @@
         <div class="stat-value">{{ $stats['total_orders'] }}</div>
         <div class="stat-change text-amber-500">{{ $stats['pending_orders'] }} pending</div>
     </div>
-    <div class="stat-card" x-data @click="window.location.href='{{ route('admin.tables.index') }}'">
+    <div class="stat-card" x-data @if(auth()->user()->restaurant?->hasFeature('table_ordering')) @click="window.location.href='{{ route('admin.tables.index') }}'" @endif>
         <div class="stat-label">Active Tables</div>
         <div class="stat-value">{{ $stats['active_tables'] }}</div>
         <div class="stat-change text-emerald-500">Occupied</div>
@@ -71,7 +71,7 @@
         </div>
         <canvas id="salesChart"></canvas>
     </div>
-    <div class="white-card" x-data style="cursor:pointer;" @click="window.location.href='{{ route('admin.analytics.index') }}'">
+    <div class="white-card" x-data style="cursor:pointer;" @if(auth()->user()->restaurant?->hasFeature('analytics')) @click="window.location.href='{{ route('admin.analytics.index') }}'" @endif>
         <div class="card-title">Top 10 Products Sold</div>
         <div class="products-body" style="justify-content:center;">
             <div class="pie-wrap"><canvas id="pieChart"></canvas></div>

@@ -40,7 +40,7 @@
                         <form action="{{ route('admin.menu-categories.destroy', $category) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" onclick="return confirm('Delete category?')" class="text-red-500 hover:text-red-700 text-sm font-medium">Delete</button>
+                            <button type="submit" data-confirm="Delete category?" class="text-red-500 hover:text-red-700 text-sm font-medium">Delete</button>
                         </form>
                     </td>
                 </tr>

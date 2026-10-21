@@ -57,7 +57,7 @@
 </div>
 
 <div class="row2">
-    <div class="spending-card" x-data style="cursor:pointer;" @click="window.location.href='{{ route('admin.analytics.index') }}'">
+    <div class="spending-card" x-data style="cursor:pointer;" @if(auth()->user()->restaurant?->hasFeature('analytics')) @click="window.location.href='{{ route('admin.analytics.index') }}'" @endif>
         <div class="spending-title">Top 10 Products Sold</div>
         <div class="spending-body" style="justify-content:center;">
             <div class="donut-wrap"><canvas id="spendingDonut"></canvas></div>

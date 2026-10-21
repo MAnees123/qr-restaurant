@@ -19,6 +19,16 @@
             </button>
         </form>
 
+        @php $hasDemo = app(\App\Services\DemoDataService::class)->hasData($restaurant); @endphp
+        <form action="{{ route('superadmin.tenants.seed-demo', $restaurant) }}" method="POST"
+              data-confirm="Add demo data (menu, tables, orders, kitchen staff...) to this restaurant only?">
+            @csrf
+            <button type="submit" {{ $hasDemo ? 'disabled' : '' }} title="{{ $hasDemo ? 'Demo data already exists' : 'Add demo data to this restaurant' }}"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-sm {{ $hasDemo ? 'opacity-50 cursor-not-allowed' : '' }}">
+                {{ $hasDemo ? 'Demo Data Added' : 'Seed Demo Data' }}
+            </button>
+        </form>
+
         <a href="{{ route('superadmin.tenants.edit', $restaurant) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-sm">
             Edit Tenant Settings
         </a>
@@ -31,7 +41,7 @@
                     Activate Tenant
                 </button>
             @else
-                <button type="submit" onclick="return confirm('Suspend this tenant?')" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition">
+                <button type="submit" data-confirm="Suspend this tenant?" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition">
                     Suspend Tenant
                 </button>
             @endif

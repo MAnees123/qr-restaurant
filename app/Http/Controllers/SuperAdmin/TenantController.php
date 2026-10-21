@@ -70,7 +70,8 @@ class TenantController extends Controller
             'max_storage_mb'=> 'nullable|integer|min:1',
             'theme'         => 'nullable|string|max:50',
             'logo'          => 'nullable|image|max:2048',
-            'granted_features' => 'nullable|array',
+            'granted_features'   => 'nullable|array',
+            'granted_features.*' => ['string', \Illuminate\Validation\Rule::in(FeatureRegistry::allCodes())],
         ]);
 
         $logoPath = null;
@@ -104,7 +105,9 @@ class TenantController extends Controller
             'max_storage_mb'       => $data['max_storage_mb'] ?? 100,
             'theme'                => $data['theme'] ?? 'default',
             'logo'                 => $logoPath,
-            'granted_features'     => $request->input('granted_features', []),
+            'granted_features'     => $request->has('granted_features')
+                ? $request->input('granted_features', [])
+                : $this->planFeatures($data['plan_id'] ?? null),
             'is_active'            => true,
             'is_suspended'         => false,
         ]);
@@ -174,6 +177,7 @@ class TenantController extends Controller
             'theme'                => 'nullable|string|max:50',
             'logo'                 => 'nullable|image|max:2048',
             'granted_features'     => 'nullable|array',
+            'granted_features.*'   => ['string', \Illuminate\Validation\Rule::in(FeatureRegistry::allCodes())],
         ]);
 
         if ($request->hasFile('logo')) {
@@ -183,7 +187,10 @@ class TenantController extends Controller
             $data['logo'] = $request->file('logo')->store('restaurant_logos', 'public');
         }
 
-        $data['granted_features'] = $request->input('granted_features', []);
+        $planChanged = array_key_exists('plan_id', $data) && (int) $data['plan_id'] !== (int) $restaurant->plan_id;
+        $data['granted_features'] = ($planChanged && !$request->has('granted_features'))
+            ? $this->planFeatures($data['plan_id'])
+            : $request->input('granted_features', []);
         $data['is_active']        = $request->boolean('is_active', true);
 
         $restaurant->update($data);
@@ -215,13 +222,48 @@ class TenantController extends Controller
 
     public function updateFeatures(Request $request, Restaurant $restaurant)
     {
-        $restaurant->update([
-            'granted_features' => $request->input('granted_features', []),
+        $request->validate([
+            'granted_features'   => 'nullable|array',
+            'granted_features.*' => ['string', \Illuminate\Validation\Rule::in(FeatureRegistry::allCodes())],
         ]);
-        
-        \App\Models\ActivityLog::log('tenant_features_updated', "Tenant features updated.", $restaurant->id);
+
+        $before = $restaurant->granted_features ?? [];
+        $after  = array_values(array_unique($request->input('granted_features', [])));
+
+        $restaurant->update(['granted_features' => $after]);
+
+        $added   = array_diff($after, $before);
+        $removed = array_diff($before, $after);
+        \App\Models\ActivityLog::log(
+            'tenant_features_updated',
+            'Tenant features updated. Added: ' . ($added ? implode(', ', $added) : 'none')
+                . '. Removed: ' . ($removed ? implode(', ', $removed) : 'none') . '.',
+            $restaurant->id
+        );
 
         return back()->with('success', 'Feature access updated successfully.');
+    }
+
+    /** Feature codes included in a plan (used as the default grant for a tenant). */
+    private function planFeatures(?int $planId): array
+    {
+        return $planId ? (Plan::find($planId)?->features ?? []) : [];
+    }
+
+    public function seedDemo(Restaurant $restaurant, \App\Services\DemoDataService $demo)
+    {
+        try {
+            $created = $demo->seed($restaurant);
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        \App\Models\ActivityLog::log('tenant_demo_seeded', 'Demo data added to tenant.', $restaurant->id);
+
+        return back()->with('success', "Demo data added to {$restaurant->name}: "
+            . ($created['menu_items'] ?? 0) . ' menu items, '
+            . ($created['tables'] ?? 0) . ' tables, '
+            . ($created['orders'] ?? 0) . ' orders. Kitchen login: kitchen' . $restaurant->id . '@restaurant.com / password');
     }
 
     public function impersonate(Restaurant $restaurant)

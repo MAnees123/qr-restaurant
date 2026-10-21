@@ -46,7 +46,7 @@
                         <td class="p-4 text-right">
                             <form action="{{ route('admin.portions.destroy', $p) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
-                                <button type="submit" onclick="return confirm('Delete this portion?')" class="text-xs text-red-500 font-bold uppercase hover:underline">Delete</button>
+                                <button type="submit" data-confirm="Delete this portion?" class="text-xs text-red-500 font-bold uppercase hover:underline">Delete</button>
                             </form>
                         </td>
                     </tr>

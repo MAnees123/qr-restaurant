@@ -113,7 +113,7 @@ return new class extends Migration
   'name' => 'Admin User',
   'email' => 'admin@gmail.com',
   'email_verified_at' => NULL,
-  'password' => '1234',
+  'password' => bcrypt('1234'),
   'role' => 'admin',
   'is_super_admin' => 0,
   'avatar' => NULL,
