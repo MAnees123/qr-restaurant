@@ -52,6 +52,7 @@
 .dark-main input, .dark-main select, .dark-main textarea { background-color: #111111 !important; color: #fff !important; border-color: #2a2a2a !important; }
 </style>
 @stack('styles')
+@include('partials.pwa-head', ['restaurant' => $restaurant ?? null])
 </head>
 <body>
 @if(session()->has('impersonator_id'))
@@ -173,6 +174,7 @@
             Inventory
         </a>
         @endif
+        <x-feature-menu theme="dark" />
         @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
         <a href="{{ route('admin.themes.index') }}" class="{{ request()->routeIs('admin.themes.*') ? 'dark-sb-active' : 'dark-sb-item' }}">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#888" stroke-width="1.3"/><path d="M7 4v3l2 1.5" stroke="#888" stroke-width="1.3" stroke-linecap="round"/></svg>

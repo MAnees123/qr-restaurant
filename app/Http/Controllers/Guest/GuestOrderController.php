@@ -19,6 +19,9 @@ class GuestOrderController extends Controller
             'payment_status' => 'nullable|string|in:pending,paid',
             'transaction_id' => 'nullable|string',
             'address' => 'nullable|string',
+            'customer_name' => 'nullable|string|max:120',
+            'customer_phone' => 'nullable|string|max:30',
+            'customer_email' => 'nullable|email|max:120',
         ]);
 
         $cart = session()->get('cart', []);
@@ -94,6 +97,9 @@ class GuestOrderController extends Controller
             'discount_amount' => $discountAmount,
             'total_amount' => $totalAmount,
             'notes' => trim($orderNotes),
+            'customer_name' => $request->filled('customer_name') ? strip_tags($request->customer_name) : null,
+            'customer_phone' => $request->filled('customer_phone') ? strip_tags($request->customer_phone) : null,
+            'customer_email' => $request->input('customer_email') ?: null,
             'estimated_completion_time' => now()->addMinutes($maxPrepTime),
         ]);
 

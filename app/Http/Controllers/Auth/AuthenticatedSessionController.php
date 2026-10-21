@@ -28,9 +28,23 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // advanced_security hook: IP allowlist + 2FA challenge (no-op unless the feature is granted)
+        if ($blocked = app(\App\Services\Platform\LoginSecurity::class)->afterPasswordCheck($request)) {
+            return $blocked;
+        }
+
         // Super Admin goes directly to the Super Admin dashboard
         if (auth()->user()->is_super_admin) {
             return redirect()->route('superadmin.dashboard');
+        }
+
+        // Operations module: waiter / cashier staff land on their own panel
+        $user = auth()->user();
+        if ($user->role === 'staff' && $user->staff_role === 'waiter' && $user->restaurant?->hasFeature('waiter_panel')) {
+            return redirect()->route('staff.waiter.index');
+        }
+        if ($user->role === 'staff' && $user->staff_role === 'cashier' && $user->restaurant?->hasFeature('cashier_module')) {
+            return redirect()->route('staff.cashier.index');
         }
 
         return redirect()->intended(route('dashboard', absolute: false));

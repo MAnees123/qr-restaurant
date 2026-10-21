@@ -38,6 +38,7 @@
     .modern-content { padding:28px 28px 40px; flex:1; overflow-y:auto; }
     </style>
     @stack('styles')
+@include('partials.pwa-head', ['restaurant' => $restaurant ?? null])
 </head>
 <body>
 <div class="modern-shell">
@@ -137,6 +138,7 @@
             </a>
             @endif
 
+            <x-feature-menu theme="modern" />
             {{-- Theme Customization --}}
             @if($u->hasFeature('theme_custom'))
             <a href="{{ route('admin.themes.index') }}" class="modern-sb-item {{ request()->routeIs('admin.themes.*') ? 'active' : '' }}">

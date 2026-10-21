@@ -23,10 +23,14 @@ class Order extends Model
         'total_amount',
         'notes',
         'estimated_completion_time',
+        'order_type', 'customer_name', 'customer_phone', 'customer_email', 'delivery_address', 'delivery_fee',
+        'delivery_status', 'driver_name', 'driver_phone', 'delivered_at', 'rejection_reason',
+        'placed_by_user_id', 'loyalty_points_redeemed',
     ];
 
     protected $casts = [
         'estimated_completion_time' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
     public function payments()

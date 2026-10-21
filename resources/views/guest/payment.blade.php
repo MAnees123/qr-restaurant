@@ -149,6 +149,8 @@
                 <input class="modal-inp" type="text" placeholder="Full Name" x-model="tempName" />
                 <input class="modal-inp" type="text" placeholder="Street Address" x-model="tempStreet" />
                 <input class="modal-inp" type="text" placeholder="City, State, ZIP" x-model="tempCity" />
+                <input class="modal-inp" type="tel" placeholder="Phone (optional, for order updates)" x-model="tempPhone" />
+                <input class="modal-inp" type="email" placeholder="Email (optional, for order updates)" x-model="tempEmail" />
                 <button class="modal-save" @click="saveAddr()">
                     Save Details
                 </button>
@@ -1255,6 +1257,10 @@
                 addressName: '',
                 addressStreet: '',
                 addressCity: '',
+                customerPhone: '',
+                customerEmail: '',
+                tempPhone: '',
+                tempEmail: '',
                 
                 tempName: '',
                 tempStreet: '',
@@ -1283,6 +1289,8 @@
                     this.tempName = this.addressName;
                     this.tempStreet = this.addressStreet;
                     this.tempCity = this.addressCity;
+                    this.tempPhone = this.customerPhone;
+                    this.tempEmail = this.customerEmail;
                     
                     // Convert PKR to BTC (Rate: 1 BTC = 18,000,000 PKR)
                     this.btcAmount = this.totalAmount / 18000000;
@@ -1310,6 +1318,8 @@
                     this.tempName = this.addressName;
                     this.tempStreet = this.addressStreet;
                     this.tempCity = this.addressCity;
+                    this.tempPhone = this.customerPhone;
+                    this.tempEmail = this.customerEmail;
                     this.isModalOpen = true;
                 },
                 
@@ -1321,6 +1331,8 @@
                     this.addressName = this.tempName;
                     this.addressStreet = this.tempStreet;
                     this.addressCity = this.tempCity;
+                    this.customerPhone = this.tempPhone;
+                    this.customerEmail = this.tempEmail;
                     this.ccName = this.tempName; // sync ccName
                     this.isModalOpen = false;
                     this.showToast("📍 Delivery details updated.");
@@ -1425,7 +1437,10 @@
                         payment_method: method,
                         payment_status: pStatus,
                         transaction_id: txId,
-                        address: addressStr
+                        address: addressStr,
+                        customer_name: this.addressName,
+                        customer_phone: this.customerPhone,
+                        customer_email: this.customerEmail
                     })
                     .then(response => {
                         if (method === 'cash') {

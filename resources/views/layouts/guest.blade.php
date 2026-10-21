@@ -25,6 +25,7 @@
             window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
         }
     </script>
+@include('partials.pwa-head', ['restaurant' => $restaurant ?? null])
 </head>
 <body class="font-sans antialiased" style="margin:0;padding:0;background:#111;">
     @yield('content')

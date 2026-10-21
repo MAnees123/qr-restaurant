@@ -40,6 +40,7 @@
     .theme-content { padding:24px; flex:1; overflow-y:auto; }
     </style>
     @stack('styles')
+@include('partials.pwa-head', ['restaurant' => $restaurant ?? null])
 </head>
 <body>
     <div class="theme-shell">
@@ -121,6 +122,7 @@
                     Inventory
                 </a>
                 @endif
+                <x-feature-menu theme="falcon" />
                 @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
                 <a href="{{ route('admin.themes.index') }}" class="theme-sb-item {{ request()->routeIs('admin.themes.*') ? 'active' : '' }}">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M7 4v3l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>

@@ -35,6 +35,7 @@
 .classic-content { padding:24px 24px 30px; flex:1; overflow-y:auto; }
 </style>
 @stack('styles')
+@include('partials.pwa-head', ['restaurant' => $restaurant ?? null])
 </head>
 <body>
 <div class="classic-shell">
@@ -112,6 +113,7 @@
                 Inventory
             </a>
             @endif
+            <x-feature-menu theme="classic" />
             @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
             <a href="{{ route('admin.themes.index') }}" class="classic-sb-item {{ request()->routeIs('admin.themes.*') ? 'active' : '' }}">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>

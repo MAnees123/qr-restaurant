@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable, \App\Models\Concerns\HasStaffPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -15,7 +16,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password',
         'restaurant_id', 'role',
-        'is_super_admin', 'is_suspended', 'avatar',
+        'is_super_admin', 'is_suspended', 'avatar', 'staff_role', 'custom_role_id',
     ];
 
     /**

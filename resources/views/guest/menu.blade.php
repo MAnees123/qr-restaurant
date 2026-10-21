@@ -3,6 +3,7 @@
 
 @section('content')
     @php
+        if (!function_exists('getCategoryEmoji')) {
         function getCategoryEmoji($name)
         {
             $name = strtolower($name);
@@ -30,6 +31,7 @@
                 return '🍕';
             }
             return '🍽️';
+        }
         }
 
         $featured = null;
@@ -69,6 +71,16 @@
             <div>
                 <div class="greeting-name">Hi, Table {{ $table->table_number }}</div>
                 <div class="greeting-sub">Ready to order from {{ $restaurant->name }}?</div>
+                @if($restaurant->hasFeature('custom_branding') && ($__brand = \App\Models\Comms\CommsSetting::read($restaurant->id, 'branding')))
+                    <div class="flex items-center gap-2 mt-1" data-brand-block>
+                        @if(!empty($__brand['logo']))
+                            <img src="{{ asset('storage/' . $__brand['logo']) }}" alt="{{ $restaurant->name }}" style="height:28px;width:auto;border-radius:6px;">
+                        @endif
+                        @if(!empty($__brand['tagline']))
+                            <span class="greeting-sub" style="color: var(--brand-primary);">{{ $__brand['tagline'] }}</span>
+                        @endif
+                    </div>
+                @endif
             </div>
             <button class="cart-btn relative text-white"
                 @click="activeTab = 'cart'; window.scrollTo({top: 0, behavior: 'smooth'})">

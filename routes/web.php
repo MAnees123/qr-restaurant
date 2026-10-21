@@ -55,6 +55,18 @@ Route::middleware(['auth'])->get('/dashboard', function () {
     if (auth()->user()->role === 'kitchen') {
         return redirect()->route('kitchen.dashboard');
     }
+    $user = auth()->user();
+    if ($user->role === 'staff') {
+        $panel = match ($user->staff_role) {
+            'waiter'  => $user->restaurant?->hasFeature('waiter_panel') ? 'staff.waiter.index' : null,
+            'cashier' => $user->restaurant?->hasFeature('cashier_module') ? 'staff.cashier.index' : null,
+            default   => null,
+        };
+        if (!$panel) {
+            $panel = $user->restaurant?->hasFeature('attendance') ? 'staff.attendance.my' : 'profile.edit';
+        }
+        return redirect()->route($panel);
+    }
     return redirect()->route('admin.dashboard');
 })->name('dashboard');
 
@@ -190,3 +202,8 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
 
 // Impersonation leave route (needs to be outside superadmin middleware group because we are currently logged in as a normal user)
 Route::middleware(['auth'])->get('/superadmin/impersonate/leave', [\App\Http\Controllers\SuperAdmin\TenantController::class, 'leaveImpersonate'])->name('superadmin.tenants.leave-impersonate');
+
+// Feature modules: each file in routes/features declares its own middleware (auth, role, feature:<code>).
+foreach (glob(base_path('routes/features/*.php')) as $featureRoutes) {
+    require $featureRoutes;
+}

@@ -14,6 +14,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+@include('partials.pwa-head', ['restaurant' => $restaurant ?? null])
 </head>
 
 <body class="font-sans antialiased bg-gray-100">
@@ -96,6 +97,7 @@
                 <a href="{{ route('admin.portions.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.portions.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Inventory</a>
                 @endif
+                <x-feature-menu theme="default" />
                 @if(auth()->user()->restaurant?->hasFeature('theme_custom'))
                 <a href="{{ route('admin.themes.index') }}"
                     class="block px-6 py-3 hover:bg-slate-700 {{ request()->routeIs('admin.themes.*') ? 'bg-slate-700 border-l-4 border-amber-500' : '' }}">Themes</a>
