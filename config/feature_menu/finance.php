@@ -1,7 +1,7 @@
 <?php
 
 return [
-    ['feature' => 'reports', 'label' => 'Reports', 'route' => 'admin.reports.index', 'pattern' => 'admin.reports.*'],
+    ['group' => 'reports', 'feature' => 'reports', 'label' => 'Reports', 'route' => 'admin.reports.index', 'pattern' => 'admin.reports.*'],
     ['feature' => 'billing', 'label' => 'Invoices', 'route' => 'admin.invoices.index', 'pattern' => 'admin.invoices.*'],
     ['feature' => 'tax_mgmt', 'label' => 'Tax Rates', 'route' => 'admin.taxes.index', 'pattern' => 'admin.taxes.*'],
     ['feature' => 'supplier_mgmt', 'label' => 'Suppliers', 'route' => 'admin.suppliers.index', 'pattern' => 'admin.suppliers.*'],

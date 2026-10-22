@@ -2,12 +2,12 @@
 @section('title', 'Register - QR Restaurant')
 
 @section('content')
-<div class="min-h-screen flex flex-col justify-center items-center p-6 bg-stone-50">
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-stone-100">
+<div class="min-h-screen flex flex-col justify-center items-center p-6 bg-slate-50">
+    <div class="card w-full max-w-md overflow-hidden shadow-xl">
         <!-- Header Section -->
-        <div class="bg-amber-500 p-8 text-center">
+        <div class="p-8 text-center" style="background:linear-gradient(135deg,#4f46e5,#6366f1)">
             <h1 class="text-2xl font-bold text-white">Create Account</h1>
-            <p class="text-amber-100 text-sm mt-1">Get your restaurant started today</p>
+            <p class="text-indigo-100 text-sm mt-1">Get your restaurant started today</p>
         </div>
 
         <div class="p-8">
@@ -16,8 +16,8 @@
 
                 <!-- Name -->
                 <div>
-                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" class="w-full rounded-xl border-stone-200 focus:border-amber-500 focus:ring-amber-500 shadow-sm px-4 py-3">
+                    <label for="name" class="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
+                    <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" class="input !py-3">
                     @error('name')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -25,8 +25,8 @@
 
                 <!-- Email Address -->
                 <div>
-                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
-                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="w-full rounded-xl border-stone-200 focus:border-amber-500 focus:ring-amber-500 shadow-sm px-4 py-3">
+                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
+                    <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" class="input !py-3">
                     @error('email')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -34,8 +34,8 @@
 
                 <!-- Password -->
                 <div>
-                    <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                    <input id="password" type="password" name="password" required autocomplete="new-password" class="w-full rounded-xl border-stone-200 focus:border-amber-500 focus:ring-amber-500 shadow-sm px-4 py-3">
+                    <label for="password" class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                    <input id="password" type="password" name="password" required autocomplete="new-password" class="input !py-3">
                     @error('password')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -43,15 +43,15 @@
 
                 <!-- Confirm Password -->
                 <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
-                    <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" class="w-full rounded-xl border-stone-200 focus:border-amber-500 focus:ring-amber-500 shadow-sm px-4 py-3">
+                    <label for="password_confirmation" class="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+                    <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" class="input !py-3">
                     @error('password_confirmation')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors flex justify-center items-center">
+                    <button type="submit" class="btn btn-primary w-full !py-3">
                         Register Account
                     </button>
                 </div>
@@ -60,7 +60,7 @@
             <div class="mt-8 text-center">
                 <p class="text-sm text-slate-600">
                     Already have an account? 
-                    <a href="{{ route('login') }}" class="font-medium text-amber-600 hover:text-amber-500">Sign in</a>
+                    <a href="{{ route('login') }}" class="font-semibold text-indigo-600 hover:text-indigo-500">Sign in</a>
                 </p>
             </div>
         </div>

@@ -2,26 +2,28 @@
 @section('title', 'Daily Cash Summary')
 @section('header', 'Daily Cash Summary')
 @section('content')
-<form method="GET" class="mb-6 flex gap-2 items-end">
-    <div><label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Date</label>
-    <input type="date" name="date" value="{{ $summary['date'] }}" class="rounded-xl border-slate-200"></div>
-    <button class="px-5 py-2.5 rounded-xl bg-slate-800 text-white font-bold">Show</button>
+<div class="space-y-6">
+<form method="GET" class="flex gap-2 items-end">
+    <div><label class="block text-sm font-medium text-slate-700 mb-1.5">Date</label>
+    <input type="date" name="date" value="{{ $summary['date'] }}" class="input"></div>
+    <button class="btn btn-primary">Show</button>
 </form>
-<div class="grid sm:grid-cols-3 gap-3 mb-6">
-    <div class="bg-white rounded-2xl border p-4"><div class="text-xs font-black uppercase tracking-widest text-slate-400">Total collected</div><div class="text-2xl font-black text-emerald-600">Rs {{ number_format($summary['total'], 2) }}</div></div>
-    <div class="bg-white rounded-2xl border p-4"><div class="text-xs font-black uppercase tracking-widest text-slate-400">Payments</div><div class="text-2xl font-black">{{ $summary['count'] }}</div></div>
-    <div class="bg-white rounded-2xl border p-4"><div class="text-xs font-black uppercase tracking-widest text-slate-400">Currently unpaid</div><div class="text-2xl font-black text-amber-600">{{ $summary['unpaid_count'] }} (Rs {{ number_format($summary['unpaid_total'], 2) }})</div></div>
+<div class="grid sm:grid-cols-3 gap-4">
+    <x-ui.stat-card label="Total collected" :value="'Rs ' . number_format($summary['total'], 2)" tone="success"/>
+    <x-ui.stat-card label="Payments" :value="$summary['count']"/>
+    <x-ui.stat-card label="Currently unpaid" :value="$summary['unpaid_count'] . ' (Rs ' . number_format($summary['unpaid_total'], 2) . ')'" tone="warning"/>
 </div>
-<div class="bg-white rounded-2xl border overflow-hidden">
+<div class="card overflow-x-auto">
     <table class="w-full text-left">
-        <thead><tr class="bg-slate-50 border-b"><th class="px-4 py-3 text-xs font-black text-slate-400 uppercase">Method</th><th class="px-4 py-3 text-xs font-black text-slate-400 uppercase">Payments</th><th class="px-4 py-3 text-xs font-black text-slate-400 uppercase text-right">Amount</th></tr></thead>
-        <tbody class="divide-y">
+        <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase tracking-wide"><th class="px-6 py-4">Method</th><th class="px-6 py-4 text-right">Payments</th><th class="px-6 py-4 text-right">Amount</th></tr></thead>
+        <tbody class="divide-y divide-slate-100">
         @forelse ($summary['by_method'] as $method => $row)
-            <tr><td class="px-4 py-3 font-bold capitalize">{{ $method }}</td><td class="px-4 py-3">{{ $row['count'] }}</td><td class="px-4 py-3 text-right font-black">Rs {{ number_format($row['amount'], 2) }}</td></tr>
+            <tr class="hover:bg-slate-50/60 transition-colors"><td class="px-6 py-4 font-semibold capitalize">{{ $method }}</td><td class="px-6 py-4 text-right">{{ $row['count'] }}</td><td class="px-6 py-4 text-right font-semibold">Rs {{ number_format($row['amount'], 2) }}</td></tr>
         @empty
-            <tr><td colspan="3" class="px-4 py-8 text-center text-slate-400">No payments on this date.</td></tr>
+            <tr><td colspan="3"><x-ui.empty-state title="No payments on this date"/></td></tr>
         @endforelse
         </tbody>
     </table>
+</div>
 </div>
 @endsection

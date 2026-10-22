@@ -193,9 +193,12 @@
         .impersonate-bar a { color: #1c1917; font-weight: 700; text-decoration: underline; }
 
         /* ── Page Content ───────────────────────────────────── */
-        .page-content { padding: 32px; flex: 1; }
+        .page-content { padding: 32px; flex: 1; min-width: 0; }
+        .page-content > div[style*="justify-content:space-between"] { flex-wrap: wrap; gap: 12px; }
 
         /* ── Alert Flashes ──────────────────────────────────── */
+        @keyframes sa-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        .page-content > * { animation: sa-fade-in .25s ease both; }
         .flash {
             padding: 12px 18px; border-radius: var(--radius);
             margin-bottom: 20px; font-size: 13.5px; font-weight: 500;
@@ -208,10 +211,12 @@
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
+            border-radius: 14px;
             padding: 24px;
-            transition: background .3s, border-color .3s;
+            box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px -14px rgba(0,0,0,.25);
+            transition: background .3s, border-color .3s, box-shadow .2s, transform .2s;
         }
+        .card:hover { box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 14px 30px -14px rgba(0,0,0,.3); }
         .card-header { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
 
         /* ── Buttons ────────────────────────────────────────── */
@@ -219,10 +224,15 @@
             display: inline-flex; align-items: center; gap: 7px;
             padding: 8px 16px; border-radius: 8px;
             font-size: 13px; font-weight: 600; cursor: pointer;
-            border: none; text-decoration: none; transition: all .15s ease;
+            border: 1px solid transparent; text-decoration: none; transition: all .15s ease;
+            line-height: 1.25; white-space: nowrap;
         }
-        .btn-primary   { background: var(--accent); color: #fff; }
-        .btn-primary:hover { background: #574fd6; }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .btn:disabled { opacity: .5; cursor: not-allowed; pointer-events: none; }
+        .btn-primary   { background: linear-gradient(180deg, #7c75ff, var(--accent)); color: #fff; box-shadow: 0 6px 14px -6px rgba(108,99,255,.6); }
+        .btn-primary:hover { background: linear-gradient(180deg, var(--accent), #574fd6); }
         .btn-danger    { background: rgba(239,68,68,.15); color: #f87171; border: 1px solid rgba(239,68,68,.25); }
         .btn-danger:hover { background: rgba(239,68,68,.25); }
         .btn-secondary { background: rgba(108,99,255,.06); color: var(--muted); border: 1px solid var(--border); }
@@ -234,11 +244,11 @@
         /* ── Tables ─────────────────────────────────────────── */
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-        thead th { padding: 10px 14px; background: rgba(108,99,255,.04); color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; text-align: left; border-bottom: 1px solid var(--border); }
+        thead th { padding: 12px 20px; white-space: nowrap; background: rgba(108,99,255,.04); color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; text-align: left; border-bottom: 1px solid var(--border); }
         tbody tr { border-bottom: 1px solid var(--border); transition: background .12s; }
         tbody tr:last-child { border-bottom: none; }
         tbody tr:hover { background: rgba(108,99,255,.04); }
-        tbody td { padding: 12px 14px; color: var(--text); vertical-align: middle; }
+        tbody td { padding: 14px 20px; color: var(--text); vertical-align: middle; }
 
         /* ── Badges ─────────────────────────────────────────── */
         .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
@@ -254,11 +264,11 @@
         .form-control {
             width: 100%; padding: 10px 14px;
             background: rgba(108,99,255,.04); border: 1px solid var(--border);
-            border-radius: 8px; color: var(--text); font-size: 13.5px;
+            border-radius: 10px; color: var(--text); font-size: 13.5px;
             outline: none; font-family: 'Inter', sans-serif;
-            transition: border-color .15s, background .3s;
+            transition: border-color .15s, background .3s, box-shadow .15s;
         }
-        .form-control:focus { border-color: var(--accent); background: rgba(108,99,255,.08); }
+        .form-control:focus { border-color: var(--accent); background: rgba(108,99,255,.08); box-shadow: 0 0 0 4px rgba(108,99,255,.18); }
         .form-control option { background: var(--bg-card); color: var(--text); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
@@ -276,7 +286,8 @@
             overflow: hidden;
             transition: transform .2s, box-shadow .2s, background .3s;
         }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+        .stat-card { box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px -12px rgba(0,0,0,.3); }
         .stat-card::before {
             content: '';
             position: absolute; top: 0; left: 0;
@@ -316,9 +327,49 @@
         .empty-state i { font-size: 40px; margin-bottom: 16px; opacity: .3; display: block; }
         .empty-state a { color: var(--accent2); }
 
+
+        /* ── Theme compatibility for Tailwind-styled pages ──── */
+        [data-theme] .page-content .bg-white { background: var(--bg-card); }
+        [data-theme] .page-content .border-slate-100,
+        [data-theme] .page-content .border-slate-200,
+        [data-theme] .page-content .border-b,
+        [data-theme] .page-content .border-t { border-color: var(--border); }
+        [data-theme] .page-content .bg-slate-50 { background: rgba(108,99,255,.05); }
+        [data-theme] .page-content .text-slate-800,
+        [data-theme] .page-content .text-slate-700 { color: var(--text); }
+        [data-theme] .page-content .text-slate-600,
+        [data-theme] .page-content .text-slate-500,
+        [data-theme] .page-content .text-slate-400 { color: var(--muted); }
+        [data-theme] .page-content .divide-y > :not([hidden]) ~ :not([hidden]) { border-color: var(--border); }
+        [data-theme] .page-content input:not([type=checkbox]):not([type=radio]):not([type=file]),
+        [data-theme] .page-content select,
+        [data-theme] .page-content textarea {
+            background: rgba(108,99,255,.04); border: 1px solid var(--border); color: var(--text);
+            border-radius: 10px; padding: 10px 14px; transition: border-color .15s, box-shadow .15s;
+        }
+        [data-theme] .page-content input:focus, [data-theme] .page-content select:focus, [data-theme] .page-content textarea:focus {
+            outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(108,99,255,.18);
+        }
+        [data-theme] .page-content select option { background: var(--bg-card); color: var(--text); }
+        .page-content .grid { min-width: 0; }
+        .page-content .grid > * { min-width: 0; }
+
+        /* ── Mobile menu ────────────────────────────────────── */
+        .menu-btn { display: none; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; align-items: center; justify-content: center; font-size: 16px; margin-right: 12px; }
+        .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 45; opacity: 0; transition: opacity .25s; }
+        .sidebar { transition: background .3s, border-color .3s, transform .25s ease; }
+
         /* ── Responsive ─────────────────────────────────────── */
         @media (max-width: 768px) {
-            .sidebar { width: 220px; transform: translateX(-100%); }
+            .sidebar { width: 240px; transform: translateX(-100%); }
+            body.sidebar-open .sidebar { transform: translateX(0); box-shadow: 0 0 40px rgba(0,0,0,.4); }
+            body.sidebar-open .sidebar-backdrop { display: block; opacity: 1; }
+            .menu-btn { display: inline-flex; }
+            .page-content [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+            .page-content form[style*="display:flex"] { flex-wrap: wrap; }
+            .page-content form .form-control { max-width: 100% !important; }
+            .topbar-name { display: none; }
+            .stat-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
             .main { margin-left: 0; }
             .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
             .topbar { padding: 0 16px; }
@@ -341,6 +392,8 @@
 @endif
 
 <div class="shell">
+
+    <div class="sidebar-backdrop" onclick="document.body.classList.remove('sidebar-open')"></div>
 
     {{-- ── Sidebar ──────────────────────────────────── --}}
     <aside class="sidebar">
@@ -398,7 +451,12 @@
     <div class="main">
         {{-- Topbar --}}
         <div class="topbar">
-            <div class="topbar-title">@yield('title', 'Super Admin Dashboard')</div>
+            <div style="display:flex; align-items:center; min-width:0;">
+                <button type="button" class="menu-btn" onclick="document.body.classList.toggle('sidebar-open')" aria-label="Toggle menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="topbar-title">@yield('title', 'Super Admin Dashboard')</div>
+            </div>
             <div class="topbar-actions">
                 {{-- Dark / Light Mode Toggle --}}
                 <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode" id="themeBtn">

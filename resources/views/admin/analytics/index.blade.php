@@ -3,35 +3,35 @@
 @section('title', 'Product Sales Analytics')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
+<div class="page-header">
     <div>
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Hot Items & Analytics</h2>
-        <p class="text-gray-500 text-sm">Track trending products, peak hours, and overall sales momentum. Data updates live with every sale.</p>
+        <h2 class="page-title dark:text-white">Hot Items & Analytics</h2>
+        <p class="page-subtitle">Track trending products, peak hours, and overall sales momentum. Data updates live with every sale.</p>
     </div>
     <div>
-        <button onclick="window.location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-xl shadow-sm transition">
-            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <button onclick="window.location.reload()" class="btn btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             Refresh Data
         </button>
     </div>
 </div>
 
 <!-- Badges Legend -->
-<div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-[#2a2a2a] mb-6 flex flex-wrap gap-4">
-    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">🔥 Hot Item</span><span class="text-sm text-gray-500">3+ items sold</span></div>
-    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold">📈 Trending</span><span class="text-sm text-gray-500">Sales grew by > 50%</span></div>
-    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs font-bold">🏆 Best Seller</span><span class="text-sm text-gray-500">Top 15% of all products</span></div>
-    <div class="flex items-center gap-2"><span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-bold">⚡ Fast Selling</span><span class="text-sm text-gray-500">10+ units sold</span></div>
+<div class="card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] p-4 mb-6 flex flex-wrap gap-4">
+    <div class="flex items-center gap-2"><span class="badge badge-danger">🔥 Hot Item</span><span class="text-sm text-gray-500">3+ items sold</span></div>
+    <div class="flex items-center gap-2"><span class="badge badge-info">📈 Trending</span><span class="text-sm text-gray-500">Sales grew by > 50%</span></div>
+    <div class="flex items-center gap-2"><span class="badge badge-warning">🏆 Best Seller</span><span class="text-sm text-gray-500">Top 15% of all products</span></div>
+    <div class="flex items-center gap-2"><span class="badge badge-success">⚡ Fast Selling</span><span class="text-sm text-gray-500">10+ units sold</span></div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     <!-- Top Items This Month -->
-    <div class="lg:col-span-2 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
+    <div class="lg:col-span-2 card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] p-6">
         <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Top Performing Products (This Month)</h3>
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
-                    <tr class="text-xs text-gray-500 uppercase border-b border-gray-100 dark:border-[#2a2a2a]">
+                    <tr class="text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100 dark:border-[#2a2a2a]">
                         <th class="pb-3">#</th>
                         <th class="pb-3">Product Name</th>
                         <th class="pb-3 text-center">Badge</th>
@@ -49,24 +49,24 @@
                             </td>
                             <td class="py-3 text-center">
                                 @if($item->badge_type)
-                                    <span class="px-2 py-1 bg-gray-100 dark:bg-[#222] text-gray-700 dark:text-gray-300 rounded text-xs font-bold">
+                                    <span class="badge dark:!bg-[#222] dark:!text-gray-300">
                                         {{ $item->badge_type }}
                                     </span>
                                 @else
                                     <span class="text-gray-300">-</span>
                                 @endif
                             </td>
-                            <td class="py-3 text-right font-bold text-blue-600 dark:text-blue-400">{{ $item->quantity_sold }}</td>
+                            <td class="py-3 text-right font-semibold text-blue-600 dark:text-blue-400">{{ $item->quantity_sold }}</td>
                             <td class="py-3 text-right">
                                 @if($item->growth_percentage > 0)
-                                    <span class="text-emerald-500 font-medium">+{{ number_format($item->growth_percentage, 0) }}%</span>
+                                    <span class="badge badge-success">+{{ number_format($item->growth_percentage, 0) }}%</span>
                                 @elseif($item->growth_percentage < 0)
-                                    <span class="text-red-500 font-medium">{{ number_format($item->growth_percentage, 0) }}%</span>
+                                    <span class="badge badge-danger">{{ number_format($item->growth_percentage, 0) }}%</span>
                                 @else
                                     <span class="text-gray-400">0%</span>
                                 @endif
                             </td>
-                            <td class="py-3 text-right text-gray-600 dark:text-gray-400 font-medium">PKR {{ number_format($item->total_revenue) }}</td>
+                            <td class="py-3 text-right text-gray-700 dark:text-gray-300 font-semibold">PKR {{ number_format($item->total_revenue) }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="6" class="py-8 text-center text-gray-400">
@@ -85,10 +85,10 @@
     <!-- Right Column -->
     <div class="space-y-6">
         <!-- Today's Movers -->
-        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
+        <div class="card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] p-6">
             <h3 class="text-md font-bold text-gray-800 dark:text-white mb-4 flex justify-between items-center">
                 Today's Fast Movers
-                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-bold">Live</span>
+                <x-ui.badge type="info">Live</x-ui.badge>
             </h3>
             <div class="space-y-3">
                 @forelse($todayTop as $item)
@@ -97,7 +97,7 @@
                             <div class="font-medium text-sm text-gray-800 dark:text-gray-200">{{ $item->name }}</div>
                         </div>
                         <div class="text-right">
-                            <div class="font-bold text-sm text-blue-600">{{ $item->total_qty }} sold</div>
+                            <div class="font-semibold text-sm text-blue-600">{{ $item->total_qty }} sold</div>
                             <div class="text-xs text-gray-400">PKR {{ number_format($item->total_revenue) }}</div>
                         </div>
                     </div>
@@ -111,13 +111,13 @@
         </div>
 
         <!-- Weekly Hot -->
-        <div class="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
+        <div class="card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] p-6">
             <h3 class="text-md font-bold text-gray-800 dark:text-white mb-4">This Week's Best</h3>
             <div class="space-y-3">
                 @forelse($weekTop as $index => $item)
                     <div class="flex items-center justify-between border-b border-gray-50 dark:border-[#2a2a2a] pb-2 last:border-0">
                         <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold flex items-center justify-center">{{ $index + 1 }}</span>
+                            <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">{{ $index + 1 }}</span>
                             <div class="font-medium text-sm text-gray-800 dark:text-gray-200">{{ $item->name }}</div>
                         </div>
                         <div class="text-right">
@@ -138,10 +138,10 @@
 <!-- Charts Row: Demand Graph + Pie Chart -->
 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
     <!-- Demand & Sales Line Graph -->
-    <div class="lg:col-span-3 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
-        <div class="flex items-center justify-between mb-4">
+    <div class="lg:col-span-3 card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] p-6">
+        <div class="flex flex-wrap gap-2 items-center justify-between mb-4">
             <h3 class="text-lg font-bold text-gray-800 dark:text-white">Product Demand & Sales</h3>
-            <select id="graphFilter" onchange="fetchAllCharts()" class="border border-gray-200 dark:border-[#2a2a2a] bg-gray-50 dark:bg-[#111] text-gray-700 dark:text-white rounded-lg px-3 py-1.5 text-sm outline-none">
+            <select id="graphFilter" onchange="fetchAllCharts()" class="input !w-auto !py-1.5 text-sm dark:border-[#2a2a2a] dark:bg-[#111] dark:text-white">
                 <option value="today">Today (Hourly)</option>
                 <option value="7days" selected>Last 7 Days</option>
                 <option value="30days">Last 30 Days</option>
@@ -153,7 +153,7 @@
     </div>
 
     <!-- Top 5 Items Pie Chart -->
-    <div class="lg:col-span-2 bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-[#2a2a2a]">
+    <div class="lg:col-span-2 card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] p-6">
         <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Top 5 Items Sold</h3>
         <div class="h-80 w-full relative flex items-center justify-center">
             <canvas id="topItemsPieChart"></canvas>

@@ -29,6 +29,12 @@
 .pay-btn { display: inline-flex; align-items: center; padding: 9px 24px; border-radius: 50px; background: #2563eb; color: #ffffff; font-size: 13px; font-weight: 600; border: none; cursor: pointer; text-decoration: none; }
 .donut-wrap { width: 160px; height: 160px; flex-shrink: 0; position: relative; }
 .donut-wrap canvas { width: 160px !important; height: 160px !important; }
+.scard, .chart-card, .pay-btn, .filter-pill, .month-pill { transition: box-shadow .25s ease, transform .25s ease, background-color .2s ease; }
+.scard:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 12px 24px -8px rgba(0,0,0,0.14); }
+.pay-btn:hover, .filter-pill:hover { transform: translateY(-1px); filter: brightness(1.08); }
+.month-pill:hover { background: #f8fafc; }
+@media (max-width: 1100px) { .cards-row { grid-template-columns: repeat(2, 1fr); } .charts-row { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .cards-row { grid-template-columns: 1fr; } .page-header { flex-wrap: wrap; gap: 12px; align-items: flex-start; } .page-title { font-size: 24px; } .rev-body { flex-wrap: wrap; } }
 </style>
 @endpush
 
@@ -105,7 +111,7 @@
     </div>
 </div>
 
-<div class="chart-card">
+<div class="chart-card" style="margin-top: 20px;">
     <h3 class="text-lg font-bold text-slate-800 mb-4">Recent Orders</h3>
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -113,7 +119,7 @@
                 <tr>
                     <th class="py-3 px-4 text-slate-500 font-semibold border-b border-slate-100 bg-slate-50 rounded-tl-xl">Order ID</th>
                     <th class="py-3 px-4 text-slate-500 font-semibold border-b border-slate-100 bg-slate-50">Table</th>
-                    <th class="py-3 px-4 text-slate-500 font-semibold border-b border-slate-100 bg-slate-50">Amount</th>
+                    <th class="py-3 px-4 text-slate-500 font-semibold border-b border-slate-100 bg-slate-50 text-right">Amount</th>
                     <th class="py-3 px-4 text-slate-500 font-semibold border-b border-slate-100 bg-slate-50">Status</th>
                     <th class="py-3 px-4 text-slate-500 font-semibold border-b border-slate-100 bg-slate-50 rounded-tr-xl">Time</th>
                 </tr>
@@ -123,15 +129,16 @@
                 <tr class="hover:bg-slate-50 cursor-pointer transition border-b border-slate-50 last:border-0" x-data @click="$dispatch('open-order-modal', {{ $order->id }})">
                     <td class="py-4 px-4 font-bold text-blue-600">{{ $order->order_number }}</td>
                     <td class="py-4 px-4 font-semibold text-slate-700">Table {{ $order->table->table_number ?? 'N/A' }}</td>
-                    <td class="py-4 px-4 font-bold text-slate-800">PKR {{ number_format($order->total_amount) }}</td>
+                    <td class="py-4 px-4 font-semibold text-slate-800 text-right">PKR {{ number_format($order->total_amount) }}</td>
                     <td class="py-4 px-4">
-                        <span class="px-3 py-1 text-xs rounded-full font-bold uppercase {{ $order->status === 'pending' ? 'bg-amber-100 text-amber-600' : ($order->status === 'served' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600') }}">
-                            {{ $order->status }}
-                        </span>
+                        <x-ui.badge :type="$order->status === 'pending' ? 'warning' : ($order->status === 'served' ? 'success' : 'info')" class="capitalize">{{ $order->status }}</x-ui.badge>
                     </td>
                     <td class="py-4 px-4 text-sm text-slate-500">{{ $order->created_at->diffForHumans() }}</td>
                 </tr>
                 @endforeach
+                @if($recentOrders->isEmpty())
+                <tr><td colspan="5"><x-ui.empty-state title="No recent orders" /></td></tr>
+                @endif
             </tbody>
         </table>
     </div>

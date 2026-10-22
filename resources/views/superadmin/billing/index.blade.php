@@ -72,7 +72,7 @@
                     <th>Invoice No.</th>
                     <th>Restaurant</th>
                     <th>Plan</th>
-                    <th>Amount</th>
+                    <th style="text-align:right;">Amount</th>
                     <th>Status</th>
                     <th>Cycle</th>
                     <th>Date</th>
@@ -89,7 +89,7 @@
                     <td>
                         <span class="badge badge-purple">{{ $inv->plan->name ?? '—' }}</span>
                     </td>
-                    <td style="font-weight:700; color:var(--text);">
+                    <td style="font-weight:700; color:var(--text); text-align:right;">
                         ${{ number_format($inv->amount, 2) }}
                         @if($inv->tax > 0)
                             <div style="font-size:10px; color:var(--muted);">+${{ number_format($inv->tax, 2) }} tax</div>

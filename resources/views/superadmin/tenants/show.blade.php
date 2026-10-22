@@ -13,7 +13,7 @@
         <!-- Impersonate -->
         <form action="{{ route('superadmin.tenants.impersonate', $restaurant) }}" method="POST">
             @csrf
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-slate-200 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition shadow-sm">
+            <button type="submit" class="btn btn-secondary">
                 <svg class="w-4 h-4 mr-1.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 Login as Restaurant Admin
             </button>
@@ -24,12 +24,12 @@
               data-confirm="Add demo data (menu, tables, orders, kitchen staff...) to this restaurant only?">
             @csrf
             <button type="submit" {{ $hasDemo ? 'disabled' : '' }} title="{{ $hasDemo ? 'Demo data already exists' : 'Add demo data to this restaurant' }}"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 transition shadow-sm {{ $hasDemo ? 'opacity-50 cursor-not-allowed' : '' }}">
+                    class="btn btn-success  {{ $hasDemo ? 'opacity-50 cursor-not-allowed' : '' }}">
                 {{ $hasDemo ? 'Demo Data Added' : 'Seed Demo Data' }}
             </button>
         </form>
 
-        <a href="{{ route('superadmin.tenants.edit', $restaurant) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 transition shadow-sm">
+        <a href="{{ route('superadmin.tenants.edit', $restaurant) }}" class="btn btn-primary">
             Edit Tenant Settings
         </a>
 
@@ -37,11 +37,11 @@
         <form action="{{ route('superadmin.tenants.toggle-suspension', $restaurant) }}" method="POST">
             @csrf
             @if($restaurant->is_suspended)
-                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition">
+                <button type="submit" class="btn btn-success">
                     Activate Tenant
                 </button>
             @else
-                <button type="submit" data-confirm="Suspend this tenant?" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition">
+                <button type="submit" data-confirm="Suspend this tenant?" class="btn btn-danger">
                     Suspend Tenant
                 </button>
             @endif
@@ -52,7 +52,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Left Column: Tenant Identity & Password Reset -->
     <div class="lg:col-span-1 space-y-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center">
+        <div class="p-6 text-center card">
             @if($restaurant->logo)
                 <img src="{{ asset('storage/' . $restaurant->logo) }}" class="w-24 h-24 rounded-2xl mx-auto mb-4 object-cover border">
             @else
@@ -69,7 +69,7 @@
         </div>
         
         <!-- Subscription Details -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-3">
+        <div class="p-6 space-y-3 card">
             <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-2 border-b pb-2">Subscription Details</h3>
             <div class="flex justify-between text-sm">
                 <span class="text-slate-500">Plan</span>
@@ -100,7 +100,7 @@
         </div>
 
         <!-- Limits -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-3">
+        <div class="p-6 space-y-3 card">
             <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-2 border-b pb-2">Plan Limits</h3>
             <div class="flex justify-between text-sm">
                 <span class="text-slate-500">Max Branches</span>
@@ -125,7 +125,7 @@
         </div>
 
         <!-- Password Reset Section -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+        <div class="p-6 card">
             <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3 border-b pb-2">Reset Owner Password</h3>
             <form action="{{ route('superadmin.tenants.reset-password', $restaurant) }}" method="POST" class="space-y-3">
                 @csrf
@@ -150,33 +150,33 @@
     <div class="lg:col-span-2 space-y-6">
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+            <div class="p-4 text-center card">
                 <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Users</p>
                 <p class="text-2xl font-bold text-slate-800">{{ $restaurant->users_count }}</p>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+            <div class="p-4 text-center card">
                 <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Tables</p>
                 <p class="text-2xl font-bold text-slate-800">{{ $restaurant->tables_count }}</p>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+            <div class="p-4 text-center card">
                 <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Menu Items</p>
                 <p class="text-2xl font-bold text-slate-800">{{ $restaurant->menu_items_count }}</p>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+            <div class="p-4 text-center card">
                 <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Orders</p>
                 <p class="text-2xl font-bold text-slate-800">{{ $restaurant->orders_count }}</p>
             </div>
         </div>
         
         <!-- Enabled Features / Modules -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+        <div class="p-6 card">
             <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-3 mb-4">Enabled Features & Modules</h3>
             <div class="flex flex-wrap gap-2">
                 @forelse($restaurant->granted_features ?? [] as $code)
                     @php
                         $label = collect($features)->flatten(1)->firstWhere('code', $code)['label'] ?? $code;
                     @endphp
-                    <span class="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold rounded-lg">
+                    <span class="badge badge-purple">
                         {{ $label }}
                     </span>
                 @empty
@@ -186,7 +186,7 @@
         </div>
 
         <!-- Billing & Invoices -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-hidden card">
             <div class="p-5 border-b">
                 <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Invoices & Billing History</h3>
             </div>
@@ -225,7 +225,7 @@
         </div>
 
         <!-- Tenant Users list -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-hidden card">
             <div class="p-5 border-b">
                 <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Tenant Users</h3>
             </div>
@@ -268,7 +268,7 @@
         </div>
 
         <!-- Activity Logs -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-hidden card">
             <div class="p-5 border-b">
                 <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Recent Activity Logs</h3>
             </div>

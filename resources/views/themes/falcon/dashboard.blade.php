@@ -40,6 +40,11 @@
 .proj-avatar { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; flex-shrink:0; margin-right:12px; }
 .proj-name { font-size:13px; font-weight:600; color:#344050; margin-right:8px; }
 .proj-pct-badge { font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:10px; background:#e8f4ff; color:#2c7be5; flex-shrink:0; }
+.card { transition: box-shadow .25s ease, transform .25s ease; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 12px 24px -10px rgba(0,0,0,0.16); }
+.proj-row { transition: background-color .2s ease; }
+@media (max-width: 1200px) { .row1 { grid-template-columns: repeat(2,1fr); } .row2 { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .row1 { grid-template-columns: 1fr; } .proj-row { flex-wrap: wrap; gap: 6px; } }
 .proj-time { margin-left:auto; font-size:12.5px; color:#344050; font-weight:500; min-width:80px; text-align:left; }
 </style>
 @endpush
@@ -106,6 +111,9 @@
                 <span class="proj-time">{{ $order->created_at->diffForHumans() }}</span>
             </div>
             @endforeach
+            @if($recentOrders->isEmpty())
+            <x-ui.empty-state title="No recent orders" />
+            @endif
         </div>
     </div>
     <div class="card sales-card">

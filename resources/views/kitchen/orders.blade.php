@@ -4,7 +4,7 @@
 
 @section('content')
 <div x-data="kitchenOrders('{{ $status }}')" x-init="initPolling()" @order-updated.window="fetchOrders()" class="space-y-6">
-    <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+    <div class="card flex justify-between items-center p-4">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl"
                  :class="{
@@ -17,7 +17,7 @@
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Live Updates Enabled</p>
             </div>
         </div>
-        <button @click="fetchOrders()" class="p-2 text-slate-400 hover:text-emerald-600 transition">
+        <button @click="fetchOrders()" class="btn btn-sm btn-ghost !px-2 text-slate-400 hover:text-indigo-600" title="Refresh">
             <svg class="w-6 h-6" :class="{'animate-spin': loading}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         </button>
     </div>
@@ -25,8 +25,8 @@
     <!-- Orders Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <template x-for="order in orders" :key="order.id">
-            <div @click="$dispatch('open-order-modal', order.id)" 
-                 class="bg-white border-2 rounded-2xl shadow-sm overflow-hidden flex flex-col transition hover:shadow-md cursor-pointer group"
+            <div x-transition.opacity @click="$dispatch('open-order-modal', order.id)" 
+                 class="card card-hover border-2 overflow-hidden flex flex-col cursor-pointer group"
                  :class="{
                     'border-amber-200 hover:border-amber-400': order.status === 'pending',
                     'border-blue-200 hover:border-blue-400': order.status === 'preparing',
@@ -93,11 +93,11 @@
 
     <!-- Empty State -->
     <template x-if="orders.length === 0">
-        <div class="text-center py-24 bg-white rounded-[2rem] border-2 border-dashed border-slate-200">
+        <div class="card text-center py-20 border-2 border-dashed border-slate-200">
             <div class="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg class="w-12 h-12 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
             </div>
-            <h3 class="text-2xl font-black text-slate-800" x-text="'No ' + status + ' orders' "></h3>
+            <h3 class="text-xl font-bold text-slate-800" x-text="'No ' + status + ' orders' "></h3>
             <p class="text-slate-500 font-medium">Sit tight! New orders will appear here automatically.</p>
         </div>
     </template>

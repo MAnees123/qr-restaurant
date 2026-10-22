@@ -16,42 +16,43 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-100">
-    <div class="h-screen flex overflow-hidden">
+<body class="font-sans antialiased bg-slate-50">
+    <div class="h-screen flex overflow-hidden" x-data="{ nav: false }" @keydown.escape.window="nav = false">
+        <div x-show="nav" style="display:none" x-transition.opacity @click="nav = false" class="fixed inset-0 bg-slate-900/50 z-30 md:hidden"></div>
         <!-- Sidebar -->
-        <aside class="w-64 bg-emerald-900 text-white flex-shrink-0 sticky top-0 self-start h-screen overflow-y-auto">
+        <aside :class="nav ? 'translate-x-0' : '-translate-x-full md:translate-x-0'" class="w-64 bg-slate-900 text-white flex-shrink-0 fixed md:sticky inset-y-0 left-0 z-40 md:top-0 md:self-start h-screen overflow-y-auto transform transition-transform duration-200 ease-out shadow-xl md:shadow-none">
             <div class="p-6">
-                <h1 class="text-2xl font-bold text-amber-400">Kitchen KOT</h1>
-                <p class="text-xs text-emerald-300 mt-1 uppercase tracking-widest font-bold">
+                <h1 class="text-2xl font-bold text-indigo-300">Kitchen KOT</h1>
+                <p class="text-xs text-slate-400 mt-1 uppercase tracking-widest font-bold">
                     {{ auth()->user()->restaurant->name ?? 'System' }}</p>
             </div>
             <nav class="mt-6">
                 <a href="{{ route('kitchen.dashboard') }}"
-                    class="block px-6 py-3 hover:bg-emerald-800 {{ request()->routeIs('kitchen.dashboard') ? 'bg-emerald-800 border-l-4 border-amber-400' : '' }}">Kitchen
+                    class="block px-6 py-3 hover:bg-slate-800 transition-colors {{ request()->routeIs('kitchen.dashboard') ? 'bg-slate-800 border-l-4 border-indigo-400' : '' }}">Kitchen
                     Overview</a>
                 @if(auth()->user()->role === 'admin' || auth()->user()->is_super_admin)
                 <a href="{{ route('admin.dashboard') }}"
-                    class="block px-6 py-3 hover:bg-emerald-800 {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-800 border-l-4 border-amber-400' : '' }}">Admin
+                    class="block px-6 py-3 hover:bg-slate-800 transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-slate-800 border-l-4 border-indigo-400' : '' }}">Admin
                     Dashboard</a>
                 @endif
 
-                <div class="px-6 py-2 text-xs font-bold text-emerald-400 uppercase mt-4">Order Status</div>
+                <div class="px-6 py-2 text-xs font-bold text-slate-500 uppercase mt-4">Order Status</div>
                 <a href="{{ route('kitchen.orders.status', 'pending') }}"
-                    class="block px-6 py-3 hover:bg-emerald-800 {{ request()->is('kitchen/orders/pending') ? 'bg-emerald-800 border-l-4 border-amber-400' : '' }}">
+                    class="block px-6 py-3 hover:bg-slate-800 transition-colors {{ request()->is('kitchen/orders/pending') ? 'bg-slate-800 border-l-4 border-indigo-400' : '' }}">
                     <span class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                         Pending Orders
                     </span>
                 </a>
                 <a href="{{ route('kitchen.orders.status', 'preparing') }}"
-                    class="block px-6 py-3 hover:bg-emerald-800 {{ request()->is('kitchen/orders/preparing') ? 'bg-emerald-800 border-l-4 border-amber-400' : '' }}">
+                    class="block px-6 py-3 hover:bg-slate-800 transition-colors {{ request()->is('kitchen/orders/preparing') ? 'bg-slate-800 border-l-4 border-indigo-400' : '' }}">
                     <span class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                         Preparing
                     </span>
                 </a>
                 <a href="{{ route('kitchen.orders.status', 'ready') }}"
-                    class="block px-6 py-3 hover:bg-emerald-800 {{ request()->is('kitchen/orders/ready') ? 'bg-emerald-800 border-l-4 border-amber-400' : '' }}">
+                    class="block px-6 py-3 hover:bg-slate-800 transition-colors {{ request()->is('kitchen/orders/ready') ? 'bg-slate-800 border-l-4 border-indigo-400' : '' }}">
                     <span class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                         Ready to Serve
@@ -61,7 +62,7 @@
                 <form method="POST" action="{{ route('logout') }}" class="mt-12">
                     @csrf
                     <button type="submit"
-                        class="w-full text-left px-6 py-3 hover:bg-emerald-800 text-red-300 font-medium">Log
+                        class="w-full text-left px-6 py-3 hover:bg-slate-800 transition-colors text-red-300 font-medium transition-colors">Log
                         Out</button>
                 </form>
             </nav>
@@ -69,11 +70,16 @@
 
         <!-- Main Content -->
         <main class="flex-1 h-screen overflow-x-hidden overflow-y-auto">
-            <header class="sticky top-0 z-20 bg-white shadow">
+            <header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-100 shadow-sm">
                 <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <h2 class="font-bold text-xl text-emerald-900 leading-tight">
-                        @yield('header', 'hboard')
-                    </h2>
+                    <div class="flex items-center gap-3">
+                        <button type="button" @click="nav = true" class="md:hidden p-2 -ml-2 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Open menu">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        </button>
+                        <h2 class="font-bold text-xl text-slate-800 leading-tight">
+                            @yield('header', 'hboard')
+                        </h2>
+                    </div>
                     <div class="flex items-center gap-2">
                         <span class="relative flex h-3 w-3">
                             <span
@@ -85,10 +91,10 @@
                 </div>
             </header>
 
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 @if (session('success'))
-                    <div
-                        class="mb-4 bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded relative">
+                    <div x-data="{ show: true }" x-show="show" x-transition
+                        class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl relative shadow-sm">
                         <span class="block sm:inline">{{ session('success') }}</span>
                     </div>
                 @endif
@@ -99,7 +105,7 @@
             <!-- Global Kitchen Order Status Notifications -->
             <div class="fixed top-20 right-8 w-96 z-50 max-w-[calc(100vw-4rem)]" x-data="orderStatusNotifications()" x-init="initPolling()">
                 <template x-if="notifications.length > 0">
-                    <div class="bg-slate-900 text-white rounded-[2rem] p-6 shadow-lg animate-pulse hover:animate-none transition-all">
+                    <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-xl animate-pulse hover:animate-none transition-all">
                         <div class="flex items-center justify-between mb-4 gap-4">
                             <div class="flex items-center gap-4">
                                 <div class="bg-white text-slate-900 p-3 rounded-2xl shadow-lg shadow-slate-700">
@@ -118,7 +124,7 @@
                         </div>
                         <div class="space-y-3">
                             <template x-for="(notification, index) in notifications" :key="notification.id + notification.updated_at">
-                                <div class="bg-slate-800/90 border border-slate-700 rounded-3xl p-4 flex items-start justify-between gap-4">
+                                <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 flex items-start justify-between gap-4">
                                     <div>
                                         <p class="text-sm font-black text-white" x-text="notificationMessage(notification)"></p>
                                         <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-1" x-text="formatTime(notification.updated_at)"></p>

@@ -37,6 +37,12 @@
 .status-served { color:#3b5bdb; background: #ebf0ff; }
 .status-pending { color:#f59e0b; background: #fff8eb; }
 .status-ready { color:#10b981; background: #ebfff5; }
+.stat-card, .white-card { transition: box-shadow .25s ease, transform .25s ease; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 12px 24px -10px rgba(0,0,0,0.16); }
+.status-badge { border-radius: 999px; padding: 3px 10px; }
+.orders-table td.num, .orders-table th.num { text-align: right; }
+@media (max-width: 1100px) { .row1 { grid-template-columns: repeat(2,1fr); } .row2 { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .row1 { grid-template-columns: 1fr; } .products-body { flex-wrap: wrap; } }
 </style>
 @endpush
 
@@ -82,12 +88,13 @@
 <div class="row3">
     <div class="white-card">
         <div class="card-title">Recent Orders</div>
+        <div style="overflow-x:auto;">
         <table class="orders-table">
             <thead>
                 <tr>
                     <th>Order ID</th>
                     <th>Table</th>
-                    <th>Amount</th>
+                    <th class="num">Amount</th>
                     <th>Status</th>
                     <th>Time</th>
                 </tr>
@@ -97,7 +104,7 @@
                 <tr x-data @click="$dispatch('open-order-modal', {{ $order->id }})">
                     <td class="font-bold">{{ $order->order_number }}</td>
                     <td>Table {{ $order->table->table_number ?? 'N/A' }}</td>
-                    <td class="font-bold">PKR {{ number_format($order->total_amount) }}</td>
+                    <td class="font-semibold num">PKR {{ number_format($order->total_amount) }}</td>
                     <td>
                         <span class="status-badge {{ $order->status === 'pending' ? 'status-pending' : ($order->status === 'served' ? 'status-served' : 'status-ready') }} uppercase">
                             {{ $order->status }}
@@ -106,8 +113,12 @@
                     <td>{{ $order->created_at->diffForHumans() }}</td>
                 </tr>
                 @endforeach
+                @if($recentOrders->isEmpty())
+                <tr><td colspan="5"><x-ui.empty-state title="No recent orders" /></td></tr>
+                @endif
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 @endsection

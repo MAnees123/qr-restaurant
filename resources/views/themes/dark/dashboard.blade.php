@@ -33,6 +33,10 @@
 .stocks-value { font-size:28px; font-weight:800; color:#fff; letter-spacing:-0.5px; margin-bottom:10px; }
 .stocks-chart-wrap { margin:0 -22px; padding:0; }
 
+.stat-card, .spending-card, .stocks-card { transition: box-shadow .25s ease, transform .25s ease, background-color .25s ease; }
+.stat-card:hover { transform: translateY(-2px); background:#202020; box-shadow: 0 14px 30px -12px rgba(0,0,0,0.6); }
+@media (max-width: 1100px) { .row2 { grid-template-columns: 1fr; } .row1 { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 640px) { .row1 { grid-template-columns: 1fr; } .spending-card { padding: 20px; } .spending-body { flex-wrap: wrap; } }
 .team-card { background:#1a1a1a; border-radius:16px; padding:20px 22px; display:flex; align-items:center; justify-content:space-between; }
 </style>
 @endpush
@@ -69,25 +73,28 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr>
-                            <th class="py-2 text-gray-400 font-medium border-b border-gray-800">Order</th>
-                            <th class="py-2 text-gray-400 font-medium border-b border-gray-800">Table</th>
-                            <th class="py-2 text-gray-400 font-medium border-b border-gray-800">Status</th>
-                            <th class="py-2 text-gray-400 font-medium border-b border-gray-800">Amount</th>
+                            <th class="px-3 py-3 text-xs uppercase tracking-wide text-gray-400 font-medium border-b border-gray-800">Order</th>
+                            <th class="px-3 py-3 text-xs uppercase tracking-wide text-gray-400 font-medium border-b border-gray-800">Table</th>
+                            <th class="px-3 py-3 text-xs uppercase tracking-wide text-gray-400 font-medium border-b border-gray-800">Status</th>
+                            <th class="px-3 py-3 text-xs uppercase tracking-wide text-gray-400 font-medium border-b border-gray-800 text-right">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($recentOrders as $order)
                         <tr x-data class="hover:bg-[#222] cursor-pointer transition" @click="$dispatch('open-order-modal', {{ $order->id }})">
-                            <td class="py-3 font-semibold">{{ $order->order_number }}</td>
-                            <td class="py-3">T-{{ $order->table->table_number ?? 'N/A' }}</td>
-                            <td class="py-3">
-                                <span class="px-2 py-1 text-xs rounded-md font-bold uppercase {{ $order->status === 'pending' ? 'bg-amber-500/20 text-amber-500' : ($order->status === 'served' ? 'bg-[#c8f135]/20 text-[#c8f135]' : 'bg-emerald-500/20 text-emerald-500') }}">
+                            <td class="px-3 py-3 font-semibold">{{ $order->order_number }}</td>
+                            <td class="px-3 py-3">T-{{ $order->table->table_number ?? 'N/A' }}</td>
+                            <td class="px-3 py-3">
+                                <span class="px-2.5 py-1 text-xs rounded-full font-semibold capitalize {{ $order->status === 'pending' ? 'bg-amber-500/20 text-amber-500' : ($order->status === 'served' ? 'bg-[#c8f135]/20 text-[#c8f135]' : 'bg-emerald-500/20 text-emerald-500') }}">
                                     {{ $order->status }}
                                 </span>
                             </td>
-                            <td class="py-3 font-bold">PKR {{ number_format($order->total_amount) }}</td>
+                            <td class="px-3 py-3 font-semibold text-right">PKR {{ number_format($order->total_amount) }}</td>
                         </tr>
                         @endforeach
+                        @if($recentOrders->isEmpty())
+                        <tr><td colspan="4" class="py-10 text-center text-gray-500 text-sm">No recent orders</td></tr>
+                        @endif
                     </tbody>
                 </table>
             </div>

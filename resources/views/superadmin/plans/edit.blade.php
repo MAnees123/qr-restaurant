@@ -10,7 +10,7 @@
         <!-- Main Form Fields -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Plan Details -->
-            <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
+            <div class="p-6 space-y-4 card">
                 <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-3">Plan Basic Info</h3>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -41,7 +41,7 @@
             </div>
 
             <!-- Plan Limits -->
-            <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
+            <div class="p-6 space-y-4 card">
                 <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-3">Plan Limits (-1 for Unlimited)</h3>
                 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -69,7 +69,7 @@
             </div>
 
             <!-- Features & Modules -->
-            <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
+            <div class="p-6 space-y-4 card">
                 <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-3">Granted Features & Modules</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
@@ -94,7 +94,7 @@
 
         <!-- Sidebar Actions -->
         <div class="space-y-6">
-            <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
+            <div class="p-6 space-y-4 card">
                 <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider border-b pb-3">Plan Status</h3>
                 
                 <label class="flex items-center gap-2 cursor-pointer pt-2">
@@ -109,7 +109,7 @@
                 <h3 class="font-bold text-md">Update Subscription Plan</h3>
                 <p class="text-xs text-slate-400">Updating this plan will affect all restaurants currently assigned to it.</p>
                 <div class="pt-2">
-                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-sm font-semibold rounded-xl text-center transition-colors shadow-lg">
+                    <button type="submit" class="btn btn-primary w-full justify-center py-3">
                         Update Plan
                     </button>
                 </div>

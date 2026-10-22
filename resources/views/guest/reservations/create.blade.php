@@ -12,9 +12,9 @@
 
     <!-- Form -->
     <div class="p-6 -mt-8">
-        <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-6">
+        <div class="card p-6 shadow-xl">
             @if(session('success'))
-                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl text-center">
+                <div x-data="{ show: true }" x-show="show" x-transition class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-center">
                     <p class="font-bold">{{ session('success') }}</p>
                 </div>
             @endif
@@ -25,28 +25,28 @@
 
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-1">Full Name</label>
-                    <input type="text" name="customer_name" required class="w-full rounded-2xl border-slate-200 focus:border-amber-500 focus:ring-amber-500" placeholder="Enter your name">
+                    <input type="text" name="customer_name" required class="w-full rounded-xl border-slate-200 shadow-sm transition focus:border-amber-500 focus:ring-amber-500" placeholder="Enter your name">
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-1">Phone Number</label>
-                    <input type="text" name="customer_phone" required class="w-full rounded-2xl border-slate-200 focus:border-amber-500 focus:ring-amber-500" placeholder="03xx-xxxxxxx">
+                    <input type="text" name="customer_phone" required class="w-full rounded-xl border-slate-200 shadow-sm transition focus:border-amber-500 focus:ring-amber-500" placeholder="03xx-xxxxxxx">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-1">Date</label>
-                        <input type="date" name="reservation_date" required min="{{ date('Y-m-d') }}" class="w-full rounded-2xl border-slate-200 focus:border-amber-500 focus:ring-amber-500">
+                        <input type="date" name="reservation_date" required min="{{ date('Y-m-d') }}" class="w-full rounded-xl border-slate-200 shadow-sm transition focus:border-amber-500 focus:ring-amber-500">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-1">Time</label>
-                        <input type="time" name="reservation_time" required class="w-full rounded-2xl border-slate-200 focus:border-amber-500 focus:ring-amber-500">
+                        <input type="time" name="reservation_time" required class="w-full rounded-xl border-slate-200 shadow-sm transition focus:border-amber-500 focus:ring-amber-500">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-1">Number of Guests</label>
-                    <select name="guests" required class="w-full rounded-2xl border-slate-200 focus:border-amber-500 focus:ring-amber-500">
+                    <select name="guests" required class="w-full rounded-xl border-slate-200 shadow-sm transition focus:border-amber-500 focus:ring-amber-500">
                         @for($i = 1; $i <= 12; $i++)
                             <option value="{{ $i }}">{{ $i }} {{ $i == 1 ? 'Person' : 'People' }}</option>
                         @endfor
@@ -55,10 +55,10 @@
 
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-1">Special Notes (Optional)</label>
-                    <textarea name="notes" rows="3" class="w-full rounded-2xl border-slate-200 focus:border-amber-500 focus:ring-amber-500" placeholder="Any special requests?"></textarea>
+                    <textarea name="notes" rows="3" class="w-full rounded-xl border-slate-200 shadow-sm transition focus:border-amber-500 focus:ring-amber-500" placeholder="Any special requests?"></textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-amber-200 transition transform active:scale-95">
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded-xl shadow-lg shadow-amber-200 transition transform hover:-translate-y-0.5 active:scale-95">
                     REQUEST RESERVATION
                 </button>
             </form>

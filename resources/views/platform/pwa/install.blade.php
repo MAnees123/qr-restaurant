@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Install {{ $restaurant->name }}</title>
 @include('partials.pwa-head', ['restaurant' => $restaurant])
-<style>body{font-family:system-ui,sans-serif;margin:0;background:#f8fafc;color:#334155;padding:24px 16px}main{max-width:480px;margin:0 auto;background:#fff;border-radius:24px;padding:24px;box-shadow:0 1px 3px #0001}h1{margin-top:0}li{margin-bottom:8px}button{padding:10px 24px;border:0;border-radius:12px;background:#059669;color:#fff;font-weight:700}</style></head>
+<style>body{font-family:system-ui,sans-serif;margin:0;background:#f8fafc;color:#334155;padding:24px 16px}main{max-width:480px;margin:0 auto;background:#fff;border-radius:16px;padding:24px;box-shadow:0 1px 3px #0001}h1{margin-top:0}li{margin-bottom:8px}button{padding:10px 24px;border:0;border-radius:12px;background:linear-gradient(180deg,#6366f1,#4f46e5);color:#fff;font-weight:700}</style></head>
 <body><main>
 <h1>Install {{ $restaurant->name }}</h1>
 <p>Add this menu to your home screen for one-tap access.</p>

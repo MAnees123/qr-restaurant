@@ -5,30 +5,30 @@
 
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" x-data="quickScan()">
-    <div class="lg:col-span-2 bg-white rounded-[2rem] shadow-sm border p-8">
-        <label class="block text-sm font-black text-slate-700 uppercase tracking-widest mb-2">Scan or type a barcode, then press Enter</label>
+    <div class="lg:col-span-2 card p-6 md:p-8">
+        <label class="block text-sm font-medium text-slate-700 mb-2">Scan or type a barcode, then press Enter</label>
         <input type="text" x-model="code" @keydown.enter.prevent="lookup()" x-ref="scan" autofocus autocomplete="off"
-               class="w-full rounded-xl border-slate-200 font-mono text-lg" placeholder="USB scanners type here automatically">
+               class="input font-mono text-lg" placeholder="USB scanners type here automatically">
         <p class="text-sm mt-2" :class="ok ? 'text-emerald-600' : 'text-red-600'" x-text="msg"></p>
 
-        <table class="w-full mt-6 text-left">
-            <thead><tr class="text-xs uppercase text-slate-400"><th class="py-2">Item</th><th>Qty</th><th class="text-right">Subtotal</th><th></th></tr></thead>
+        <div class="overflow-x-auto mt-6"><table class="w-full text-left">
+            <thead><tr><th class="px-4 py-3">Item</th><th class="px-4 py-3">Qty</th><th class="px-4 py-3 text-right">Subtotal</th><th class="px-4 py-3"></th></tr></thead>
             <tbody>
             <template x-for="(l, i) in lines" :key="l.id">
-                <tr class="border-t">
-                    <td class="py-2 font-bold"><a :href="l.url" class="hover:underline" x-text="l.name"></a></td>
-                    <td><input type="number" min="1" x-model.number="l.qty" class="w-20 rounded-lg border-slate-200"></td>
-                    <td class="text-right" x-text="(l.price * l.qty).toFixed(2)"></td>
-                    <td class="text-right"><button type="button" @click="lines.splice(i,1)" class="text-red-500 font-black">&times;</button></td>
+                <tr>
+                    <td class="px-4 py-3 font-semibold text-slate-800"><a :href="l.url" class="hover:underline" x-text="l.name"></a></td>
+                    <td class="px-4 py-3"><input type="number" min="1" x-model.number="l.qty" class="input !w-20"></td>
+                    <td class="px-4 py-3 text-right font-semibold" x-text="(l.price * l.qty).toFixed(2)"></td>
+                    <td class="px-4 py-3 text-right"><button type="button" @click="lines.splice(i,1)" class="btn btn-sm btn-ghost text-red-500">&times;</button></td>
                 </tr>
             </template>
             </tbody>
-        </table>
+        </table></div>
     </div>
-    <div class="bg-white rounded-[2rem] shadow-sm border p-6">
-        <h3 class="font-black text-slate-700 uppercase tracking-widest text-sm mb-2">Quick order total</h3>
-        <div class="text-3xl font-black" x-text="'Rs ' + total().toFixed(2)"></div>
-        <button type="button" @click="lines = []" class="mt-4 w-full bg-slate-100 font-bold py-2 rounded-xl">Clear</button>
+    <div class="card p-6 self-start">
+        <h3 class="text-base font-semibold text-slate-800 mb-2">Quick order total</h3>
+        <div class="text-3xl font-bold text-slate-900" x-text="'Rs ' + total().toFixed(2)"></div>
+        <button type="button" @click="lines = []" class="btn btn-secondary mt-4 w-full">Clear</button>
         <p class="text-xs text-slate-400 mt-3">Quick order is a running tally for counter use. Click an item name to open it in the menu editor.</p>
     </div>
 </div>

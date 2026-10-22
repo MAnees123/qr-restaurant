@@ -15,7 +15,7 @@
     @endphp
 
     @foreach($statCards as $card)
-    <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+    <div class="p-5 card">
         <div class="flex items-center justify-between mb-3">
             <span class="text-xs font-medium text-slate-500 leading-tight">{{ $card['label'] }}</span>
             <div class="w-8 h-8 rounded-lg bg-{{ $card['color'] }}-50 flex items-center justify-center">
@@ -30,7 +30,7 @@
 {{-- Subscription breakdown + Plans --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     {{-- Subscription breakdown --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+    <div class="p-5 card">
         <h3 class="text-sm font-bold text-slate-700 mb-4">Subscription Breakdown</h3>
         <div class="space-y-3">
             @php
@@ -68,7 +68,7 @@
     </div>
 
     {{-- Recent Restaurants --}}
-    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm">
+    <div class="lg:col-span-2 card">
         <div class="p-5 border-b flex justify-between items-center">
             <h2 class="text-sm font-bold text-slate-700">Recent Restaurants</h2>
             <a href="{{ route('superadmin.tenants.index') }}" class="text-xs font-medium text-indigo-600 hover:underline">View All →</a>

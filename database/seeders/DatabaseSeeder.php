@@ -60,6 +60,21 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Seeding Activity Logs...');
         $this->call(ActivityLogSeeder::class);
 
+        $this->command->info('Seeding Staff Roles, Attendance, Payroll & Customers...');
+        $this->call(StaffDemoSeeder::class);
+
+        $this->command->info('Seeding Delivery, Loyalty & Operations Settings...');
+        $this->call(OperationsDemoSeeder::class);
+
+        $this->command->info('Seeding Suppliers, Purchases, Expenses, Tax, Invoices & Accounting...');
+        $this->call(FinanceDemoSeeder::class);
+
+        $this->command->info('Seeding Notification Settings, Branding, Printer & QR Logo...');
+        $this->call(CommsDemoSeeder::class);
+
+        $this->command->info('Seeding API Tokens, Security, PWA & AI Settings...');
+        $this->call(PlatformDemoSeeder::class);
+
         $this->command->info('✓ Database successfully populated with complete client demo data!');
     }
 }
